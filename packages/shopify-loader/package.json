@@ -13,5 +13,6 @@
   },
   "dependencies": {
     "loader-utils": "^1.2.3"
-  }
+  },
+  "gitHead": "ad9afc61d42f5188678cd62027163380f21e5b3e"
 }
