@@ -14,7 +14,6 @@
     "@halfhelix/glob-loader": "^0.0.1",
     "@halfhelix/shopify-kit": "^0.0.1",
     "@halfhelix/shopify-loader": "^0.0.1",
-    "@halfhelix/shopify-mockery": "^0.0.1",
     "@halfhelix/terminal-kit": "^0.0.1",
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",

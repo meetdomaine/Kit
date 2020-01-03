@@ -1,6 +1,5 @@
 {
-  "name": "@halfhelix/shopify-mockery",
-  "version": "0.0.1",
+  "private": true,
   "description": "",
   "main": "shopify-mockery.js",
   "author": "https://halfhelix.com",

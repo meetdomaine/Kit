@@ -2,7 +2,7 @@
 const webpack = require('webpack')
 const protect = require('@halfhelix/terminal-kit/protect')
 const settings = require('@halfhelix/configure').settings
-const mockServer = require('@halfhelix/shopify-mockery')
+// const mockServer = require('@halfhelix/shopify-mockery')
 const {
   interceptConsole,
   resetConsole,
