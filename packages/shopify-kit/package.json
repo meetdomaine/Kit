@@ -1,0 +1,19 @@
+{
+  "name": "@halfhelix/shopify-kit",
+  "version": "0.0.1",
+  "description": "",
+  "main": "shopify-kit.js",
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "dependencies": {
+    "@halfhelix/configure": "^0.0.1",
+    "@halfhelix/terminal-kit": "^0.0.1",
+    "fs-extra": "^8.1.0",
+    "globby": "^10.0.1",
+    "node-fetch": "^2.6.0",
+    "w2t": "^2.0.2"
+  }
+}

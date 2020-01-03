@@ -1,0 +1,119 @@
+.inline {
+  display: inline;
+}
+.inline-block {
+  display: inline-block;
+}
+.relative {
+  position: relative;
+}
+.absolute {
+  position: absolute;
+}
+.fixed {
+  position: fixed;
+}
+.static {
+  position: static;
+}
+.pointer{
+  cursor: pointer;
+}
+
+.block {
+  display: block;
+}
+.block--xxs {
+  @media #{$mq-xxs} {
+    display: block;
+  }
+}
+.block--xs {
+  @media #{$mq-xs} {
+    display: block;
+  }
+}
+.block--s {
+  @media #{$mq-s} {
+    display: block;
+  }
+}
+.block--ms {
+  @media #{$mq-ms} {
+    display: block;
+  }
+}
+.block--m {
+  @media #{$mq-m} {
+    display: block;
+  }
+}
+.block--ml {
+  @media #{$mq-ml} {
+    display: block;
+  }
+}
+.block--l {
+  @media #{$mq-l} {
+    display: block;
+  }
+}
+.block--xl {
+  @media #{$mq-xl} {
+    display: block;
+  }
+}
+.block--xxl {
+  @media #{$mq-xxl} {
+    display: block;
+  }
+}
+
+.hide {
+  display: none;
+}
+.hide--xxs {
+  @media #{$mq-xxs} {
+    display: none;
+  }
+}
+.hide--xs {
+  @media #{$mq-xs} {
+    display: none;
+  }
+}
+.hide--s {
+  @media #{$mq-s} {
+    display: none;
+  }
+}
+.hide--ms {
+  @media #{$mq-ms} {
+    display: none;
+  }
+}
+.hide--m {
+  @media #{$mq-m} {
+    display: none;
+  }
+}
+.hide--ml {
+  @media #{$mq-ml} {
+    display: none;
+  }
+}
+.hide--l {
+  @media #{$mq-l} {
+    display: none;
+  }
+}
+.hide--xl {
+  @media #{$mq-xl} {
+    display: none;
+  }
+}
+.hide--xxl {
+  @media #{$mq-xxl} {
+    display: none;
+  }
+}

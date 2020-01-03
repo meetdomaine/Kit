@@ -1,0 +1,16 @@
+{
+  "name": "@halfhelix/configure",
+  "version": "0.0.1",
+  "description": "",
+  "main": "configure.js",
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.12.0"
+  }
+}

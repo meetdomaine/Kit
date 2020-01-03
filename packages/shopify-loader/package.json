@@ -1,0 +1,14 @@
+{
+  "name": "@halfhelix/shopify-loader",
+  "version": "0.0.1",
+  "description": "",
+  "main": "shopify-loader.js",
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "dependencies": {
+    "loader-utils": "^1.2.3"
+  }
+}

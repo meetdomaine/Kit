@@ -1,0 +1,10 @@
+{
+  "name": "General",
+  "settings": [
+    {
+      "type": "text",
+      "id": "general_example",
+      "label": "General Example"
+    }
+  ]
+}

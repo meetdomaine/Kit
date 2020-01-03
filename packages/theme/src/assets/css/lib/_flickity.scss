@@ -1,0 +1,108 @@
+.flickity-enabled {
+  position: relative;
+}
+
+.flickity-viewport {
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.flickity-prev-next-button {
+  height: 18px;
+  margin-top: -14px;
+  position: absolute;
+  top: calc(50% - 9px);
+  transition: opacity $speed $ease;
+  width: 18px;
+  z-index: 99;
+  @media #{$mq-xs} {
+    height: 33px;
+    margin-top: -16px;
+    top: calc(50% - 16.5px);
+    width: 33px;
+  }
+
+  svg {
+    filter: drop-shadow(0 0 15px $black);
+  }
+
+  path {
+    transition: stroke-width $speed $ease;
+  }
+
+  .arrow {
+    fill: transparent;
+    stroke: $white;
+    stroke-width: 6px;
+  }
+
+  &.previous {
+    left: 20px;
+  }
+
+  &.next {
+    right: 20px;
+  }
+
+  &[disabled] {
+    animation: none !important;
+    opacity: 0.4 !important;
+
+    path {
+      stroke-width: 2px;
+    }
+  }
+}
+
+.flickity-page-dots {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 9;
+
+  .dot {
+    border: 1px solid $black;
+    border-radius: 50%;
+    cursor: pointer;
+    display: block;
+    height: 8px;
+    margin: 7.5px 7.5px 0;
+    position: relative;
+    width: 8px;
+    @media #{$mq-s} {
+      height: 12px;
+      margin: 0 10px;
+      width: 12px;
+    }
+
+    &.is-selected {
+      background-color: $black;
+    }
+  }
+}
+
+[data-flickity-transition="fadein"] {
+  .flickity-slider {
+    transform: none !important;
+  }
+
+  .js-slide {
+    pointer-events: none;
+    left: 0 !important;
+    opacity: 0;
+    transition-duration: $speed;
+    transition-property: opacity, visibility;
+    transition-timing-function: $ease;
+    visibility: hidden;
+    width: 100%;
+
+    &.is-selected {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+  }
+}

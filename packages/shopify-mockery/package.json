@@ -1,0 +1,17 @@
+{
+  "name": "@halfhelix/shopify-mockery",
+  "version": "0.0.1",
+  "description": "",
+  "main": "shopify-mockery.js",
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "dependencies": {
+    "connect": "^3.7.0",
+    "express": "^4.17.1",
+    "liquid": "^4.0.0",
+    "nodemon": "^2.0.2"
+  }
+}

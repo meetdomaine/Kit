@@ -1,0 +1,15 @@
+{
+  "name": "@halfhelix/kit",
+  "version": "0.0.1-beta.0",
+  "description": "A frontend helper monolibrary by the folks at Half Helix",
+  "scripts": {
+    "publish": "NPM_CONFIG_OTP= ./node_modules/.bin/lerna publish",
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean"
+  },
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^3.10.6"
+  }
+}

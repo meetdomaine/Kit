@@ -1,0 +1,66 @@
+.ratio {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 100%;
+  }
+}
+
+/* Square */
+.ro-1::before {
+  padding-top: 100%;
+}
+
+/* Rectangle */
+.ro-2::before {
+  padding-bottom: calc(575/765 * 100%);
+}
+
+.clear {
+
+  &::before,
+  &::after {
+    content:' ';
+    display: table;
+  }
+
+  &::after {
+    clear: both;
+  }
+}
+
+/* Common */
+.hidden {
+  display: none;
+}
+
+/* Visually hidden but read by screen readers */
+.sr-only {
+  display: block;
+  height: 0;
+  overflow: hidden;
+  text-indent: -9999px;
+  width: 0;
+}
+
+.icon,
+.logo {
+  position: relative;
+
+  svg {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.fill {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+}

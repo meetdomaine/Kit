@@ -1,0 +1,6 @@
+<script>
+  var __GLOBAL__ = {
+    cdn: "{{ 'test.jpg' | asset_url }}".replace(/test.jpg\?\d*/,''),
+    cart: {{ cart | json }}
+  }
+</script>
