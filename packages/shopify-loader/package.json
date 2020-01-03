@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/shopify-loader",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.1",
   "description": "",
   "main": "shopify-loader.js",
   "author": "https://halfhelix.com",
@@ -8,7 +8,7 @@
   "scripts": {
     "publish": "npm publish --access public"
   },
-  "publishConfig":{
+  "publishConfig": {
     "access": "public"
   },
   "dependencies": {
