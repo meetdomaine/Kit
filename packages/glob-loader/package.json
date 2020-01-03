@@ -8,6 +8,9 @@
   "scripts": {
     "publish": "npm publish --access public"
   },
+  "publishConfig":{
+    "access": "public"
+  },
   "dependencies": {
     "globby": "^10.0.1",
     "loader-utils": "^1.2.3"

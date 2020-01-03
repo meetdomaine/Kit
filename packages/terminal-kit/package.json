@@ -8,6 +8,9 @@
   "scripts": {
     "publish": "npm publish --access public"
   },
+  "publishConfig":{
+    "access": "public"
+  },
   "dependencies": {
     "boxen": "^4.2.0",
     "chalk": "^3.0.0",
