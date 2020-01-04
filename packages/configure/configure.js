@@ -47,7 +47,7 @@ const defaults = {
   'lintStyles': true,
   'stylelintPaths' (settings) {
     return [
-      `src/assets/css/*.scss`,
+      `src/assets/scss/**/*.scss`,
       `src/modules/**/*.scss`,
       `src/sections/**/*.scss`
     ]

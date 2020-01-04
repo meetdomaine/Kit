@@ -228,7 +228,7 @@ module.exports = {
   // What files should be linted with Stylelint?
   'stylelintPaths' (settings) {
     return [
-      `src/assets/css/*.scss`,
+      `src/assets/scss/**/*.scss`,
       `src/modules/**/*.scss`,
       `src/sections/**/*.scss`
     ]
