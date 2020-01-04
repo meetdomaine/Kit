@@ -6,8 +6,7 @@ const {
 } = require('./utils')
 const {
   clear,
-  icon,
-  newLines
+  icon
 } = require('./atoms')
 const {
   logo,
@@ -65,6 +64,15 @@ function browserSyncNotice ({target, proxy}) {
   )
 }
 
+function error (e) {
+  box(
+    title('Error:'),
+    e.message
+  )
+
+  log(e)
+}
+
 function uploadErrors (list) {
   box(
     'Errors:',
@@ -97,5 +105,6 @@ module.exports = {
   epilogue,
   browserSyncNotice,
   uploadErrors,
-  progressBar
+  progressBar,
+  error
 }

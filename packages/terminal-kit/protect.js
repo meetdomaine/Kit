@@ -1,27 +1,16 @@
 
-const constants = require('./src/constants')
+const output = require('./src/organisms')
 
 module.exports = (callback, {
-  exit = true,
-  scope = '',
-  settings = {}
+  exit = true
 } = {}) => {
   async function protect (options) {
     try {
       return callback(options)
     } catch (e) {
-      // writeError(e)
-
-      if (
-        constants.messages[scope] &&
-        constants.messages[scope].instruction
-      ) {
-        // writeInstruction(constants.messages[scope].instruction, settings)
-      }
-
+      output.error(e)
+      output.epilogue()
       exit && process.exit()
-    } finally {
-      // exit && process.exit()
     }
   }
 

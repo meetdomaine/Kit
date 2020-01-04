@@ -79,7 +79,4 @@ program
     title: `Command "${command}" not supported`,
     subtitle: 'See usage information above'
   })
-}, {
-  scope: 'compile',
-  settings: configure.settings
 }))
