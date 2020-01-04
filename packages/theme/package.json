@@ -40,7 +40,7 @@
     "@babel/core": "^7.7.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
-    "@halfhelix/kit": "^0.0.1",
+    "@halfhelix/kit": "latest",
     "eslint-config-standard": "^14.1.0",
     "standard": "^14.3.1",
     "stylelint-config-standard": "^19.0.0",

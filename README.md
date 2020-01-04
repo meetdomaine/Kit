@@ -7,6 +7,8 @@ npm i -g @halfhelix/kit
 
 This is a toolkit that we use internally at Half Helix to develop our frontend Shopify themes. It enables us to develop websites the way that we want to, with a focus on modularity.
 
+> This package is currently in Beta. It is likely to change quickly as we prepare it for initial release.
+
 #### Core technologies included:
 - Webpack
 - Webpack Dev Middleware
@@ -353,3 +355,15 @@ Most logs from core dependencies are relayed directly to the console. However, t
 #### Bugs & Missing Information
 
 This package is currently unstable and in it's initial stages. Expect bugs and missing information. We encourage you to submit tickets and let us know the issues you are experiencing! Keep in mind that our current priority is to enable our internal developers so expect delays for general bug reports.
+
+#### Testing changes when contributing
+
+Currently, the recommended way to test new changes to this repo is via the following steps:
+- Clone this monorepo
+- Install lerna globally
+- In the root of the repo, run `lerna bootstrap`
+- Uninstall the global @halfhelix/kit package `npm uninstall -g @halfhelix/kit`
+- Install the local cli package globally `npm i -g /Users/.../packages/cli`
+- In the root of your theme, run the global Kit commands
+- When ready, submit a MR with the changes
+- The changes will be reviewed and released (`lerna publish` or `lerna version && lerna run publish`)

@@ -39,7 +39,6 @@ program
     })
   )
 ).then(protect(() => {
-  // process.exit()
   const settings = configure({
     simple: program['quick'],
     env: program.env || 'development',
