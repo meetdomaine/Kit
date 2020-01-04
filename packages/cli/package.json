@@ -6,6 +6,9 @@
   "bin": {
     "kit": "./cli.js"
   },
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
   "keywords": [
     "shopify",
     "themekit",

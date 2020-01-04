@@ -5,9 +5,7 @@
   "main": "shopify-mockery.js",
   "author": "https://halfhelix.com",
   "license": "MIT",
-  "scripts": {
-    "publish": "npm publish --access public"
-  },
+  "scripts": {},
   "dependencies": {
     "connect": "^3.7.0",
     "express": "^4.17.1",
