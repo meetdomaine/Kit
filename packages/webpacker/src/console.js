@@ -6,6 +6,10 @@ let output, errorOutput
 
 async function interceptConsole () {
   if (settings.debug) {
+    // Delete the files since everything
+    // is going to console (process.stdout)
+    fs.removeSync(settings['path.stdout'])
+    fs.removeSync(settings['path.stderr'])
     return
   }
   fs.ensureFileSync(settings['path.stdout'])

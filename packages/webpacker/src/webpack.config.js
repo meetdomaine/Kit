@@ -9,11 +9,35 @@ const fs = require('fs-extra')
 const settings = require('@halfhelix/configure').settings
 
 function getThemeNodeModulesDir (suffix = '') {
-  return `${settings['path.config.cwd']}/node_modules${suffix}`
+  return `${settings['path.cwd']}/node_modules${suffix}`
 }
 
+/**
+ * First, checks the existence of a child node modules
+ * package. Then, for global packages, checks the closets
+ * parent node modules directory.
+ */
 function getNodeModulesDir (suffix = '') {
-  return path.resolve(__dirname, `../node_modules${suffix}`)
+  const possibleChild = path.resolve(__dirname, `../node_modules${suffix}`)
+  if (fs.existsSync(possibleChild)) {
+    return possibleChild
+  }
+  const splitParent = __dirname.split('node_modules')
+  splitParent.pop()
+  const possibleParent = splitParent.join('node_modules') + `node_modules${suffix}`
+  if (fs.existsSync(possibleParent)) {
+    return possibleParent
+  }
+  return ''
+}
+
+function resolveNodeModule (suffix = '') {
+  const localDir = getNodeModulesDir(suffix)
+  return (
+    fs.existsSync(localDir)
+    ? localDir
+    : getThemeNodeModulesDir(suffix)
+  )
 }
 
 const matchLoader = name => loaderRule => {
@@ -38,15 +62,6 @@ function findAndCleanseLoader (rule, name, cleanse = true) {
   }
 
   return false
-}
-
-function resolveNodeModule (suffix = '') {
-  const localDir = getNodeModulesDir(suffix)
-  return (
-    fs.existsSync(localDir)
-    ? localDir
-    : getThemeNodeModulesDir(suffix)
-  )
 }
 
 function prepareDevtool () {
