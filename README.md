@@ -43,6 +43,8 @@ We have plans to release the starter theme we use for our Shopify sites over tim
 
 ```
 .env
+.eslintrc.js
+.stylelintrc.js
 kit.config.js
 webpack.config.js
 ...
