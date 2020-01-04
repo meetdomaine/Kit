@@ -39,6 +39,8 @@ kit watch  --env [production|staging|development]
 
 #### Theme architecture
 
+We have plans to release the starter theme we use for our Shopify sites over time to sit alongside this toolkit. In the meantime, see here for a little information about how our these are structured. This is the environment in which this toolkit is used.
+
 ```
 .env
 kit.config.js
@@ -46,11 +48,13 @@ webpack.config.js
 ...
 src
   |- assets
-  |  |- css
+  |  |- scss
   |  |  |- lib
+  |  |  |- main.scss
   |  |
   |  |- js
   |  |  |- lib
+  |  |  |- main.js
   |  |
   |  |- images
   |  |- fonts
@@ -64,7 +68,8 @@ src
   |- locales
   |- sections
   |- snippets
-  |  |- zendesk.liquid
+  |  |- gtm.liquid
+  |  |- no-index.liquid
   |
   |- templates
   |- modules
@@ -339,6 +344,18 @@ module.exports = {
   }
 }
 
+```
+#### NPM Dependencies
+
+Most of the dependencies that are used to compile assets with the Webpack configuration above are declared and managed in this package. However, there are some that will need to be dev dependencies of the theme itself. Currently, the theme dev dependencies we use for the configuration above are:
+
+```
+"@babel/core": "^7.7.7",
+"@babel/plugin-proposal-object-rest-spread": "^7.7.7",
+"@babel/preset-env": "^7.7.7",
+"eslint-config-standard": "^14.1.0",
+"standard": "^14.3.1",
+"stylelint-config-standard": "^19.0.0",
 ```
 
 #### Logging
