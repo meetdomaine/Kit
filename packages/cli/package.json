@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/kit",
-  "version": "0.0.1-beta.7",
+  "version": "0.0.1-beta.8",
   "description": "A Shopify development toolkit",
   "main": "index.js",
   "bin": {
@@ -21,11 +21,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@halfhelix/configure": "^0.0.1-beta.7",
-    "@halfhelix/shopify-kit": "^0.0.1-beta.7",
-    "@halfhelix/terminal-kit": "^0.0.1-beta.5",
-    "@halfhelix/webpacker": "^0.0.1-beta.7",
+    "@halfhelix/configure": "^0.0.1-beta.8",
+    "@halfhelix/shopify-kit": "^0.0.1-beta.8",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.8",
+    "@halfhelix/webpacker": "^0.0.1-beta.8",
     "commander": "^4.0.1"
   },
-  "gitHead": "ad9afc61d42f5188678cd62027163380f21e5b3e"
+  "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/glob-loader",
-  "version": "0.0.1-beta.7",
+  "version": "0.0.1-beta.8",
   "description": "",
   "main": "index.js",
   "author": "https://halfhelix.com",
@@ -15,5 +15,5 @@
     "globby": "^10.0.1",
     "loader-utils": "^1.2.3"
   },
-  "gitHead": "ad9afc61d42f5188678cd62027163380f21e5b3e"
+  "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"
 }
