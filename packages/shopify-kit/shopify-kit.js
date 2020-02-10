@@ -8,12 +8,16 @@ const {
 const sanitize = require('./src/sanitize')
 const sync = require('./src/syncToShopify')
 
+function reverseSlashes (path) {
+  return path.replace(/\\/g, '/')
+}
+
 async function getThemeFiles (settings) {
-  return await globby(`${settings['path.src']}/**/*.*`)
+  return await globby(`${reverseSlashes(settings['path.src'])}/**/*.*`)
 }
 
 async function addInConfig (files, settings) {
-  const configs = await globby(`${settings['path.src']}/config/lib/*.json`)
+  const configs = await globby(`${reverseSlashes(settings['path.src'])}/config/lib/*.json`)
   const schema = configs.reduce((arr, path) => {
     const content = fs.readFileSync(path, 'utf8').trim()
     content && arr.push(content)

@@ -2,6 +2,7 @@
 const webpack = require('webpack')
 const protect = require('@halfhelix/terminal-kit/protect')
 const settings = require('@halfhelix/configure').settings
+const path = require('path')
 // const mockServer = require('@halfhelix/shopify-mockery')
 const {
   interceptConsole,
@@ -19,8 +20,8 @@ const {
 const config = require('./src/webpack.config')
 const setUpProxy = require('./src/setUpProxy')
 
-function cleanseCompiledFileName (path) {
-  return path.split('?').shift()
+function cleanseCompiledFileName (filePath) {
+  return path.normalize(filePath.split('?').shift())
 }
 
 function getCompiledFilePaths (stats) {

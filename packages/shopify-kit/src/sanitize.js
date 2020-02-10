@@ -15,7 +15,12 @@ function filterOutFiles (path) {
   return true
 }
 
+function reverseSlashes (path) {
+  return path.replace(/\\/g, '/')
+}
+
 function createTokens (path) {
+  path = reverseSlashes(path)
   const file = path.split('/').pop()
   const src = file.replace(/(.*)([.]section|[.]template)([.]liquid)/, '$1$3')
   let base = ''
@@ -41,11 +46,11 @@ function createTokens (path) {
   const destination = (
     /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
     ? ({
-      absolute: `${settings['path.dist']}/assets/${src}`,
+      absolute: `${reverseSlashes(settings['path.dist'])}/assets/${src}`,
       relative: `assets/${src}`
     })
     : ({
-      absolute: `${settings['path.dist']}/${base}/${src}`,
+      absolute: `${reverseSlashes(settings['path.dist'])}/${base}/${src}`,
       relative: `${base}/${src}`
     })
   )
@@ -60,6 +65,7 @@ function createTokens (path) {
 }
 
 function createCompiledAssetTokens (path) {
+  path = reverseSlashes(path)
   return {
     file: path.split('/').pop(),
     original: path,

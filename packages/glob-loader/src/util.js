@@ -1,4 +1,9 @@
 const globby = require('globby')
+const path = require('path')
+
+function reverseSlashes (path) {
+  return path.replace(/\\/g, '/')
+}
 
 function getMatches (source, regex) {
   let matches = []
@@ -10,7 +15,7 @@ function getMatches (source, regex) {
     matches.length
     ? matches.map(match => ({
       full: match[0],
-      match: match[1]
+      match: path.normalize(match[1])
     }))
     : matches
   )
@@ -25,7 +30,7 @@ function replaceRootDirectory (matches = [], options) {
 
 function getChunkName (path, options) {
   const split = path
-    .replace(options['path.src'], '')
+    .replace(reverseSlashes(options['path.src']), '')
     .split('/')
     .filter(val => val)
 
@@ -33,7 +38,7 @@ function getChunkName (path, options) {
 }
 
 async function injectSassDependencies (token, options) {
-  let files = await globby(token.match)
+  let files = await globby(reverseSlashes(token.match))
 
   if (options.sortFunction && typeof options.sortFunction === 'function') {
     files = options.sortFunction(files, 'sass')
@@ -48,7 +53,7 @@ async function injectSassDependencies (token, options) {
 }
 
 async function injectJavascriptDependencies (token, options) {
-  let files = await globby(token.match)
+  let files = await globby(reverseSlashes(token.match))
 
   if (options.sortFunction && typeof options.sortFunction === 'function') {
     files = options.sortFunction(files, 'javascript')
