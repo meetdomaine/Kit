@@ -164,10 +164,10 @@ function _addEslintConfig (rule) {
   if (!findAndCleanseLoader(rule, 'eslint-loader')) {
     return
   }
-
   rule.loader = resolveNodeModule('/eslint-loader')
   rule.options = {
-    eslintPath: resolveNodeModule('/eslint')
+    eslintPath: resolveNodeModule('/eslint'),
+    ...(rule.options || {})
   }
 }
 
@@ -177,7 +177,10 @@ function _addCustomJsLoaders (rule) {
   }
   rule.use = [{
     loader: resolveNodeModule('/babel-loader'),
-    options: settings.babel
+    options: {
+      ...settings.babel,
+      ...(rule.options || {})
+    }
   }, {
     loader: resolveNodeModule('/@halfhelix/glob-loader'),
     options: {
