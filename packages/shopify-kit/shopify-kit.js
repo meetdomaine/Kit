@@ -43,6 +43,8 @@ async function deployFiles (compiledAssets = [], settings) {
 
   await addInConfig(files, settings)
   await sync(settings).sync(files)
+
+  return Promise.resolve(true)
 }
 
 async function buildTheme (settings) {
@@ -86,9 +88,9 @@ async function deployFile (event, file, settings) {
     return Promise.resolve(false)
   }
 
-  return await sync(settings).sync(files).then(() => {
-    return Promise.resolve(true)
-  })
+  await sync(settings).sync(files)
+
+  return Promise.resolve(true)
 }
 
 module.exports = {

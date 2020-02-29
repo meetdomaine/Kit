@@ -49,7 +49,7 @@ program
     ~['build', 'deploy'].indexOf(command)
   ) {
     webpacker(settings).then(files => {
-      if (!files || files.length) {
+      if (!files || !files.length) {
         return Promise.resolve(false)
       }
 
