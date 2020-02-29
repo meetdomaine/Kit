@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const protect = require('@halfhelix/terminal-kit/protect')
 const settings = require('@halfhelix/configure').settings
 const path = require('path')
+const fs = require('fs-extra')
 // const mockServer = require('@halfhelix/shopify-mockery')
 const {
   interceptConsole,
@@ -13,7 +14,7 @@ const wait = require('w2t')
 const {
   log,
   action,
-  completedAction,
+  error,
   webpackResponse,
   browserSyncNotice,
 } = require('@halfhelix/terminal-kit')
@@ -40,6 +41,14 @@ function getCompiledFilePaths (stats) {
   }, [])
 }
 
+function writeToLogFile (stats) {
+  fs.outputJsonSync(`${settings['path.cwd']}/webpack.kit.log`, stats.toJson(), {spaces: 2})
+}
+
+function webpackHasErrors (webpackError, webpackStats) {
+  return webpackError || webpackStats.toJson().errors || false
+}
+
 async function compileWithWebpack () {
   if (settings.bypassWebpack) {
     return Promise.resolve(settings)
@@ -49,16 +58,30 @@ async function compileWithWebpack () {
 
   await wait(1000)
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     interceptConsole()
     webpack(config(settings)).run(async (error, stats) => {
+      if (settings['writeWebpackOutputToFile']) {
+        writeToLogFile(stats)
+      }
+
       resetConsole(false)
-      const files = getCompiledFilePaths(stats)
       spinner.succeed()
+
+      const hasErrors = webpackHasErrors(error, stats)
+      if (hasErrors) {
+        return reject(hasErrors)
+      }
+
       webpackResponse(stats, settings)
       await wait(1000)
+
+      const files = getCompiledFilePaths(stats)
       resolve(files, settings)
     })
+  }).catch(e => {
+    error(e, false)
+    return Promise.resolve(false)
   })
 }
 

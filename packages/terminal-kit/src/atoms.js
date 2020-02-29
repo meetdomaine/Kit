@@ -13,6 +13,7 @@ function newLines (amount = 1) {
   return [...Array(amount).keys()].map(v => '\n').join()
 }
 
+// @see https://www.npmjs.com/package/figures
 function icon (type) {
   return figures[type]
 }

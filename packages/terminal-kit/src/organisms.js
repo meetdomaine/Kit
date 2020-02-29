@@ -48,10 +48,15 @@ function webpackResponse (stats, settings) {
 }
 
 function epilogue ({error = false, title: foo = false, subtitle: bar = false} = {}) {
-  const text = foo || 'Process completed!'
+  const text = foo || error ? 'Process completed with errors' : 'Process completed!'
+
   box(
     title(error ? chalk.red(text) : text),
-    subtitle(bar || `Learn more about us at ${chalk.underline('https://halfhelix.com')}`)
+    subtitle(bar || (
+      error
+      ? `${icon('arrowUp')} Check the output above`
+      : `Learn more about us at ${chalk.underline('https://halfhelix.com')}`
+    ))
   )
 }
 
@@ -66,11 +71,11 @@ function browserSyncNotice ({target, proxy}) {
 
 function error (e) {
   box(
-    title('Error:'),
-    e.message
+    e.message ? title('Error:') : title(`Oh dang it!`),
+    e.message || 'An error occurred'
   )
 
-  log(e)
+  log(e.toString())
 }
 
 function uploadErrors (list) {

@@ -78,7 +78,8 @@ const defaults = {
   'mockTarget' () {
     return  `http://localhost:8080`
   },
-  'debug': false
+  'debug': false,
+  'writeWebpackOutputToFile': false
 }
 
 function readConfigFiles () {

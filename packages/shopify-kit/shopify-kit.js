@@ -68,7 +68,9 @@ async function buildTheme (settings) {
   spinner.succeed()
   await wait(2000)
   completedAction(`Created theme in "${settings['path.dist']}"`)
-  return await wait(2000)
+  await wait(2000)
+
+  return Promise.resolve(true)
 }
 
 async function deployFile (event, file, settings) {
@@ -83,7 +85,10 @@ async function deployFile (event, file, settings) {
   if (!files.length) {
     return Promise.resolve(false)
   }
-  return await sync(settings).sync(files)
+
+  return await sync(settings).sync(files).then(() => {
+    return Promise.resolve(true)
+  })
 }
 
 module.exports = {

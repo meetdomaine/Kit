@@ -49,14 +49,18 @@ program
     ~['build', 'deploy'].indexOf(command)
   ) {
     webpacker(settings).then(files => {
+      if (!files || files.length) {
+        return Promise.resolve(false)
+      }
+
       if (settings.task === 'build') {
         return buildTheme(settings)
       }
       if (settings.task === 'deploy') {
         return deployFiles(files, settings)
       }
-    }).then(() => {
-      epilogue()
+    }).then(result => {
+      epilogue({error: !result})
     })
     return
   }
