@@ -21,6 +21,7 @@ module.exports = function(source) {
   if (!matches.length) {
     return callback(null, options.source)
   }
+
   Promise.all(matches.map(match => {
     return injectSassDependencies.call(this, match, options)
   })).then(() => {

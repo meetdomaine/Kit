@@ -4,6 +4,7 @@ const protect = require('@halfhelix/terminal-kit/protect')
 const settings = require('@halfhelix/configure').settings
 const path = require('path')
 const fs = require('fs-extra')
+const util = require('util')
 // const mockServer = require('@halfhelix/shopify-mockery')
 const {
   interceptConsole,
@@ -53,6 +54,10 @@ function webpackHasErrors (webpackError, webpackStats) {
   )
 }
 
+function writeToLogFile (json) {
+  fs.outputFileSync(`${__dirname}/critical.kit.log`, util.inspect(json, true, 10))
+}
+
 async function compileWithWebpack () {
   if (settings.bypassWebpack) {
     return Promise.resolve(settings)
@@ -62,26 +67,31 @@ async function compileWithWebpack () {
 
   await wait(1000)
 
-  return new Promise((resolve, reject) => {
-    interceptConsole()
-    webpack(config(settings)).run(async (error, stats) => {
-      if (settings['writeWebpackOutputToFile']) {
-        writeToLogFile(stats)
-      }
+  return config(settings).then(webpackSettings => {
+    return new Promise((resolve, reject) => {
+      interceptConsole()
+      webpack(webpackSettings).run(async (error, stats) => {
+        // fs.outputJsonSync(`${__dirname}/webpack.kit.log`, stats.toJson(), {spaces: 2})
+        // process.exit()
 
-      resetConsole(false)
-      spinner.succeed()
+        if (settings['writeWebpackOutputToFile']) {
+          writeToLogFile(stats)
+        }
 
-      const hasErrors = webpackHasErrors(error, stats)
-      if (hasErrors) {
-        return reject(hasErrors)
-      }
+        resetConsole(false)
+        spinner.succeed()
 
-      webpackResponse(stats, settings)
-      await wait(1000)
+        const hasErrors = webpackHasErrors(error, stats)
+        if (hasErrors) {
+          return reject(hasErrors)
+        }
 
-      const files = getCompiledFilePaths(stats)
-      resolve(files, settings)
+        webpackResponse(stats, settings)
+        await wait(1000)
+
+        const files = getCompiledFilePaths(stats)
+        resolve(files, settings)
+      })
     })
   }).catch(e => {
     error(e, false)

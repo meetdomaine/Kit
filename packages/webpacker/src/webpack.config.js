@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const MinifyPlugin = require("babel-minify-webpack-plugin")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const ExplodeStylesheetsPlugin = require("@halfhelix/glob-loader/plugin")
 const StyleLintPlugin = require('stylelint-webpack-plugin')
 const DynamicPublicPathPlugin = require("dynamic-public-path-webpack-plugin")
 const autoprefixer = require('autoprefixer')
@@ -76,14 +77,22 @@ function prepareDevtool () {
   }
 }
 
-function prepareEntry () {
+async function prepareEntry () {
   const {entry} = settings.webpack
 
   if (
     settings.task !== 'watch' ||
     !settings.hmr
   ) {
-    return entry
+    if (typeof entry === 'object' && false) {
+      const splitOut = await ExplodeStylesheetsPlugin(entry, settings)
+      return {
+        ...entry,
+        ...splitOut
+      }
+    } else {
+      return entry
+    }
   }
 
   if (typeof entry === 'string') {
@@ -261,6 +270,9 @@ function preparePlugins () {
     ...(settings.task === 'watch' ? [
       new webpack.SourceMapDevToolPlugin(),
     ] : [
+      // new ExplodeStylesheetsPlugin({
+      //   'path.src': settings['path.src']
+      // }),
       new ExtractTextPlugin(settings.cssName),
       new MinifyPlugin()
     ]),
@@ -288,7 +300,7 @@ function prepareExternals () {
   return Object.assign({}, settings.webpack.externals)
 }
 
-module.exports = () => {
+module.exports = async () => {
   const {
     devtool,
     entry,
@@ -304,7 +316,7 @@ module.exports = () => {
   const webpackConfig = {
     mode: getEnv(),
     devtool: prepareDevtool(),
-    entry: prepareEntry(),
+    entry: await prepareEntry(),
     output: prepareOutput(),
     resolve: prepareResolve(),
     resolveLoader: prepareResolveLoader(),

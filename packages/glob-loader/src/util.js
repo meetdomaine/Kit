@@ -37,8 +37,12 @@ function getChunkName (path, options) {
   return split[1] || 'general'
 }
 
+async function getFilesViaGlob (token) {
+  return await globby(reverseSlashes(token.match))
+}
+
 async function injectSassDependencies (token, options) {
-  let files = await globby(reverseSlashes(token.match))
+  let files = await getFilesViaGlob(token)
 
   if (options.sortFunction && typeof options.sortFunction === 'function') {
     files = options.sortFunction(files, 'sass')
@@ -50,6 +54,10 @@ async function injectSassDependencies (token, options) {
   }).join('\n')
   options.source = options.source.replace(token.full, imports)
   return Promise.resolve()
+}
+
+function getModuleGroupDir (filePath) {
+  return filePath.split('/').pop().replace(/[.]\D[^.]+$/,'')
 }
 
 async function injectJavascriptDependencies (token, options) {
@@ -83,16 +91,16 @@ async function injectJavascriptDependencies (token, options) {
     }
   };\n`
 
-  let importString = files.reduce((string, path) => {
-    this.addDependency(path)
-    const moduleName = path.split('/').pop().replace(/[.]\D[^.]+$/,'')
+  let importString = files.reduce((string, filePath) => {
+    this.addDependency(filePath)
+    const moduleName = getModuleGroupDir(filePath)
     const withoutAsync = moduleName.replace('async-', '')
     if (~moduleName.indexOf('async-')) {
-      string += `window.__GLOB_MODULES__["${withoutAsync}"] = () => import(/* webpackChunkName: "${withoutAsync}" */ '${path}');\n`
-    } else if (options['autoChunk']) {
-      string += `window.__GLOB_MODULES__["${moduleName}"] = () => import(/* webpackChunkName: "${getChunkName(path, options)}" */ '${path}');\n`
+      string += `window.__GLOB_MODULES__["${withoutAsync}"] = () => import(/* webpackChunkName: "${withoutAsync}" */ '${filePath}');\n`
+    } else if (false) {
+      string += `window.__GLOB_MODULES__["${moduleName}"] = () => import(/* webpackChunkName: "${getChunkName(filePath, options)}" */ '${filePath}');\n`
     } else {
-      string += `window.__GLOB_MODULES__["${moduleName}"] = () => require('${path}');\n`
+      string += `window.__GLOB_MODULES__["${moduleName}"] = () => require('${filePath}');\n`
     }
     return string
   }, headerString);
@@ -103,6 +111,9 @@ async function injectJavascriptDependencies (token, options) {
 
 module.exports = {
   getMatches,
+  getChunkName,
+  getFilesViaGlob,
+  getModuleGroupDir,
   replaceRootDirectory,
   injectSassDependencies,
   injectJavascriptDependencies
