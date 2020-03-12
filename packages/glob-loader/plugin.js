@@ -59,15 +59,33 @@ async function processMatchedFiles (files, options) {
   }, {})
 }
 
-module.exports = function (entry, options) {
-  const matches = getModuleScssFiles(entry, options)
-  if (!matches.length) {
-    return callback(null)
-  }
+module.exports = function (options) {
+  this.apply = function(compiler) {
+    // compiler.hooks.emit.tapAsync('GlobalLoaderPlugin', (compilation, callback) => {
+    //   writeToLogFile(compilation.assets)
+    //   process.exit()
+    //   const matches = getModuleScssFiles(compiler.options.entry, options)
+    //   if (!matches.length) {
+    //     return callback(null)
+    //   }
 
-  return Promise.all(matches.map(match => {
-    return getFilesViaGlob(match)
-  })).then(files => {
-    return processMatchedFiles(files.flat(), options)
-  })
+    //   Promise.all(matches.map(match => {
+    //     return getFilesViaGlob(match)
+    //   })).then(files => {
+    //     return processMatchedFiles(files.flat(), options)
+    //   }).then(entryPoints => {
+    //     Object.keys(entryPoints).map(key => {
+    //       compiler.addEntry(key, entryPoints[key])
+    //     })
+    //     callback(null)
+    //   })
+    // })
+    compiler.hooks.assetEmitted.tap(
+      'MyPlugin',
+      (file, {outputPath}) => {
+        console.log(outputPath); // <Buffer 66 6f 6f 62 61 72>
+      }
+    )
+
+  }
 }

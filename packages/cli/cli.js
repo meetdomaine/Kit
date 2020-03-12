@@ -14,7 +14,8 @@ const {
 const {
   deployFiles,
   buildTheme,
-  deployFile
+  deployFile,
+  generateStyleSheets
 } = require('@halfhelix/shopify-kit')
 
 let command = false
@@ -48,7 +49,34 @@ program
   if (
     ~['build', 'deploy'].indexOf(command)
   ) {
-    webpacker(settings).then(files => {
+    //webpacker(settings)
+    Promise.resolve(true)
+    .then(files => {
+      return generateStyleSheets([ '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-account-cart-global-header-plp-product-form.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-article-global-pdp.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-cart-header-product-form.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/account.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/article.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/blog.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/cart.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/collections.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/contacts.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/global.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/header.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/hero.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/main.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/main.min.css.liquid',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/pdp.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/plp.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/press.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/product-form.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/products.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/text.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-blog.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-global.js',
+      '/Users/max/Sites/ratio-et-motus/dist/assets/vendors-text.js' ], settings)
+    })
+    .then(files => {
       if (!files || !files.length) {
         return Promise.resolve(false)
       }

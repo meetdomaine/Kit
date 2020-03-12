@@ -270,10 +270,10 @@ function preparePlugins () {
     ...(settings.task === 'watch' ? [
       new webpack.SourceMapDevToolPlugin(),
     ] : [
+      new ExtractTextPlugin(settings.cssName),
       // new ExplodeStylesheetsPlugin({
       //   'path.src': settings['path.src']
       // }),
-      new ExtractTextPlugin(settings.cssName),
       new MinifyPlugin()
     ]),
     ...(settings.task === 'watch' && settings.hmr ? [

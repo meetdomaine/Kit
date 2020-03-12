@@ -50,7 +50,7 @@ async function injectSassDependencies (token, options) {
 
   const imports = files.map(path => {
     this.addDependency(path)
-    return `@import "${path}";`
+    return `/*! path: ${path} */ \n @import "${path}";`
   }).join('\n')
   options.source = options.source.replace(token.full, imports)
   return Promise.resolve()
@@ -97,7 +97,7 @@ async function injectJavascriptDependencies (token, options) {
     const withoutAsync = moduleName.replace('async-', '')
     if (~moduleName.indexOf('async-')) {
       string += `window.__GLOB_MODULES__["${withoutAsync}"] = () => import(/* webpackChunkName: "${withoutAsync}" */ '${filePath}');\n`
-    } else if (false) {
+    } else if (options['autoChunk']) {
       string += `window.__GLOB_MODULES__["${moduleName}"] = () => import(/* webpackChunkName: "${getChunkName(filePath, options)}" */ '${filePath}');\n`
     } else {
       string += `window.__GLOB_MODULES__["${moduleName}"] = () => require('${filePath}');\n`

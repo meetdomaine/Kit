@@ -71,9 +71,6 @@ async function compileWithWebpack () {
     return new Promise((resolve, reject) => {
       interceptConsole()
       webpack(webpackSettings).run(async (error, stats) => {
-        // fs.outputJsonSync(`${__dirname}/webpack.kit.log`, stats.toJson(), {spaces: 2})
-        // process.exit()
-
         if (settings['writeWebpackOutputToFile']) {
           writeToLogFile(stats)
         }
