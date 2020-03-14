@@ -1,6 +1,8 @@
 const globby = require('globby')
 const fs = require('fs-extra')
 const wait = require('w2t')
+const generateStyleSheets = require('./src/splitCSS')
+
 const {
   action,
   completedAction
@@ -102,65 +104,7 @@ function getChunkName (path, options) {
   return split[1] || 'general'
 }
 
-async function generateStyleSheets (originalFiles, settings) {
-  const fileTokens = originalFiles
-    .filter(file => /\.css/.test(file))
-    .map(file => {
-      return {
-        file,
-        content: fs.readFileSync(file, 'utf8')
-      }
-    })
 
-  fileTokens.forEach(fileToken => {
-    const tokens = fileToken.content.split('/*! path: ').reduce((obj, string) => {
-      const path = string.match(/^(.*\.scss) \*\//)
-      if (!path || !path[1]) {
-        return obj
-      }
-
-      const group = getChunkName(path[1], settings)
-
-      if (typeof obj[group] === 'undefined') {
-        obj[group] = []
-      }
-
-      obj[group].push({
-        file: fileToken.file,
-        module: path[1],
-        original: '/*! path: ' + string,
-        cleansed: string.replace(path[0], '')
-      })
-
-      return obj
-    }, {})
-
-    const newFiles = Object.keys(tokens).reduce((obj, key) => {
-      if (tokens[key].length <= 1) {
-        return obj
-      }
-
-      obj[key] = tokens[key].reduce((string, token) => {
-
-      }, '')
-      return obj
-    }, {})
-
-    // const newFiles = Object.keys(filtered).reduce((obj, keu))map(key => {
-    //   filtered[key] =
-    // }) filtered.reduce((obj, key) => {
-    //   if (tokens[key].length > 1) {
-    //     obj[key] = tokens[key]
-    //   }
-    //   return obj
-    // }, {})
-
-
-    console.log(newFiles)
-    return true
-  })
-  process.exit()
-}
 
 module.exports = {
   deployFiles,

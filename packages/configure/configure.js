@@ -79,7 +79,13 @@ const defaults = {
     return  `http://localhost:8080`
   },
   'debug': false,
-  'writeWebpackOutputToFile': false
+  'writeWebpackOutputToFile': false,
+  'splitCSSConditionalFilter' (obj, defaultString) {
+    return defaultString
+  },
+  'splitCSS': true,
+  'splitCSSGlobalModules': ['global', 'header', 'footer', 'nav'],
+  'splitCSSLiquidSnippet': 'snippets/stylesheets.liquid'
 }
 
 function readConfigFiles () {
