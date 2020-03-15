@@ -1,7 +1,6 @@
 const globby = require('globby')
 const fs = require('fs-extra')
 const wait = require('w2t')
-const generateStyleSheets = require('./src/splitCSS')
 
 const {
   action,
@@ -9,6 +8,7 @@ const {
 } = require('@halfhelix/terminal-kit')
 const sanitize = require('./src/sanitize')
 const sync = require('./src/syncToShopify')
+const chunkCSS = require('./src/chunkCSS')
 
 function reverseSlashes (path) {
   return path.replace(/\\/g, '/')
@@ -95,20 +95,9 @@ async function deployFile (event, file, settings) {
   return Promise.resolve(true)
 }
 
-function getChunkName (path, options) {
-  const split = path
-    .replace(reverseSlashes(options['path.src']), '')
-    .split('/')
-    .filter(val => val)
-
-  return split[1] || 'general'
-}
-
-
-
 module.exports = {
   deployFiles,
   buildTheme,
   deployFile,
-  generateStyleSheets
+  chunkCSS
 }

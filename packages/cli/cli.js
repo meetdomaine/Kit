@@ -15,7 +15,7 @@ const {
   deployFiles,
   buildTheme,
   deployFile,
-  generateStyleSheets
+  chunkCSS
 } = require('@halfhelix/shopify-kit')
 
 let command = false
@@ -52,8 +52,8 @@ program
     webpacker(settings)
     .then(files => {
       return (
-        settings['splitCSS']
-        ? generateStyleSheets(files, settings)
+        settings['css.chunk']
+        ? chunkCSS(files, settings)
         : Promise.resolve(files)
       )
     })
