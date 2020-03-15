@@ -46,7 +46,11 @@ function writeToLogFile (stats) {
 }
 
 function webpackHasErrors (webpackError, webpackStats) {
-  return webpackError || webpackStats.toJson().errors.length || false
+  return webpackError || (
+    webpackStats.toJson().errors.length
+    ? webpackStats.toJson().errors
+    : false
+  )
 }
 
 async function compileWithWebpack () {
