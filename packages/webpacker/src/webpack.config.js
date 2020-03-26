@@ -12,6 +12,10 @@ function getThemeNodeModulesDir (suffix = '') {
   return `${settings['path.cwd']}/node_modules${suffix}`
 }
 
+function getEnv () {
+  return process.env.NODE_ENV === 'development' ? 'development' : 'production'
+}
+
 /**
  * First, checks the existence of a child node modules
  * package. Then, for global packages, checks the closets
@@ -265,8 +269,8 @@ function preparePlugins () {
     ]: []),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      'DEBUG': !(process.env.NODE_ENV === 'production'),
+      'process.env.NODE_ENV': JSON.stringify(getEnv()),
+      'DEBUG': (getEnv() === 'development'),
       'KIT_VERSION': JSON.stringify(settings.package.version)
     }),
     ...(settings.task !== 'watch' ? [
@@ -298,7 +302,7 @@ module.exports = () => {
   } = settings.webpack
 
   const webpackConfig = {
-    mode: process.env.NODE_ENV,
+    mode: getEnv(),
     devtool: prepareDevtool(),
     entry: prepareEntry(),
     output: prepareOutput(),
