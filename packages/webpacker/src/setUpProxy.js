@@ -73,7 +73,9 @@ function makeConfig (webpack, settings, watchCallback) {
     config.rewriteRules = settings.proxyReplacements.map(rule => {
       return {
         match: rule.regex,
-        replace: rule.replacement(settings) || ''
+        fn: (req, res, match) => {
+          return rule.replacement(settings, req, res, match) || ''
+        }
       }
     })
   }
