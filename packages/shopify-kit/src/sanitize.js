@@ -38,6 +38,8 @@ function createTokens (path) {
     base = 'locales'
   } else if (/layout\//.test(path)) {
     base = 'layout'
+  } else if (/(?:s?css|js)[.]liquid$/.test(file)) {
+    base = 'assets'
   } else if (!/[.]liquid$/.test(file)) {
     base = 'assets'
   } else {
