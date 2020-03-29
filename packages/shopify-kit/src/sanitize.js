@@ -3,8 +3,9 @@ const settings = require('@halfhelix/configure').settings
 function filterOutFiles (path) {
   if (
     ~path.indexOf('src/assets/css') ||
+    ~path.indexOf('src/assets/scss') ||
     ~path.indexOf('src/assets/js') ||
-    ~path.indexOf('src/config/lib') ||
+    ~path.indexOf('src/config') ||
     ~path.indexOf('.html') ||
     !~path.indexOf('src') ||
     (!~path.indexOf('src/assets') && /.*[.](s?css|js|vue)$/.test(path)) ||

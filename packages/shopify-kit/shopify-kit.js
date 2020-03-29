@@ -18,18 +18,27 @@ async function getThemeFiles (settings) {
 
 async function addInConfig (files, settings) {
   const configs = await globby(`${reverseSlashes(settings['path.src'])}/config/lib/*.json`)
-  const schema = configs.reduce((arr, path) => {
-    const content = fs.readFileSync(path, 'utf8').trim()
-    content && arr.push(content)
-    return arr
-  }, []).join(',')
+  const original = `${settings['path.src']}/config/settings_schema.json`
+  let content = ''
+  if (configs.length) {
+    content = configs.reduce((arr, path) => {
+      const raw = fs.readFileSync(path, 'utf8').trim()
+      raw && arr.push(raw)
+      return arr
+    }, []).join(',')
+    content = `[${content}]`
+  } else {
+    if (fs.existsSync(original)) {
+      content = fs.readFileSync(original, 'utf8').trim()
+    }
+  }
 
   files.push({
+    original,
+    content,
     file: `settings_schema.json`,
-    original: `${settings['path.src']}/config/settings_schema.json`,
     destination: `${settings['path.dist']}/config/settings_schema.json`,
-    theme: 'config/settings_schema.json',
-    content: `[${schema}]`,
+    theme: 'config/settings_schema.json'
   })
 
   return files
