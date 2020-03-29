@@ -6,7 +6,7 @@
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
-    "publish": "npm publish --access public"
+    "release": "npm publish --access public"
   },
   "publishConfig": {
     "access": "public"
