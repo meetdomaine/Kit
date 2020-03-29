@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/webpacker",
-  "version": "0.0.1-beta.12",
+  "version": "0.0.1-beta.13",
   "description": "",
   "main": "webpacker.js",
   "author": "https://halfhelix.com",
@@ -15,7 +15,7 @@
     "@babel/core": "^7.7.7",
     "@halfhelix/configure": "^0.0.1-beta.12",
     "@halfhelix/glob-loader": "^0.0.1-beta.12",
-    "@halfhelix/shopify-kit": "^0.0.1-beta.12",
+    "@halfhelix/shopify-kit": "^0.0.1-beta.13",
     "@halfhelix/shopify-loader": "^0.0.1-beta.12",
     "@halfhelix/terminal-kit": "^0.0.1-beta.12",
     "autoprefixer": "^9.7.3",
