@@ -89,7 +89,7 @@ async function deployFile (event, file, settings) {
     return Promise.resolve(false)
   }
   let files = (
-    /src\/config/.test(file)
+    /src\/config/.test(reverseSlashes(file))
     ? await addInConfig([], settings)
     : sanitize([file])
   )
