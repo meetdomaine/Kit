@@ -86,10 +86,12 @@ function uploadErrors (list) {
 }
 
 function progressBar (title, total, isCI) {
+  let bar
+
   if (isCI) {
     completedAction(`Start Progress: ${title}`)
   } else {
-    const bar = new cliProgress.SingleBar({
+    bar = new cliProgress.SingleBar({
       barsize: 25,
       format: `${title} {bar} {percentage}% | Errors: {errors} | ETA: {eta}s | {value}/{total}`
     }, cliProgress.Presets.shades_classic);
