@@ -23,9 +23,11 @@ program
   .version(pkg.version)
   .version('0.1.0')
   .arguments('<cmd>')
-  .usage('[watch|build|deploy]')
+  .usage('[watch|build|deploy|lint]')
   .option('-e --env [env]', 'specify an environment')
   .option('-q --quick', 'hide the loading screen')
+  .option('-i --include [include]', 'specify the type of files to include', 'js,css')
+  .option('-f --fix', 'Fix formatting issues', false)
   .action(cmd => {
     command = cmd
   })
@@ -74,6 +76,17 @@ program
     return
   }
 
+  if (
+    ~['lint'].indexOf(command)
+  ) {
+    webpacker.lint({
+      include: program.include.split(','),
+      fix: program.fix
+    }).then(() => {
+      epilogue()
+    })
+    return
+  }
   // Add more commands here..!
 
   program.outputHelp()

@@ -73,12 +73,12 @@ module.exports = function init (settings) {
           action(token)
         ])
           .then(() => {
-            cb && cb(queue.length)
+            cb && cb(queue.length, token)
             if (queue.length) return push(queue.pop())
             resolve()
           })
           .catch(error => {
-            cb && cb(queue.length)
+            cb && cb(queue.length, token)
             if (queue.length) return push(queue.pop())
             reject(error)
           })
@@ -122,11 +122,11 @@ module.exports = function init (settings) {
       var spinner = false
       var cb = (function () {
         const total = queue.length
-        const update = output.progressBar('Uploading', total)
-        return (remaining) => {
+        const update = output.progressBar('Uploading', total, settings.isCI())
+        return (remaining, token) => {
           update(total - remaining, {
             errors: errors.length
-          })
+          }, token)
         }
       })()
     }

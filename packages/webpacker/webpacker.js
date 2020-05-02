@@ -1,16 +1,9 @@
 
 const webpack = require('webpack')
-const protect = require('@halfhelix/terminal-kit/protect')
-const settings = require('@halfhelix/configure').settings
 const path = require('path')
 const fs = require('fs-extra')
-// const mockServer = require('@halfhelix/shopify-mockery')
-const {
-  interceptConsole,
-  resetConsole,
-  getLogs
-} = require('./src/console')
 const wait = require('w2t')
+const settings = require('@halfhelix/configure').settings
 const {
   log,
   action,
@@ -19,7 +12,13 @@ const {
   browserSyncNotice,
 } = require('@halfhelix/terminal-kit')
 const config = require('./src/webpack.config')
+const {
+  interceptConsole,
+  resetConsole,
+  getLogs
+} = require('./src/console')
 const setUpProxy = require('./src/setUpProxy')
+const lint = require('./src/lint')
 
 function cleanseCompiledFileName (filePath) {
   return path.normalize(filePath.split('?').shift())
@@ -57,7 +56,6 @@ async function compileWithWebpack () {
   if (settings.bypassWebpack) {
     return Promise.resolve(settings)
   }
-
   const spinner = action('Compiling assets with Webpack')
 
   await wait(1000)
@@ -122,4 +120,8 @@ module.exports.watch = async (watchCallback) => {
   log(stderr)
 
   return Promise.resolve()
+}
+
+module.exports.lint = (options) => {
+  return lint(options, settings)
 }

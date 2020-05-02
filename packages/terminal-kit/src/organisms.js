@@ -85,19 +85,27 @@ function uploadErrors (list) {
   )
 }
 
-function progressBar (title, total) {
-  const bar = new cliProgress.SingleBar({
-    barsize: 25,
-    format: `${title} {bar} {percentage}% | Errors: {errors} | ETA: {eta}s | {value}/{total}`
-  }, cliProgress.Presets.shades_classic);
-  bar.start(total, 0, {
-    errors: 0
-  })
+function progressBar (title, total, isCI) {
+  if (isCI) {
+    completedAction(`Start Progress: ${title}`)
+  } else {
+    const bar = new cliProgress.SingleBar({
+      barsize: 25,
+      format: `${title} {bar} {percentage}% | Errors: {errors} | ETA: {eta}s | {value}/{total}`
+    }, cliProgress.Presets.shades_classic);
+    bar.start(total, 0, {
+      errors: 0
+    })
+  }
 
-  return function (current, tokens) {
-    bar.update(current, tokens)
-    if (current >= total) {
-      bar.stop()
+  return function (current, otherMetrics, fileToken) {
+    if (isCI) {
+      completedAction(`[${current} of ${total}, Errors: ${otherMetrics.errors}] ${fileToken.theme}`)
+    } else {
+      bar.update(current, otherMetrics)
+      if (current >= total) {
+        bar.stop()
+      }
     }
   }
 }
