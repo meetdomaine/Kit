@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/shopify-kit",
-  "version": "0.0.1-beta.15",
+  "version": "0.0.1-beta.16",
   "description": "",
   "main": "shopify-kit.js",
   "author": "https://halfhelix.com",
@@ -12,7 +12,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@halfhelix/configure": "^0.0.1-beta.14",
+    "@halfhelix/configure": "^0.0.1-beta.16",
     "@halfhelix/terminal-kit": "^0.0.1-beta.15",
     "fs-extra": "^8.1.0",
     "globby": "^10.0.1",
