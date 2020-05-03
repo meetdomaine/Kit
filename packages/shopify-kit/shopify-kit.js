@@ -2,11 +2,14 @@ const globby = require('globby')
 const fs = require('fs-extra')
 const wait = require('w2t')
 const {
+  log,
+  newLines,
   action,
   completedAction
 } = require('@halfhelix/terminal-kit')
 const sanitize = require('./src/sanitize')
 const sync = require('./src/syncToShopify')
+const renameTheme = require('./src/renameTheme')
 
 function reverseSlashes (path) {
   return path.replace(/\\/g, '/')
@@ -52,6 +55,13 @@ async function deployFiles (compiledAssets = [], settings) {
 
   await addInConfig(files, settings)
   await sync(settings).sync(files)
+
+  log(newLines())
+  if (settings['themeName.update'](settings)) {
+    await renameTheme(settings)
+  }
+
+  completedAction(`[${settings.theme}] Preview: https://${settings.store}?preview_theme_id=${settings.theme}`)
 
   return Promise.resolve(true)
 }

@@ -11,19 +11,6 @@ module.exports = function init (settings) {
   let errors = []
   let successes = []
 
-  function updateThemeName () {
-    // @todo
-    // return fetch(`https://${settings.store}/admin/themes/${settings.theme}.json`, {
-    //   method,
-    //   headers: {
-    //     'X-Shopify-Access-Token': settings.password,
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json'
-    //   },
-    //   body: JSON.stringify(body)
-    // })
-  }
-
   function api (method, body) {
     return fetch(`https://${settings.store}/admin/themes/${settings.theme}/assets.json`, {
       method,

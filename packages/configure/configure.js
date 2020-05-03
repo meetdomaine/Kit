@@ -83,7 +83,24 @@ const defaults = {
     return  `http://localhost:8080`
   },
   'debug': false,
-  'writeWebpackOutputToFile': false
+  'writeWebpackOutputToFile': false,
+  'themeName.format' ({env}) {
+    if (env === 'production') {
+      return '[LIVE] {context} - {branch} - {commit} - {date}'
+    }
+    if (env === 'staging') {
+      return '[STAGE] {context} - {branch} - {commit} - {date}'
+    }
+    if (env === 'development') {
+      return '[DEV] {name} - {date}'
+    }
+  },
+  'themeName.override' (name, settings) {
+    return name
+  },
+  'themeName.update' (settings) {
+    return settings.env !== 'development'
+  }
 }
 
 function readConfigFiles () {
