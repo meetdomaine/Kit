@@ -1,53 +1,27 @@
-const { exec } = require('child_process')
 const fetch = require('node-fetch')
 const {
   error,
   completedAction
 } = require('@halfhelix/terminal-kit')
+const {
+  getCommit,
+  getDate,
+  getBranch,
+  getUsername
+} = require('@halfhelix/configure').utils
 
-const getCommit = () => {
-  return new Promise((resolve) => {
-    exec('git rev-parse HEAD | cut -c1-7', (err, stdout, stderr) => {
-      resolve(stdout)
-    })
-  })
-}
-
-const getDate = () => {
-  return new Promise((resolve) => {
-    exec("date +'%m.%d.%y'", (err, stdout, stderr) => {
-      resolve(stdout)
-    })
-  })
-}
-
-const getBranch = () => {
-  return new Promise((resolve) => {
-    exec('git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) => {
-      resolve(stdout)
-    })
-  })
-}
-
-const getUsername = () => {
-  return new Promise((resolve) => {
-    exec('git config user.name', (err, stdout, stderr) => {
-      resolve(stdout)
-    })
-  })
-
-}
 const formatName = async (settings, format) => {
-  const commit = await getCommit()
-  const date = await getDate()
-  const branch = await getBranch()
-  const username = await getUsername()
+  const commit = await settings['git.getCommit'](settings, getCommit)
+  const date = await settings['git.getDate'](settings, getDate)
+  const branch = await settings['git.getBranch'](settings, getBranch)
+  const username = await settings['git.getUsername'](settings, getUsername)
+
   return format
     .replace('{context}', settings.isCI() ? 'CI' : '💻')
-    .replace('{branch}', branch.trim().split('/').pop())
-    .replace('{commit}', commit.trim())
-    .replace('{date}', date.trim())
-    .replace('{name}', settings.username || username.split(' ').shift())
+    .replace('{branch}', branch.split('/').pop())
+    .replace('{commit}', commit)
+    .replace('{date}', date)
+    .replace('{name}', username.split(' ').shift())
 }
 
 module.exports = async (settings) => {

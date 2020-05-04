@@ -5,6 +5,7 @@ const program = require('commander')
 const pkg = require('./package.json')
 const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
+const gitlab = require('@halfhelix/gitlab-kit')
 const {
   protect,
   splash,
@@ -23,11 +24,12 @@ program
   .version(pkg.version)
   .version('0.1.0')
   .arguments('<cmd>')
-  .usage('[watch|build|deploy|lint]')
+  .usage('[watch|build|deploy|lint|gitlab]')
   .option('-e --env [env]', 'specify an environment')
   .option('-q --quick', 'hide the loading screen')
   .option('-i --include [include]', 'specify the type of files to include', 'js,css')
   .option('-f --fix', 'Fix formatting issues', false)
+  .option('-r --routine [routine]', 'Specify the routine to run (for supporting commands)', '')
   .action(cmd => {
     command = cmd
   })
@@ -87,6 +89,16 @@ program
     })
     return
   }
+
+  if (
+    ~['gitlab'].indexOf(command)
+  ) {
+    gitlab(program.routine, settings).then(() => {
+      epilogue()
+    })
+    return
+  }
+
   // Add more commands here..!
 
   program.outputHelp()

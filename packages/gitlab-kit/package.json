@@ -1,0 +1,19 @@
+{
+  "name": "@halfhelix/gitlab-kit",
+  "version": "0.0.1-beta.1",
+  "description": "",
+  "main": "gitlab-kit.js",
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "release": "npm publish --access public"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@halfhelix/configure": "^0.0.1-beta.16",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.15",
+    "node-fetch": "^2.6.0"
+  }
+}
