@@ -1,6 +1,10 @@
 const fetch = require('node-fetch')
 const {
+  log,
   error,
+  title,
+  subtitle,
+  newLines,
   completedAction
 } = require('@halfhelix/terminal-kit')
 const {
@@ -57,7 +61,7 @@ const createMergeRequest = async (branch, settings) => {
   const target = settings['git.targetBranch'](branch, settings)
 
   completedAction('Creating merge request')
-  return fetch(`https://gitlab.com/api/v4/projects/${settings['git.gitlabProjectId']}/merge_requests`, {
+  return fetch(`https://gitlab.com/api/v4/projects/${settings['git.gitlabProjectId']}/merge_requests?state=opened`, {
     method: 'post',
     headers: {
       'PRIVATE-TOKEN': settings['git.gitlabToken'],
@@ -145,6 +149,7 @@ const lintCommits = async (branch, mergeRequest, settings) => {
     process.exitCode = 1
     return error(`Unable to find commits to validate`)
   }
+
   if (commits.every(commit => (
     settings['git.emailValidator'](commit, settings)
   ))) {
@@ -167,6 +172,19 @@ const lintCommits = async (branch, mergeRequest, settings) => {
     error(`Branch name validation not passed`)
     process.exitCode = 1
   }
+
+  displayCommitReel(commits)
+}
+
+const displayCommitReel = (commits) => {
+  completedAction('Validation complete for the following commits:')
+  log(newLines())
+  commits.forEach(({committer_email, author_email, title: commit}) => {
+    log(title(`${commit}`))
+    log(subtitle(`Author: ${author_email}`))
+    log('-------')
+    return true
+  })
 }
 
 module.exports = async (action, settings) => {

@@ -4,7 +4,6 @@ module.exports = {
   'git.gitlabProjectId': process.env.CI_PROJECT_ID,
   'git.gitlabMergeRequestConfig': {
     'remove_source_branch': true,
-
   },
   'git.gitlabMergeRequestTitle' (branch, targetbranch, settings) {
     return `[WIP] ${branch} into ${targetbranch}`
@@ -39,7 +38,7 @@ module.exports = {
       author_email: author
     } = commit
     return (
-      settings['git.emailRegex'].test(committer) &&
+      // settings['git.emailRegex'].test(committer) &&
       settings['git.emailRegex'].test(author)
     )
   },
