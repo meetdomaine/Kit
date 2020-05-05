@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/gitlab-kit",
-  "version": "0.0.1-beta.17",
+  "version": "0.0.1-beta.18",
   "description": "",
   "main": "gitlab-kit.js",
   "author": "https://halfhelix.com",
@@ -12,7 +12,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@halfhelix/configure": "^0.0.1-beta.17",
+    "@halfhelix/configure": "^0.0.1-beta.18",
     "@halfhelix/terminal-kit": "^0.0.1-beta.15",
     "node-fetch": "^2.6.0"
   }
