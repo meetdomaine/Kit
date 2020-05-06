@@ -18,9 +18,9 @@ const getBranchAndValidate = async (settings) => {
     throw new Error('Gitlab pipelines cannot run on production or master branches')
   }
 
-  const branches = await getBranches(branch, settings)
+  const gitlabBranch = await getGitlabBranch(branch, settings)
 
-  if (!(branches || []).find(({name}) => name === branch)) {
+  if (!gitlabBranch || !gitlabBranch.name) {
     error('Gitlab branch not found')
     process.exit(1)
   }
@@ -28,9 +28,9 @@ const getBranchAndValidate = async (settings) => {
   return branch
 }
 
-const getBranches = async (branch, settings) => {
+const getGitlabBranch = async (branch, settings) => {
   completedAction('Getting Gitlab branches')
-  return fetch(`https://gitlab.com/api/v4/projects/${settings['git.gitlabProjectId']}/repository/branches`, {
+  return fetch(`https://gitlab.com/api/v4/projects/${settings['git.gitlabProjectId']}/repository/branches/${encodeURIComponent(branch)}`, {
     method: 'get',
     headers: {
       'PRIVATE-TOKEN': settings['git.gitlabToken'],
@@ -40,7 +40,7 @@ const getBranches = async (branch, settings) => {
     return response.json()
   }).then(data => {
     if (data.message || data.error) {
-      error(`getBranches: ${data.message || data.error}`)
+      error(`getGitlabBranch: ${data.message || data.error}`)
       return Promise.resolve(false)
     }
     return Promise.resolve(data)
