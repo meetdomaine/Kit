@@ -3,7 +3,7 @@ const wait = require('w2t')
 const fetch = require('node-fetch')
 const output = require('@halfhelix/terminal-kit')
 
-module.exports = function init (settings) {
+module.exports = function init(settings) {
   /**
    * filled on each sync request, emptied when successful
    */
@@ -11,24 +11,25 @@ module.exports = function init (settings) {
   let errors = []
   let successes = []
 
-  function api (method, body) {
-    return fetch(`https://${settings.store}/admin/themes/${settings.theme}/assets.json`, {
-      method,
-      headers: {
-        'X-Shopify-Access-Token': settings.password,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
+  function api(method, body) {
+    return fetch(
+      `https://${settings.store}/admin/themes/${settings.theme}/assets.json`,
+      {
+        method,
+        headers: {
+          'X-Shopify-Access-Token': settings.password,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(body)
+      }
+    )
   }
 
-  function upload (token) {
-    const encoded = (
-      token.content
+  function upload(token) {
+    const encoded = token.content
       ? Buffer.from(token.content, 'utf-8').toString('base64')
       : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString('base64')
-    )
 
     return api('PUT', {
       asset: {
@@ -36,35 +37,33 @@ module.exports = function init (settings) {
         attachment: encoded
       }
     })
-      .then(response => {
+      .then((response) => {
         return response.json()
       })
-      .then(({errors: error, asset}) => {
+      .then(({ errors: error, asset }) => {
         if (error) {
-          errors.push({token, error})
+          errors.push({ token, error })
         } else {
-          successes.push({token, asset})
+          successes.push({ token, asset })
         }
       })
-      .catch(error => {
-        errors.push({token, error})
+      .catch((error) => {
+        errors.push({ token, error })
       })
   }
 
-  function enqueue (action, cb) {
+  function enqueue(action, cb) {
     return new Promise((resolve, reject) => {
-      ;(function push (token) {
+      ;(function push(token) {
         if (!token) resolve()
 
-        wait(500, [
-          action(token)
-        ])
+        wait(500, [action(token)])
           .then(() => {
             cb && cb(queue.length, token)
             if (queue.length) return push(queue.pop())
             resolve()
           })
-          .catch(error => {
+          .catch((error) => {
             cb && cb(queue.length, token)
             if (queue.length) return push(queue.pop())
             reject(error)
@@ -73,20 +72,19 @@ module.exports = function init (settings) {
     })
   }
 
-  function filterOutIgnored (paths) {
-    return paths.filter(path => (
-      !~settings.ignore.indexOf(path.theme)
-    ))
+  function filterOutIgnored(paths) {
+    return paths.filter((path) => !~settings.ignore.indexOf(path.theme))
   }
 
-  function handleErrors () {
-    errors.forEach(({error, token}) => {
+  function handleErrors() {
+    errors.forEach(({ error, token }) => {
       const messages = Object.keys(error).reduce((array, key) => {
-        array.push(`[${token.theme}] ` + (
-          typeof error[key] === 'string'
-          ? error[key]
-          : error[key].join(', ')
-        ))
+        array.push(
+          `[${token.theme}] ` +
+            (typeof error[key] === 'string'
+              ? error[key]
+              : error[key].join(', '))
+        )
         return array
       }, [])
       output.uploadErrors(messages)
@@ -94,9 +92,9 @@ module.exports = function init (settings) {
     })
   }
 
-  function sync (paths = [], shouldUpdateThemeName = false) {
+  function sync(paths = [], shouldUpdateThemeName = false) {
     queue = filterOutIgnored(paths)
-    errors = [], successes = []
+    ;(errors = []), (successes = [])
 
     if (!queue.length) {
       return Promise.resolve(false)
@@ -111,17 +109,18 @@ module.exports = function init (settings) {
         const total = queue.length
         const update = output.progressBar('Uploading', total, settings.isCI())
         return (remaining, token) => {
-          update(total - remaining, {
-            errors: errors.length
-          }, token)
+          update(
+            total - remaining,
+            {
+              errors: errors.length
+            },
+            token
+          )
         }
       })()
     }
 
-    return enqueue(
-      upload,
-      cb
-    ).then(() => {
+    return enqueue(upload, cb).then(() => {
       if (errors.length) {
         spinner && spinner.fail()
         handleErrors()

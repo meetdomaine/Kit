@@ -1,8 +1,5 @@
 const fetch = require('node-fetch')
-const {
-  error,
-  completedAction
-} = require('@halfhelix/terminal-kit')
+const { error, completedAction } = require('@halfhelix/terminal-kit')
 const {
   getCommit,
   getDate,
@@ -25,28 +22,36 @@ const formatName = async (settings, format) => {
 }
 
 module.exports = async (settings) => {
-  const themeName = await formatName(settings, settings['themeName.format'](settings))
+  const themeName = await formatName(
+    settings,
+    settings['themeName.format'](settings)
+  )
   const finalThemeName = settings['themeName.override'](themeName, settings)
-  return fetch(`https://${settings.store}/admin/themes/${settings.theme}.json`, {
-    method: 'put',
-    headers: {
-      'X-Shopify-Access-Token': settings.password,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({
-      theme: {
-        id: settings.theme,
-        name: finalThemeName
-      }
-    })
-  }).then(response => {
-    return response.json()
-  }).then(json => {
-    if (json.errors) {
-      error(JSON.stringify(json.errors))
+  return fetch(
+    `https://${settings.store}/admin/themes/${settings.theme}.json`,
+    {
+      method: 'put',
+      headers: {
+        'X-Shopify-Access-Token': settings.password,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        theme: {
+          id: settings.theme,
+          name: finalThemeName
+        }
+      })
     }
-    completedAction(`[${settings.theme}] Name updated: ${finalThemeName}`)
-    return Promise.resolve()
-  })
+  )
+    .then((response) => {
+      return response.json()
+    })
+    .then((json) => {
+      if (json.errors) {
+        error(JSON.stringify(json.errors))
+      }
+      completedAction(`[${settings.theme}] Name updated: ${finalThemeName}`)
+      return Promise.resolve()
+    })
 }

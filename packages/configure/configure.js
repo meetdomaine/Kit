@@ -6,16 +6,14 @@ require('dotenv').config()
 const defaults = require('./src/defaults')
 const utils = require('./src/utils')
 
-function readConfigFiles () {
+function readConfigFiles() {
   const config = defaults['path.config'].reduce((obj, path) => {
     if (!fs.existsSync(path)) {
       return obj
     }
 
     if (~path.indexOf('yml')) {
-      return yaml.safeLoad(
-        fs.readFileSync(path)
-      )
+      return yaml.safeLoad(fs.readFileSync(path))
     } else {
       return require(path)
     }
@@ -28,13 +26,13 @@ function readConfigFiles () {
   return config
 }
 
-function validateConfig (config, env) {
+function validateConfig(config, env) {
   if (!config.themes || !config.themes[env]) {
     throw new Error(`No settings for current env: ${env}`)
   }
 }
 
-module.exports = options => {
+module.exports = (options) => {
   Object.assign(defaults, options)
 
   options.debug && (process.env.DEBUG = '*')

@@ -6,7 +6,8 @@
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
-    "release": "npm publish --access public"
+    "release": "npm publish --access public",
+    "lint": "prettier --write {,**/}*.js"
   },
   "publishConfig": {
     "access": "public"

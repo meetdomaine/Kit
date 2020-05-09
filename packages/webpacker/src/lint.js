@@ -1,18 +1,14 @@
 const eslint = require('eslint')
 const stylelint = require('stylelint')
 const fs = require('fs-extra')
-const {
-  completedAction,
-} = require('@halfhelix/terminal-kit')
+const { completedAction } = require('@halfhelix/terminal-kit')
 
-module.exports = ({fix, include}, settings) => {
+module.exports = ({ fix, include }, settings) => {
   return Promise.all([
-    ~include.indexOf('css') ? (
-      lintCSS(fix, settings)
-    ) : Promise.resolve(false),
-    ~include.indexOf('js') ? (
-      lintJavascript(fix, settings)
-    ) : Promise.resolve(false)
+    ~include.indexOf('css') ? lintCSS(fix, settings) : Promise.resolve(false),
+    ~include.indexOf('js')
+      ? lintJavascript(fix, settings)
+      : Promise.resolve(false)
   ]).then(([cssError, jsError]) => {
     if (cssError || jsError) {
       process.exitCode = 1
@@ -29,9 +25,9 @@ const lintJavascript = (fix, settings) => {
   const report = cli.executeOnFiles([`${settings['path.src']}/`])
   const formatter = cli.getFormatter()
   if (fix) {
-    completedAction("Fixing Eslint errors")
+    completedAction('Fixing Eslint errors')
   } else if (!report.errorCount) {
-    completedAction("No Eslint errors found")
+    completedAction('No Eslint errors found')
   } else {
     // Actually writes the human readable version
     console.log(formatter(report.results))
@@ -43,18 +39,20 @@ const lintJavascript = (fix, settings) => {
 }
 
 const lintCSS = (fix, settings) => {
-  return stylelint.lint({
-    fix,
-    configBasedir: settings['path.cwd'],
-    files: settings.stylelintPaths(settings),
-    formatter: "string"
-  }).then(function (results) {
-    if (!results.errored) {
-      completedAction("No stylelint errors found")
-    } else {
-      // Actually writes the human readable version
-      console.log(results.output)
-    }
-    return Promise.resolve(results.errored)
-  })
+  return stylelint
+    .lint({
+      fix,
+      configBasedir: settings['path.cwd'],
+      files: settings.stylelintPaths(settings),
+      formatter: 'string'
+    })
+    .then(function (results) {
+      if (!results.errored) {
+        completedAction('No stylelint errors found')
+      } else {
+        // Actually writes the human readable version
+        console.log(results.output)
+      }
+      return Promise.resolve(results.errored)
+    })
 }
