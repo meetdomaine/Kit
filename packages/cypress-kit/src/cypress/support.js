@@ -1,0 +1,1 @@
+require('@halfhelix/cypress-commands')

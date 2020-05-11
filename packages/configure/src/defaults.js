@@ -2,6 +2,7 @@ module.exports = {
   ...require('./defaults/path'),
   ...require('./defaults/git'),
   ...require('./defaults/themeName'),
+  ...require('./defaults/cypress'),
   cdnPathVar: '__GLOBAL__.cdn',
   theme: '',
   password: '',

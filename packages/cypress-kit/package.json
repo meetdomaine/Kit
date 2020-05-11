@@ -1,0 +1,27 @@
+{
+  "name": "@halfhelix/cypress-kit",
+  "version": "0.0.1-beta.19",
+  "description": "",
+  "main": "cypress-kit.js",
+  "bin": {
+    "cy-kit": "./cypress-kit.js"
+  },
+  "author": "https://halfhelix.com",
+  "license": "MIT",
+  "scripts": {
+    "release": "npm publish --access public",
+    "lint": "prettier --write {,**/}*.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@halfhelix/configure": "^0.0.1-beta.18",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.15",
+    "@halfhelix/cypress-commands": "^0.0.1-beta.19",
+    "@percy/cypress": "^2.3.1",
+    "commander": "^4.0.1",
+    "cross-spawn": "^7.0.2",
+    "cypress": "^4.5.0"
+  }
+}
