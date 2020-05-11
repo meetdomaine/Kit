@@ -3,8 +3,6 @@ const configure = require('@halfhelix/configure')
 const path = require('path')
 
 const settings = configure({
-  'cypress.viewportWidth': Number(process.env.VIEWPORT_WIDTH) || false,
-  'cypress.cypressOnly': process.env.CYPRESS_ONLY || false,
   env: process.env.ENV
 })
 

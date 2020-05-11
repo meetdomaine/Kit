@@ -15,7 +15,6 @@ program
   .usage('[run]')
   .option('-e --env [env]', 'specify an environment')
   .option('--with-percy', 'Wrap Cypress around Percy', false)
-  .option('--viewport-width [size]', 'Specify the size to run')
   .action((cmd) => {
     command = cmd
   })
@@ -30,7 +29,6 @@ Promise.resolve(
   protect(() => {
     const settings = configure({
       'cypress.withPercy': program.withPercy,
-      'cypress.viewportWidth': program.viewportWidth || false,
       env: program.env || 'development',
       task: command
     })

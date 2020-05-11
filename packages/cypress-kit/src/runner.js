@@ -8,8 +8,6 @@ module.exports = (settings) => {
 
     process.env.BLUEBIRD_W_FORGOTTEN_RETURN = 0
     process.env.ENV = settings.env
-    process.env.VIEWPORT_WIDTH = settings['cypress.viewportWidth']
-    process.env.CYPRESS_ONLY = settings['cypress.cypressOnly']
 
     let p
     if (settings['cypress.withPercy']) {
