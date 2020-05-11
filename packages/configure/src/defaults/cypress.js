@@ -12,7 +12,7 @@ module.exports = {
   'cypress.withPercy': false,
   'cypress.exit': true,
   'cypress.headless': true,
-  'cypress.video': true,
+  'cypress.video': false,
   'cypress.integrationFolder'(settings, value) {
     return value
   },

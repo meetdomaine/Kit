@@ -16,19 +16,19 @@ cypress.run({
   config: {
     integrationFolder: settings['cypress.integrationFolder'](
       settings,
-      path.normalize(`${__dirname}/../specs`)
-    ),
-    supportFile: settings['cypress.supportFile'](
-      settings,
-      path.normalize(`${__dirname}/../cypress/support`)
+      path.resolve(settings['path.cwd'], 'cypress/specs')
     ),
     screenshotsFolder: settings['cypress.screenshotsFolder'](
       settings,
-      path.normalize(`${__dirname}/../../tmp/screenshots`)
+      path.resolve(settings['path.cwd'], 'cypress/report')
     ),
     videosFolder: settings['cypress.videosFolder'](
       settings,
-      path.normalize(`${__dirname}/../../tmp/videos`)
+      path.resolve(settings['path.cwd'], 'cypress/report')
+    ),
+    supportFile: settings['cypress.supportFile'](
+      settings,
+      path.resolve(settings['path.cwd'], 'cypress/support/support')
     ),
     pluginsFile: settings['cypress.pluginsFile'](
       settings,
