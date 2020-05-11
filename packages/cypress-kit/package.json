@@ -19,7 +19,6 @@
     "@halfhelix/configure": "^0.0.1-beta.22",
     "@halfhelix/terminal-kit": "^0.0.1-beta.20",
     "commander": "^4.0.1",
-    "cross-spawn": "^7.0.2",
     "cypress": "^4.5.0"
   }
 }
