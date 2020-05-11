@@ -9,7 +9,6 @@ module.exports = {
   'cypress.viewportWidth': false,
   'cypress.viewportHeight': 1024,
   'cypress.pages': {},
-  'cypress.withPercy': false,
   'cypress.exit': true,
   'cypress.headless': true,
   'cypress.video': false,

@@ -14,7 +14,6 @@ program
   .arguments('<cmd>')
   .usage('[run]')
   .option('-e --env [env]', 'specify an environment')
-  .option('--with-percy', 'Wrap Cypress around Percy', false)
   .action((cmd) => {
     command = cmd
   })
@@ -28,7 +27,6 @@ Promise.resolve(
 ).then(
   protect(() => {
     const settings = configure({
-      'cypress.withPercy': program.withPercy,
       env: program.env || 'development',
       task: command
     })
