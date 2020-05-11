@@ -32,10 +32,7 @@ cypress.run({
       settings,
       path.normalize(`${__dirname}/../cypress/plugins.js`)
     ),
-    baseUrl: settings['cypress.baseUrl'](
-      settings,
-      settings['cypress.base'](settings)
-    ),
+    baseUrl: settings['cypress.base'](settings),
     video: settings['cypress.video']
   },
   env: {
