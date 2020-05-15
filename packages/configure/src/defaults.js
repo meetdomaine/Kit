@@ -3,6 +3,7 @@ module.exports = {
   ...require('./defaults/git'),
   ...require('./defaults/themeName'),
   ...require('./defaults/cypress'),
+  ...require('./defaults/css'),
   cdnPathVar: '__GLOBAL__.cdn',
   theme: '',
   password: '',

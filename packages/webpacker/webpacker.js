@@ -59,15 +59,11 @@ function webpackHasErrors(webpackError, webpackStats) {
   )
 }
 
-<<<<<<< HEAD
 function writeToLogFile (json) {
   fs.outputFileSync(`${__dirname}/critical.kit.log`, util.inspect(json, true, 10))
 }
 
 async function compileWithWebpack () {
-=======
-async function compileWithWebpack() {
->>>>>>> master
   if (settings.bypassWebpack) {
     return Promise.resolve(settings)
   }
