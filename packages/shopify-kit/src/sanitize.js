@@ -1,10 +1,11 @@
 const settings = require('@halfhelix/configure').settings
 
-function filterOutFiles (path) {
+function filterOutFiles(path) {
   if (
     ~path.indexOf('src/assets/css') ||
+    ~path.indexOf('src/assets/scss') ||
     ~path.indexOf('src/assets/js') ||
-    ~path.indexOf('src/config/lib') ||
+    ~path.indexOf('src/config') ||
     ~path.indexOf('.html') ||
     !~path.indexOf('src') ||
     (!~path.indexOf('src/assets') && /.*[.](s?css|js|vue)$/.test(path)) ||
@@ -15,11 +16,11 @@ function filterOutFiles (path) {
   return true
 }
 
-function reverseSlashes (path) {
+function reverseSlashes(path) {
   return path.replace(/\\/g, '/')
 }
 
-function createTokens (path) {
+function createTokens(path) {
   path = reverseSlashes(path)
   const file = path.split('/').pop()
   const src = file.replace(/(.*)([.]section|[.]template)([.]liquid)/, '$1$3')
@@ -37,23 +38,23 @@ function createTokens (path) {
     base = 'locales'
   } else if (/layout\//.test(path)) {
     base = 'layout'
+  } else if (/(?:s?css|js)[.]liquid$/.test(file)) {
+    base = 'assets'
   } else if (!/[.]liquid$/.test(file)) {
     base = 'assets'
   } else {
     base = 'snippets'
   }
 
-  const destination = (
-    /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
-    ? ({
-      absolute: `${reverseSlashes(settings['path.dist'])}/assets/${src}`,
-      relative: `assets/${src}`
-    })
-    : ({
-      absolute: `${reverseSlashes(settings['path.dist'])}/${base}/${src}`,
-      relative: `${base}/${src}`
-    })
-  )
+  const destination = /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
+    ? {
+        absolute: `${reverseSlashes(settings['path.dist'])}/assets/${src}`,
+        relative: `assets/${src}`
+      }
+    : {
+        absolute: `${reverseSlashes(settings['path.dist'])}/${base}/${src}`,
+        relative: `${base}/${src}`
+      }
 
   return {
     file,
@@ -64,7 +65,7 @@ function createTokens (path) {
   }
 }
 
-function createCompiledAssetTokens (path) {
+function createCompiledAssetTokens(path) {
   path = reverseSlashes(path)
   return {
     file: path.split('/').pop(),
@@ -75,12 +76,10 @@ function createCompiledAssetTokens (path) {
   }
 }
 
-function init (files = [], compiledAssets = []) {
+function init(files = [], compiledAssets = []) {
   files = files.filter(filterOutFiles).map(createTokens)
   if (compiledAssets.length) {
-    files = files.concat(
-      compiledAssets.map(createCompiledAssetTokens)
-    )
+    files = files.concat(compiledAssets.map(createCompiledAssetTokens))
   }
   return files
 }

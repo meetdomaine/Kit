@@ -2,38 +2,33 @@ const boxen = require('boxen')
 const chalk = require('chalk')
 const ora = require('ora')
 
-const {
-  log
-} = require('./utils')
-const {
-  newLines,
-  time
-} = require('./atoms')
-function logo () {
-  log(
-    require(`${__dirname}/../src/logo`)
-  )
+const { log } = require('./utils')
+const { newLines, time } = require('./atoms')
+function logo() {
+  log(require(`${__dirname}/../src/logo`))
 }
 
-function box () {
+function box() {
   log(newLines())
-  const string = Object.keys(arguments).reduce((array, key) => {
-    array.push(arguments[key])
-    return array
-  }, []).join(newLines())
-  log(boxen(string, {padding: 1}))
+  const string = Object.keys(arguments)
+    .reduce((array, key) => {
+      array.push(arguments[key])
+      return array
+    }, [])
+    .join(newLines())
+  log(boxen(string, { padding: 1 }))
   log(newLines())
 }
 
-function title (string) {
+function title(string) {
   return chalk.bold(string)
 }
 
-function subtitle (string) {
+function subtitle(string) {
   return string
 }
 
-function spinner (string) {
+function spinner(string) {
   return ora({
     text: string,
     spinner: 'circleHalves',
@@ -41,7 +36,7 @@ function spinner (string) {
   }).start()
 }
 
-function prefix () {
+function prefix() {
   return `${time()} / `
 }
 

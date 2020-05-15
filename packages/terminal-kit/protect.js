@@ -1,10 +1,7 @@
-
 const output = require('./src/organisms')
 
-module.exports = (callback, {
-  exit = true
-} = {}) => {
-  async function protect (options) {
+module.exports = (callback, { exit = true } = {}) => {
+  async function protect(options) {
     try {
       return callback(options)
     } catch (e) {

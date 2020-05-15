@@ -1,12 +1,13 @@
 {
   "name": "@halfhelix/terminal-kit",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.20",
   "description": "",
   "main": "terminal-kit.js",
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
-    "publish": "npm publish --access public"
+    "release": "npm publish --access public",
+    "lint": "prettier --write {,**/}*.js"
   },
   "publishConfig": {
     "access": "public"

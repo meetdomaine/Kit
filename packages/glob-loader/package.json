@@ -1,12 +1,12 @@
 {
   "name": "@halfhelix/glob-loader",
-  "version": "0.0.1-beta.8",
+  "version": "0.0.1-beta.12",
   "description": "",
   "main": "index.js",
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
-    "publish": "npm publish --access public"
+    "release": "npm publish --access public"
   },
   "publishConfig": {
     "access": "public"

@@ -1,13 +1,14 @@
 {
   "name": "@halfhelix/kit",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.22",
   "description": "A Shopify development toolkit",
   "main": "index.js",
   "bin": {
     "kit": "./cli.js"
   },
   "scripts": {
-    "publish": "npm publish --access public"
+    "release": "npm publish --access public",
+    "lint": "prettier --write {,**/}*.js"
   },
   "keywords": [
     "shopify",
@@ -21,10 +22,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@halfhelix/configure": "^0.0.1-beta.10",
-    "@halfhelix/shopify-kit": "^0.0.1-beta.10",
-    "@halfhelix/terminal-kit": "^0.0.1-beta.10",
-    "@halfhelix/webpacker": "^0.0.1-beta.10",
+    "@halfhelix/configure": "^0.0.1-beta.22",
+    "@halfhelix/gitlab-kit": "^0.0.1-beta.22",
+    "@halfhelix/shopify-kit": "^0.0.1-beta.22",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.20",
+    "@halfhelix/webpacker": "^0.0.1-beta.22",
     "commander": "^4.0.1"
   },
   "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"

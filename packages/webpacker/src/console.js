@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 
 let output, errorOutput
 
-async function interceptConsole () {
+async function interceptConsole() {
   if (settings.debug) {
     // Delete the files since everything
     // is going to console (process.stdout)
@@ -25,7 +25,7 @@ async function interceptConsole () {
   }
 }
 
-function resetConsole (errorsOnly = true) {
+function resetConsole(errorsOnly = true) {
   if (settings.debug) {
     return
   }
@@ -41,18 +41,15 @@ function resetConsole (errorsOnly = true) {
   console._interceptingStdout = false
 }
 
-async function getLogs () {
+async function getLogs() {
   const stdout = await getLog('stdout')
   const stderr = await getLog('stderr')
-  return {stdout, stderr}
+  return { stdout, stderr }
 }
 
-async function getLog (log = 'stdout') {
-  const file = (
-    log === 'stdout'
-    ? settings['path.stdout']
-    : settings['path.stderr']
-  )
+async function getLog(log = 'stdout') {
+  const file =
+    log === 'stdout' ? settings['path.stdout'] : settings['path.stderr']
 
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf-8', (err, data) => {

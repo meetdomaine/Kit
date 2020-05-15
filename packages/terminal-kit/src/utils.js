@@ -1,4 +1,4 @@
-function log (string) {
+function log(string) {
   if (console.penetrate && console._interceptingStdout) {
     // Console.log adds a new line character to each write
     // https://github.com/nodejs/node/blob/master/lib/internal/console/constructor.js#L237

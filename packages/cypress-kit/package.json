@@ -1,8 +1,11 @@
 {
-  "name": "@halfhelix/shopify-kit",
-  "version": "0.0.1-beta.22",
+  "name": "@halfhelix/cypress-kit",
+  "version": "0.0.1-beta.24",
   "description": "",
-  "main": "shopify-kit.js",
+  "main": "cypress-kit.js",
+  "bin": {
+    "cy-kit": "./cypress-kit.js"
+  },
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
@@ -15,10 +18,7 @@
   "dependencies": {
     "@halfhelix/configure": "^0.0.1-beta.22",
     "@halfhelix/terminal-kit": "^0.0.1-beta.20",
-    "fs-extra": "^8.1.0",
-    "globby": "^10.0.1",
-    "node-fetch": "^2.6.0",
-    "w2t": "^2.0.2"
-  },
-  "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"
+    "commander": "^4.0.1",
+    "cypress": "3.8.3"
+  }
 }

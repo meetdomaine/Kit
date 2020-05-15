@@ -1,24 +1,33 @@
 {
   "name": "@halfhelix/webpacker",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.22",
   "description": "",
   "main": "webpacker.js",
   "author": "https://halfhelix.com",
   "license": "MIT",
   "scripts": {
-    "publish": "npm publish --access public"
+    "release": "npm publish --access public",
+    "lint": "prettier --write {,**/}*.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
     "@babel/core": "^7.7.7",
+<<<<<<< HEAD
     "@halfhelix/configure": "^0.0.1-beta.10",
     "@halfhelix/shopify-critical-plugin": "^0.0.1-beta.1",
     "@halfhelix/glob-loader": "^0.0.1-beta.8",
     "@halfhelix/shopify-kit": "^0.0.1-beta.10",
     "@halfhelix/shopify-loader": "^0.0.1-beta.8",
     "@halfhelix/terminal-kit": "^0.0.1-beta.10",
+=======
+    "@halfhelix/configure": "^0.0.1-beta.22",
+    "@halfhelix/glob-loader": "^0.0.1-beta.12",
+    "@halfhelix/shopify-kit": "^0.0.1-beta.22",
+    "@halfhelix/shopify-loader": "^0.0.1-beta.20",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.20",
+>>>>>>> master
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",
     "babel-minify-webpack-plugin": "^0.3.1",
