@@ -1,13 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
-<<<<<<< HEAD
-const MinifyPlugin = require("babel-minify-webpack-plugin")
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const ExplodeStylesheetsPlugin = require("@halfhelix/glob-loader/plugin")
-=======
 const MinifyPlugin = require('babel-minify-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
->>>>>>> master
 const StyleLintPlugin = require('stylelint-webpack-plugin')
 const DynamicPublicPathPlugin = require('dynamic-public-path-webpack-plugin')
 const autoprefixer = require('autoprefixer')
@@ -79,30 +73,11 @@ function prepareDevtool() {
   }
 }
 
-<<<<<<< HEAD
-async function prepareEntry () {
-  const {entry} = settings.webpack
-
-  if (
-    settings.task !== 'watch' ||
-    !settings.hmr
-  ) {
-    if (typeof entry === 'object' && false) {
-      const splitOut = await ExplodeStylesheetsPlugin(entry, settings)
-      return {
-        ...entry,
-        ...splitOut
-      }
-    } else {
-      return entry
-    }
-=======
 function prepareEntry() {
   const { entry } = settings.webpack
 
   if (settings.task !== 'watch' || !settings.hmr) {
     return entry
->>>>>>> master
   }
 
   if (typeof entry === 'string') {
@@ -267,26 +242,6 @@ function _addCustomStyleLoaders(rule) {
 function preparePlugins() {
   return [
     ...(settings.webpack.plugins || []),
-<<<<<<< HEAD
-    ...(settings.lintStyles ? [
-      new StyleLintPlugin({
-        stylelintPath: resolveNodeModule('/stylelint'),
-        files: settings.stylelintPaths(settings),
-      })
-    ] : []),
-    ...(settings.task === 'watch' ? [
-      new webpack.SourceMapDevToolPlugin(),
-    ] : [
-      new ExtractTextPlugin(settings['css.mainFileName']),
-      // new ExplodeStylesheetsPlugin({
-      //   'path.src': settings['path.src']
-      // }),
-      new MinifyPlugin()
-    ]),
-    ...(settings.task === 'watch' && settings.hmr ? [
-      new webpack.HotModuleReplacementPlugin()
-    ]: []),
-=======
     ...(settings.lintStyles
       ? [
           new StyleLintPlugin({
@@ -301,7 +256,6 @@ function preparePlugins() {
     ...(settings.task === 'watch' && settings.hmr
       ? [new webpack.HotModuleReplacementPlugin()]
       : []),
->>>>>>> master
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(getEnv()),
@@ -325,7 +279,7 @@ function prepareExternals() {
   return Object.assign({}, settings.webpack.externals)
 }
 
-module.exports = async () => {
+module.exports = () => {
   const {
     devtool,
     entry,
@@ -341,7 +295,7 @@ module.exports = async () => {
   const webpackConfig = {
     mode: getEnv(),
     devtool: prepareDevtool(),
-    entry: await prepareEntry(),
+    entry: prepareEntry(),
     output: prepareOutput(),
     resolve: prepareResolve(),
     resolveLoader: prepareResolveLoader(),

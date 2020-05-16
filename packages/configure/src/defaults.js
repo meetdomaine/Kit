@@ -67,5 +67,9 @@ module.exports = {
     return `http://localhost:8080`
   },
   debug: false,
-  writeWebpackOutputToFile: false
+  writeWebpackOutputToFile: false,
+  filesToCleanInDev(settings) {
+    return [settings['css.chunk.snippet']]
+  },
+  cleanFileContents: '{% comment %}File Emptied{% endcomment %}'
 }

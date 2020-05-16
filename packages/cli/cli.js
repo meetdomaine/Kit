@@ -9,6 +9,7 @@ const gitlab = require('@halfhelix/gitlab-kit')
 const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
 
 const {
+  cleanseFiles,
   deployFiles,
   buildTheme,
   deployFile,
@@ -46,12 +47,16 @@ Promise.resolve(
     subtitle: 'The developer toolbelt'
   })
 ).then(
-  protect(() => {
+  protect(async () => {
     const settings = configure({
       simple: program['quick'],
       env: program.env || 'development',
       task: command
     })
+
+    if (~['deploy', 'watch']) {
+      await cleanseFiles(settings)
+    }
 
     if (~['build', 'deploy'].indexOf(command)) {
       webpacker(settings)
@@ -79,9 +84,9 @@ Promise.resolve(
     }
 
     if (~['watch'].indexOf(command)) {
-      webpacker.watch((event, file, settings) => {
-        return deployFile(event, file, settings)
-      })
+      webpacker.watch((event, file, settings) =>
+        deployFile(event, file, settings)
+      )
       return
     }
 

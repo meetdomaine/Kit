@@ -22,9 +22,31 @@ function reverseSlashes(path) {
 
 function createTokens(path) {
   path = reverseSlashes(path)
-  const file = path.split('/').pop()
+
   const src = file.replace(/(.*)([.]section|[.]template)([.]liquid)/, '$1$3')
-  let base = ''
+  const base = getBase(path)
+
+  const destination = /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
+    ? {
+        absolute: `${reverseSlashes(settings['path.dist'])}/assets/${src}`,
+        relative: `assets/${src}`
+      }
+    : {
+        absolute: `${reverseSlashes(settings['path.dist'])}/${base}/${src}`,
+        relative: `${base}/${src}`
+      }
+
+  return {
+    file,
+    original: path,
+    destination: destination.absolute,
+    theme: destination.relative,
+    contents: false
+  }
+}
+
+function getBase(path) {
+  const file = path.split('/').pop()
 
   if (/template/.test(path) && /[.]liquid/.test(file)) {
     if (/templates\/customers/.test(path)) {
@@ -46,23 +68,7 @@ function createTokens(path) {
     base = 'snippets'
   }
 
-  const destination = /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
-    ? {
-        absolute: `${reverseSlashes(settings['path.dist'])}/assets/${src}`,
-        relative: `assets/${src}`
-      }
-    : {
-        absolute: `${reverseSlashes(settings['path.dist'])}/${base}/${src}`,
-        relative: `${base}/${src}`
-      }
-
-  return {
-    file,
-    original: path,
-    destination: destination.absolute,
-    theme: destination.relative,
-    contents: false
-  }
+  return base
 }
 
 function createCompiledAssetTokens(path) {
@@ -71,7 +77,7 @@ function createCompiledAssetTokens(path) {
     file: path.split('/').pop(),
     original: path,
     destination: path,
-    theme: `assets/${path.split('/').pop()}`,
+    theme: `${getBase(path)}/${path.split('/').pop()}`,
     contents: false
   }
 }

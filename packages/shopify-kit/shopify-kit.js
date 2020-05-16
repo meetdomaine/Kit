@@ -18,6 +18,9 @@ function reverseSlashes(path) {
 }
 
 async function getThemeFiles(settings) {
+  if (settings['css.chunk.configureSplitting']) {
+    return Promise.resolve([])
+  }
   return await globby(`${reverseSlashes(settings['path.src'])}/**/*.*`)
 }
 
@@ -111,7 +114,24 @@ async function deployFile(event, file, settings) {
   return Promise.resolve(true)
 }
 
+async function cleanseFiles(
+  settings,
+  files = settings['filesToCleanInDev'](settings)
+) {
+  for (let index in files) {
+    await sync(settings, { label: 'Emptying' }).sync([
+      {
+        content: settings['cleanFileContents'],
+        theme: files[index]
+      }
+    ])
+  }
+
+  return Promise.resolve(true)
+}
+
 module.exports = {
+  cleanseFiles,
   deployFiles,
   buildTheme,
   deployFile,

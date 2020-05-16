@@ -1,6 +1,7 @@
-
 const path = require('path')
 const fs = require('fs-extra')
+const util = require('util')
+const output = require('@halfhelix/terminal-kit')
 
 /**
  * This should be a global util function
@@ -9,8 +10,15 @@ const fs = require('fs-extra')
  *
  * @param {String} path
  */
-function reverseSlashes (path) {
+function reverseSlashes(path) {
   return path.replace(/\\/g, '/')
+}
+
+function writeToLogFile(json) {
+  fs.outputFileSync(
+    `${__dirname}/critical.kit.log`,
+    util.inspect(json, true, 10)
+  )
 }
 
 /**
@@ -20,20 +28,20 @@ function reverseSlashes (path) {
  *
  * @param {Array} files
  */
-const getCSSFiles = files => {
+const getCSSFiles = (files) => {
   return files
-  .filter(file => /\.css/.test(file) && fs.existsSync(file))
-  .map(file => {
-    const directory = reverseSlashes(file).split('/')
-    const fileName = directory.pop()
+    .filter((file) => /\.css/.test(file) && fs.existsSync(file))
+    .map((file) => {
+      const directory = reverseSlashes(file).split('/')
+      const fileName = directory.pop()
 
-    return {
-      file,
-      directory: path.normalize(directory.join('/')),
-      mimeType: fileName.match(/(.[^.]*)(.*)/)[2],
-      content: fs.readFileSync(file, 'utf8')
-    }
-  })
+      return {
+        file,
+        directory: path.normalize(directory.join('/')),
+        mimeType: fileName.match(/(.[^.]*)(.*)/)[2],
+        content: fs.readFileSync(file, 'utf8')
+      }
+    })
 }
 
 /**
@@ -43,11 +51,11 @@ const getCSSFiles = files => {
  * @param {String} path
  * @param {Object} settings
  */
-function getChunkName (path, settings) {
+function getChunkName(path, settings) {
   const split = path
     .replace(reverseSlashes(settings['path.src']), '')
     .split('/')
-    .filter(val => val)
+    .filter((val) => val)
 
   return split[1] || 'general'
 }
@@ -96,7 +104,7 @@ const splitCSSByComment = (token, settings) => {
  */
 const compileNewFiles = (CSSChunkTokens, originalFile, settings) => {
   return Object.keys(CSSChunkTokens).reduce((obj, key) => {
-    if (CSSChunkTokens[key].length <= 1 || ~settings['css.chunk.globals'].indexOf(key)) {
+    if (~settings['css.chunk.globals'].indexOf(key)) {
       return obj
     }
 
@@ -118,13 +126,12 @@ const compileNewFiles = (CSSChunkTokens, originalFile, settings) => {
  * @param {Object} originalFile
  */
 const writeNewFiles = (compiledChunkFiles, originalFile, settings) => {
-  return Object.keys(compiledChunkFiles).map(key => {
+  return Object.keys(compiledChunkFiles).map((key) => {
     const file = `${key}${originalFile.mimeType}`
     const path = `${originalFile.directory}/${file}`
 
-    !settings['css.chunk.inline'] && (
+    !settings['css.chunk.inline'] &&
       fs.outputFileSync(path, compiledChunkFiles[key])
-    )
 
     return {
       file,
@@ -143,14 +150,24 @@ const writeNewFiles = (compiledChunkFiles, originalFile, settings) => {
  * @param {Object} settings
  */
 const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
-  let html = writtenFiles.reduce((string, token, i) => {
-    string += `
-      {% ${!i ? 'if' : 'elsif'} ${settings['css.chunk.conditionalFilter'](token, `request.page_type contains '${token.key}'`)} %}
-       ${(settings['css.chunk.inline']
-       ? token.content
-       : generateStylesheetLinks(token, writtenFiles, settings))}`
-    return string
-  }, settings['css.chunk.inlineMainFile'] ? `${originalFile.content}\n\n` : '').replace(/\s\s/g,'')
+  let html = writtenFiles
+    .reduce(
+      (string, token, i) => {
+        string += `
+      {% ${!i ? 'if' : 'elsif'} ${settings['css.chunk.conditionalFilter'](
+          token,
+          generateRenderConditional(token.key, settings)
+        )} %}
+       ${
+         settings['css.chunk.inline']
+           ? token.content
+           : generateStylesheetLinks(token, writtenFiles, settings)
+       }`
+        return string
+      },
+      settings['css.chunk.inlineMainFile'] ? `${originalFile.content}\n\n` : ''
+    )
+    .replace(/\s\s/g, '')
 
   if (settings['css.chunk.inline']) {
     html += `{% endif %}`
@@ -162,17 +179,64 @@ const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
     `
   }
 
-  return html.replace(/\s\s/g,'')
+  return html
+    .replace(/\s\s/g, '')
+    .split('<link')
+    .join('\n<link')
+    .split('{%')
+    .join('\n{%')
+}
+/**
+ * Here, we generate the Liquid conditional that dictates
+ * which CSS files are prefetched and which are called
+ * directly.
+ *
+ * @param {String} folderName
+ * @param {Object} settings
+ */
+const generateRenderConditional = (folderName, settings) => {
+  const delimiter = settings['css.chunk.folderDelimiter']
+  const split = folderName.split(delimiter)
+  const prop1 = settings['css.chunk.firstConditionalProperty']
+  const prop2 = settings['css.chunk.secondConditionalProperty']
+
+  if (split.length <= 1) {
+    return `${prop1} contains '${folderName}'`
+  }
+
+  return `${prop1} == '${split.shift()}' and ${prop2} == '${split.join(
+    delimiter
+  )}'`
 }
 
-const generateStylesheetLinks = ({file = '', key = '', path = ''} = {}, allFiles, settings) => {
+/**
+ * Generates the stylesheet links, not the prefetch
+ * links (we do this in the following function).
+ * @param {Object} Token
+ * @param {Array} allFiles
+ * @param {Object} settings
+ */
+const generateStylesheetLinks = (
+  { file = '', key = '', path = '' } = {},
+  allFiles,
+  settings
+) => {
   const string = `
-    ${file ? `<link type="text/css" href="{{ '${file}' | asset_url }}" rel="stylesheet">` : ''}
-    ${allFiles.map(({file: _file, key: _key}) => (
-      _key !== key ? generatePrefetchLink(_file) : ''
-    )).join('')}
+    ${
+      file
+        ? `<link type="text/css" href="{{ '${file.replace(
+            '.liquid',
+            ''
+          )}' | asset_url }}" rel="stylesheet">`
+        : ''
+    }
+    ${allFiles
+      .map(({ file: _file, key: _key }) =>
+        _key !== key ? generatePrefetchLink(_file) : ''
+      )
+      .join('')}
   `
-  return settings['css.chunk.snippetFilter']({file, key, path}, string)
+  return settings['css.chunk.snippetFilter']({ file, key, path }, string)
 }
 
 /**
@@ -181,8 +245,13 @@ const generateStylesheetLinks = ({file = '', key = '', path = ''} = {}, allFiles
  *
  * @param {String} file
  */
-const generatePrefetchLink = file => {
-  return file ? `<link rel="prefetch" href="{{ '${file}' | asset_url }}" as="style">` : ''
+const generatePrefetchLink = (file) => {
+  return file
+    ? `<link rel="prefetch" href="{{ '${file.replace(
+        '.liquid',
+        ''
+      )}' | asset_url }}" as="style">`
+    : ''
 }
 
 /**
@@ -197,23 +266,48 @@ const writeLiquidSnippet = (contents, settings) => {
   return snippetName
 }
 
-
 module.exports = async function (originalFiles, settings) {
+  const spinner = output.action(`Splitting CSS Files`)
   const cssFilesAsTokens = getCSSFiles(originalFiles)
 
-  const newFiles = cssFilesAsTokens.map(originalFile => {
+  const newFiles = cssFilesAsTokens.map((originalFile) => {
     const CSSChunkTokens = splitCSSByComment(originalFile, settings)
-    const compiledChunkFiles = compileNewFiles(CSSChunkTokens, originalFile, settings)
-    const writtenFiles = writeNewFiles(compiledChunkFiles, originalFile, settings)
-    const liquidFileContents = createLiquidSnippet(writtenFiles, settings, originalFile)
+    const compiledChunkFiles = compileNewFiles(
+      CSSChunkTokens,
+      originalFile,
+      settings
+    )
+    const writtenFiles = writeNewFiles(
+      compiledChunkFiles,
+      originalFile,
+      settings
+    )
+
+    const liquidFileContents = createLiquidSnippet(
+      writtenFiles,
+      settings,
+      originalFile
+    )
+
     const snippetName = writeLiquidSnippet(liquidFileContents, settings)
 
     // Update original file
-    fs.outputFileSync(originalFile.file, settings['css.chunk.inlineMainFile'] ? '' : originalFile.content)
+    fs.outputFileSync(
+      originalFile.file,
+      settings['css.chunk.inlineMainFile'] ? '' : originalFile.content
+    )
 
-    writtenFiles.push({path: snippetName})
-    return writtenFiles.map(({path}) => path)
+    writtenFiles.push({ path: snippetName })
+    return writtenFiles.map(({ path }) => path)
   })
+
+  spinner.succeed()
+  output.genericListBox(
+    'Generated files from CSS splitting:',
+    newFiles.flat().map((path = '') => {
+      return reverseSlashes(path).split('/').pop()
+    })
+  )
 
   newFiles.push(originalFiles)
   return newFiles.flat()

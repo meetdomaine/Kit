@@ -2,12 +2,6 @@ const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs-extra')
 const util = require('util')
-// const mockServer = require('@halfhelix/shopify-mockery')
-const {
-  interceptConsole,
-  resetConsole,
-  getLogs
-} = require('./src/console')
 const wait = require('w2t')
 const settings = require('@halfhelix/configure').settings
 const {
@@ -18,9 +12,9 @@ const {
   browserSyncNotice
 } = require('@halfhelix/terminal-kit')
 const config = require('./src/webpack.config')
-const { interceptConsole, resetConsole, getLogs } = require('./src/console')
 const setUpProxy = require('./src/setUpProxy')
 const lint = require('./src/lint')
+const { interceptConsole, resetConsole, getLogs } = require('./src/console')
 
 function cleanseCompiledFileName(filePath) {
   return path.normalize(filePath.split('?').shift())
@@ -59,11 +53,14 @@ function webpackHasErrors(webpackError, webpackStats) {
   )
 }
 
-function writeToLogFile (json) {
-  fs.outputFileSync(`${__dirname}/critical.kit.log`, util.inspect(json, true, 10))
+function writeToLogFile(json) {
+  fs.outputFileSync(
+    `${__dirname}/critical.kit.log`,
+    util.inspect(json, true, 10)
+  )
 }
 
-async function compileWithWebpack () {
+async function compileWithWebpack() {
   if (settings.bypassWebpack) {
     return Promise.resolve(settings)
   }
@@ -71,28 +68,26 @@ async function compileWithWebpack () {
 
   await wait(1000)
 
-  return config(settings).then(webpackSettings => {
-    return new Promise((resolve, reject) => {
-      interceptConsole()
-      webpack(webpackSettings).run(async (error, stats) => {
-        if (settings['writeWebpackOutputToFile']) {
-          writeToLogFile(stats)
-        }
+  return new Promise((resolve, reject) => {
+    interceptConsole()
+    webpack(config(settings)).run(async (error, stats) => {
+      if (settings['writeWebpackOutputToFile']) {
+        writeToLogFile(stats)
+      }
 
-        resetConsole(false)
-        spinner.succeed()
+      resetConsole(false)
+      spinner.succeed()
 
-        const hasErrors = webpackHasErrors(error, stats)
-        if (hasErrors) {
-          return reject(hasErrors)
-        }
+      const hasErrors = webpackHasErrors(error, stats)
+      if (hasErrors) {
+        return reject(hasErrors)
+      }
 
-        webpackResponse(stats, settings)
-        await wait(1000)
+      webpackResponse(stats, settings)
+      await wait(1000)
 
-        const files = getCompiledFilePaths(stats)
-        resolve(files, settings)
-      })
+      const files = getCompiledFilePaths(stats)
+      resolve(files, settings)
     })
   }).catch((e) => {
     error(e, false)
@@ -106,13 +101,13 @@ module.exports = (options) => {
 
 module.exports.watch = async (watchCallback) => {
   let spinner = action('Starting up BrowserSync proxy server')
+
   await wait(1000)
   spinner.succeed()
+
   spinner = action('Compiling with Webpack')
 
   interceptConsole()
-
-  // settings.mock && mockServer(settings)
 
   const { bs } = await setUpProxy(
     webpack(config(settings)),

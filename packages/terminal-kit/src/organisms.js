@@ -31,6 +31,13 @@ function webpackResponse(stats, settings) {
   ;(asJson.errors || []).length && log((asJson.errors || []).join('\n') + '\n')
 }
 
+function genericListBox(header = '', list = [], settings) {
+  const strings = list.map((element) => {
+    return `${icon('star')} ${element}`
+  })
+  box(title(header), ...strings)
+}
+
 function epilogue({
   error = false,
   title: foo = false,
@@ -110,6 +117,7 @@ module.exports = {
   splash,
   action,
   webpackResponse,
+  genericListBox,
   completedAction,
   epilogue,
   browserSyncNotice,

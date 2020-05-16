@@ -1,2 +1,0 @@
-# @halfhelix/webpacker
-@todo
