@@ -134,6 +134,9 @@ async function cleanseFiles(
   settings,
   files = settings['shopify.generatedFiles'](settings)
 ) {
+  if (!settings['shopify.clearGeneratedFiles'](settings)) {
+    return Promise.resolve(true)
+  }
   for (let index in files) {
     await sync(settings, { label: 'Emptying' }).sync([
       {

@@ -105,7 +105,13 @@ const splitCSSByComment = (token, settings) => {
  * @param {Object} settings
  */
 const compileNewFiles = (CSSChunkTokens, originalFile, settings) => {
-  return Object.keys(CSSChunkTokens).reduce((obj, key) => {
+  const keys = Object.keys(CSSChunkTokens)
+
+  settings['css.chunk.sortFunction']
+    ? keys.sort(settings['css.chunk.sortFunction'])
+    : keys.sort().reverse()
+
+  return keys.reduce((obj, key) => {
     if (~(settings['css.chunk.globalFolders'] || []).indexOf(key)) {
       output.completedAction(`"${key}" rolled into main CSS bundle`)
       return obj
@@ -204,23 +210,41 @@ const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
  * @param {Object} settings
  */
 const generateRenderConditional = (folderName, settings) => {
+  if (
+    Object.keys(settings['css.chunk.conditionalFolderMapping'] || {}).length &&
+    typeof settings['css.chunk.conditionalFolderMapping'][folderName] !==
+      'undefined'
+  ) {
+    output.completedAction(
+      `"${folderName}" conditional updated to "${settings['css.chunk.conditionalFolderMapping'][folderName]}"`
+    )
+    folderName = settings['css.chunk.conditionalFolderMapping'][folderName]
+  }
+
   const delimiter = settings['css.chunk.folderDelimiter']
   const split = folderName.split(delimiter)
   const prop1 = settings['css.chunk.firstConditionalProperty']
   const prop2 = settings['css.chunk.secondConditionalProperty']
+  const prop1EqualityConditional =
+    settings['css.chunk.firstEqualityConditional']
+  const prop2EqualityConditional =
+    settings['css.chunk.secondEqualityConditional']
 
   if (split.length <= 1) {
-    return `${prop1} == '${folderName}'`
+    return `${prop1} ${prop1EqualityConditional || '=='} '${folderName}'`
   }
 
-  return `${prop1} == '${split.shift()}' and ${prop2} == '${split.join(
-    delimiter
-  )}'`
+  return `${prop1} ${
+    prop1EqualityConditional || '=='
+  } '${split.shift()}' and ${prop2} ${
+    prop2EqualityConditional || '=='
+  } '${split.join(delimiter)}'`
 }
 
 /**
  * Generates the stylesheet links, not the prefetch
  * links (we do this in the following function).
+ *
  * @param {Object} Token
  * @param {Array} allFiles
  * @param {Object} settings

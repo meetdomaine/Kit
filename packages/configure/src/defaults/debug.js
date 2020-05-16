@@ -3,5 +3,5 @@ module.exports = {
   'debug.writeWebpackOutputToFile': false,
   'debug.bypassWebpack': false,
   'debug.cssSplitting': false,
-  'debug.showDeploymentLog': true
+  'debug.showDeploymentLog': false
 }
