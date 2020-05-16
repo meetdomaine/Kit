@@ -1,6 +1,7 @@
 ![](https://i.imgur.com/emcU0vv.gif)
 
-***Installation:***
+**_Installation:_**
+
 ```
 npm i -g @halfhelix/kit
 ```
@@ -10,6 +11,7 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 > This package is currently in Beta. It is likely to change quickly as we prepare it for initial release.
 
 #### Core technologies included:
+
 - Webpack
 - Webpack Dev Middleware
 - Sass
@@ -19,6 +21,7 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 - Stylelint
 
 #### Core Benefits:
+
 - Compile easily and quickly with Webpack
 - See Javascript and CSS changes without a round-trip to Shopify
 - Browser Reloading after Liquid file upload to Shopify
@@ -30,7 +33,9 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 - Concatination of Shopify settings schema from multiple JSON files
 
 #### Commands
+
 Run these commands from the root of the theme
+
 ```
 kit build  --env [production|staging|development]
 kit deploy --env [production|staging|development]
@@ -88,6 +93,7 @@ src
 Here, the header, footer and newsletter-signup code is encapsulated inside module folders, in this example. These module folders are a concept that helps us reuse code and keep track of logic, markup and styles across complex themes.
 
 This toolbelt enables this architecture by supporting glob patterns like the examples provided below.
+
 ```
 // main.scss
 // Our Webpack loader takes this glob pattern and injects found
@@ -101,6 +107,7 @@ This toolbelt enables this architecture by supporting glob patterns like the exa
 import 'modules/**/*.js'
 
 ```
+
 In addition to style and Javascript files, Liquid is taken out of these module folders and sent to the Snippets, Sections or Templates theme directories. For example:
 
 ```
@@ -164,6 +171,21 @@ module.exports = {
       production: {}
   },
 
+  // The Shopify theme custom domain, if enabled on the instance
+  // This is needed if the *Redirect to Primary Domain* Shopify setting is on
+  'domain': false, // e.g 'shop.halfhelix.com'
+
+  // What files should be watched for changes in 'watch'?
+  'watch': (settings) => {
+    return `${settings['path.src']}/**/*`
+  },
+
+  // Ignore certain files from being uploaded to Shopify
+  // Can be on this global level or on the theme level
+  'ignore': [
+    'config/settings_data.json'
+  ],
+
   // Babel configuration
   'babel': {},
 
@@ -185,28 +207,37 @@ module.exports = {
   // The theme's CDN URL (used in 'watch' only, relates to "addShopifyLoader")
   'path.cdn': 'https://cdn.shopify.com/replace-this',
 
-  // The global variable used in production to reference the Shopify CDN
-  'cdnPathVar': '__GLOBAL__.cdn',
-
   // The log file to use for non-errors (See 'logging')
   'path.stdout': `${CWD}/node_modules/.logs/kit-stdout.log`,
 
   // The log file to use for errors (See 'logging')
   'path.stderr': `${CWD}/node_modules/.logs/kit-stderr.log`,
 
+  // Should styles be linted with Stylelint?
+  'css.lintStyles': true,
+
+  // What files should be linted with Stylelint?
+  'css.stylelintPaths' (settings) {
+    return [
+      `src/assets/scss/**/*.scss`,
+      `src/modules/**/*.scss`,
+      `src/sections/**/*.scss`
+    ]
+  },
+
+  // What is the name of the CSS file generated in 'build|deploy'?
+  'css.mainFileName': '[name].min.css.liquid',
+
   // The function to return the BrowserSync proxy target URL
-  'target': (settings) => {
+  'bs.target': (settings) => {
     return `https://${(settings.domain || settings.store)}?preview_theme_id=${settings['theme']}`
   },
 
-  // The Shopify theme custom domain, if enabled on the instance
-  'domain': false, // e.g 'shop.halfhelix.com'
-
   // The local URL that should be used to access the proxy
-  'local': 'localhost',
+  'bs.local': 'localhost',
 
   // Customizes the placement of the BrowserSync snippet in 'watch'
-  'browserSyncSnippetPlacement' (settings) {
+  'bs.browserSyncSnippetPlacement' (settings) {
     return {
       match: /<\/body>/i,
       fn: function (snippet, match) {
@@ -215,53 +246,18 @@ module.exports = {
     }
   },
 
-  // Should Webpack Hot Module Reloading be enabled?
-  'hmr': true,
-
-  // Ignore certain files from being uploaded to Shopify
-  // Can be on this global level or on the theme level
-  'ignore': [
-    'config/settings_data.json'
-  ],
-
-  // Should styles be linted with Stylelint?
-  'lintStyles': true,
-
-  // What files should be linted with Stylelint?
-  'stylelintPaths' (settings) {
-    return [
-      `src/assets/scss/**/*.scss`,
-      `src/modules/**/*.scss`,
-      `src/sections/**/*.scss`
-    ]
-  },
-
-  // Should CSS be autoprefixed in the 'watch' command?
-  'autoprefixInDev': false,
-
   // Should BrowserSync automatically open a new tab in 'watch'?
-  'open': true,
-
-  // What files should be watched for changes in 'watch'?
-  'watch': (settings) => {
-    return `${settings['path.src']}/**/*`
-  },
-
-  // What is the name of the CSS file generated in 'build|deploy'?
-  'cssName': '[name].min.css.liquid',
+  'bs.open': true,
 
   // The delay between the Shopify upload and the browser reload
-  'reloadDelay': 700,
-
-  // Customize the order of assets returned in the CSS/ JS globs
-  'sortFunction': false, // (files = [], javascript?) => {}
+  'bs.reloadDelay': 700,
 
   // Perform replacements of asset strings with 'watch'
-  'replaceAssets': true,
+  'bs.replaceAssets': true,
 
   // The theme HTML asset strings to dynamically replace. We do this
   // to support Hot Module Reloading in 'watch'
-  'proxyReplacements': [{
+  'bs.proxyReplacements': [{
     'regex': /<script.*main(?:[.]min)?[.]js.[^>]*><\/script>/ig,
     'replacement' () {}
   },{
@@ -271,12 +267,24 @@ module.exports = {
     }
   }],
 
+  // Should Webpack Hot Module Reloading be enabled?
+  'js.hmr': true,
+
+  // Should CSS be autoprefixed in the 'watch' command?
+  'js.autoprefixInDev': false,
+
+  // Customize the order of assets returned in the CSS/ JS globs
+  'js.chunkSortFunction': false, // (files = [], javascript?) => {}
+
   // Auto-chunk the main JS bundle based on module parent directory
-  'autoChunk': true,
+  'js.autoChunk': true,
 
   // Interpret {{ ... | asset_url }} tags in Sass files, in 'watch'
   // The 'path.cdn' is used to replace the 'asset_url' filter
-  'addShopifyLoader': true,
+  'shopify.addShopifyLoader': true,
+
+  // The global variable used in production to reference the Shopify CDN
+  'shopify.cdnPathVar': '__GLOBAL__.cdn',
 
   // Always log errors and info to the console
   'debug': false
@@ -347,6 +355,7 @@ module.exports = {
 }
 
 ```
+
 #### NPM Dependencies
 
 Most of the dependencies that are used to compile assets with the Webpack configuration above are declared and managed in this package. However, there are some that will need to be dev dependencies of the theme itself. Currently, the theme dev dependencies we use for the configuration above are:
@@ -378,6 +387,7 @@ This package is currently unstable and in it's initial stages. Expect bugs and m
 #### Testing changes when contributing
 
 Currently, the recommended way to test new changes to this repo is via the following steps:
+
 - Clone this monorepo
 - Install lerna globally
 - In the root of the repo, run `lerna bootstrap`

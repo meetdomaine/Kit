@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 const util = require('util')
+const wait = require('w2t')
 const output = require('@halfhelix/terminal-kit')
 
 /**
@@ -83,6 +84,7 @@ const splitCSSByComment = (token, settings) => {
     obj[group].push({
       file: token.file,
       module: path[1],
+      fileName: reverseSlashes(path[1]).split('/').pop(),
       original: '/*! path: ' + string,
       cleansed: string.replace(path[0], '')
     })
@@ -104,11 +106,20 @@ const splitCSSByComment = (token, settings) => {
  */
 const compileNewFiles = (CSSChunkTokens, originalFile, settings) => {
   return Object.keys(CSSChunkTokens).reduce((obj, key) => {
-    if (~settings['css.chunk.globals'].indexOf(key)) {
+    if (~(settings['css.chunk.globalFolders'] || []).indexOf(key)) {
+      output.completedAction(`"${key}" rolled into main CSS bundle`)
       return obj
     }
 
     obj[key] = CSSChunkTokens[key].reduce((string, token) => {
+      if (
+        ~(settings['css.chunk.globalFiles'] || []).indexOf(token['fileName'])
+      ) {
+        output.completedAction(
+          `"${token['fileName']}" rolled into main CSS bundle`
+        )
+        return string
+      }
       // When we add to the bundle, we take away from the original
       originalFile.content = originalFile.content.replace(token.original, '')
       string += token.cleansed
@@ -137,6 +148,7 @@ const writeNewFiles = (compiledChunkFiles, originalFile, settings) => {
       file,
       path,
       key,
+      written: !settings['css.chunk.inline'],
       content: compiledChunkFiles[key]
     }
   })
@@ -151,22 +163,19 @@ const writeNewFiles = (compiledChunkFiles, originalFile, settings) => {
  */
 const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
   let html = writtenFiles
-    .reduce(
-      (string, token, i) => {
-        string += `
+    .reduce((string, token, i) => {
+      string += `
       {% ${!i ? 'if' : 'elsif'} ${settings['css.chunk.conditionalFilter'](
-          token,
-          generateRenderConditional(token.key, settings)
-        )} %}
+        token,
+        generateRenderConditional(token.key, settings)
+      )} %}
        ${
          settings['css.chunk.inline']
-           ? token.content
+           ? `{% raw %}<style>${token.content}</style>{% endraw %}`
            : generateStylesheetLinks(token, writtenFiles, settings)
        }`
-        return string
-      },
-      settings['css.chunk.inlineMainFile'] ? `${originalFile.content}\n\n` : ''
-    )
+      return string
+    }, '')
     .replace(/\s\s/g, '')
 
   if (settings['css.chunk.inline']) {
@@ -201,7 +210,7 @@ const generateRenderConditional = (folderName, settings) => {
   const prop2 = settings['css.chunk.secondConditionalProperty']
 
   if (split.length <= 1) {
-    return `${prop1} contains '${folderName}'`
+    return `${prop1} == '${folderName}'`
   }
 
   return `${prop1} == '${split.shift()}' and ${prop2} == '${split.join(
@@ -267,7 +276,10 @@ const writeLiquidSnippet = (contents, settings) => {
 }
 
 module.exports = async function (originalFiles, settings) {
-  const spinner = output.action(`Splitting CSS Files`)
+  const spinner = output.action(`Splitting CSS files into chunks`)
+  await wait(1000)
+  spinner.succeed()
+
   const cssFilesAsTokens = getCSSFiles(originalFiles)
 
   const newFiles = cssFilesAsTokens.map((originalFile) => {
@@ -290,24 +302,29 @@ module.exports = async function (originalFiles, settings) {
     )
 
     const snippetName = writeLiquidSnippet(liquidFileContents, settings)
+    writtenFiles.push({ path: snippetName, written: true })
 
     // Update original file
-    fs.outputFileSync(
-      originalFile.file,
-      settings['css.chunk.inlineMainFile'] ? '' : originalFile.content
-    )
+    if (
+      !settings['debug.cssSplitting'] &&
+      settings['css.chunk.updateOriginalFile']
+    ) {
+      fs.outputFileSync(originalFile.file, originalFile.content)
+    }
 
-    writtenFiles.push({ path: snippetName })
-    return writtenFiles.map(({ path }) => path)
+    return writtenFiles.filter(({ written }) => written).map(({ path }) => path)
   })
 
-  spinner.succeed()
   output.genericListBox(
     'Generated files from CSS splitting:',
     newFiles.flat().map((path = '') => {
       return reverseSlashes(path).split('/').pop()
     })
   )
+
+  if (settings['debug.cssSplitting']) {
+    process.exit()
+  }
 
   newFiles.push(originalFiles)
   return newFiles.flat()

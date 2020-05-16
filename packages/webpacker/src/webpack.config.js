@@ -76,7 +76,7 @@ function prepareDevtool() {
 function prepareEntry() {
   const { entry } = settings.webpack
 
-  if (settings.task !== 'watch' || !settings.hmr) {
+  if (settings.task !== 'watch' || !settings['js.hmr']) {
     return entry
   }
 
@@ -183,8 +183,8 @@ function _addCustomJsLoaders(rule) {
       loader: resolveNodeModule('/@halfhelix/glob-loader'),
       options: {
         'path.src': settings['path.src'],
-        autoChunk: settings['autoChunk'],
-        sortFunction: settings['globSortFunction']
+        autoChunk: settings['js.autoChunk'],
+        sortFunction: settings['js.chunkSortFunction']
       }
     }
   ]
@@ -199,7 +199,7 @@ function _addCustomStyleLoaders(rule) {
     loader: resolveNodeModule('/@halfhelix/glob-loader'),
     options: {
       'path.src': settings['path.src'],
-      sortFunction: settings['globSortFunction']
+      sortFunction: settings['js.chunkSortFunction']
     }
   })
 
@@ -208,7 +208,7 @@ function _addCustomStyleLoaders(rule) {
   }
 
   if (~sassIndex()) {
-    if (settings.addShopifyLoader && settings.task === 'watch') {
+    if (settings['shopify.addShopifyLoader'] && settings.task === 'watch') {
       rule.use.splice(sassIndex(), 0, {
         loader: resolveNodeModule('/@halfhelix/shopify-loader'),
         options: {
@@ -216,7 +216,7 @@ function _addCustomStyleLoaders(rule) {
         }
       })
     }
-    if (settings.autoprefixInDev || settings.task !== 'watch') {
+    if (settings['js.autoprefixInDev'] || settings.task !== 'watch') {
       rule.use.splice(sassIndex(), 0, {
         loader: resolveNodeModule('/postcss-loader'),
         options: {
@@ -242,18 +242,21 @@ function _addCustomStyleLoaders(rule) {
 function preparePlugins() {
   return [
     ...(settings.webpack.plugins || []),
-    ...(settings.lintStyles
+    ...(settings['css.lintStyles']
       ? [
           new StyleLintPlugin({
             stylelintPath: resolveNodeModule('/stylelint'),
-            files: settings.stylelintPaths(settings)
+            files: settings['css.stylelintPaths'](settings)
           })
         ]
       : []),
     ...(settings.task === 'watch'
       ? [new webpack.SourceMapDevToolPlugin()]
-      : [new ExtractTextPlugin(settings.cssName), new MinifyPlugin()]),
-    ...(settings.task === 'watch' && settings.hmr
+      : [
+          new ExtractTextPlugin(settings['css.mainFileName']),
+          new MinifyPlugin()
+        ]),
+    ...(settings.task === 'watch' && settings['js.hmr']
       ? [new webpack.HotModuleReplacementPlugin()]
       : []),
     new webpack.NoEmitOnErrorsPlugin(),
@@ -266,7 +269,7 @@ function preparePlugins() {
       ? [
           ...Object.keys(settings.webpack.entry).map((name) => {
             return new DynamicPublicPathPlugin({
-              externalGlobal: settings.cdnPathVar,
+              externalGlobal: settings['shopify.cdnPathVar'],
               chunkName: name
             })
           })

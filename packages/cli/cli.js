@@ -9,11 +9,11 @@ const gitlab = require('@halfhelix/gitlab-kit')
 const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
 
 const {
-  cleanseFiles,
+  prepareForDeployment,
   deployFiles,
   buildTheme,
   deployFile,
-  chunkCSS
+  chunkStylesheets
 } = require('@halfhelix/shopify-kit')
 
 let command = false
@@ -55,14 +55,14 @@ Promise.resolve(
     })
 
     if (~['deploy', 'watch']) {
-      await cleanseFiles(settings)
+      await prepareForDeployment(settings)
     }
 
     if (~['build', 'deploy'].indexOf(command)) {
       webpacker(settings)
         .then((files) => {
           return settings['css.chunk']
-            ? chunkCSS(files, settings)
+            ? chunkStylesheets(files, settings)
             : Promise.resolve(files)
         })
         .then((files) => {

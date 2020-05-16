@@ -81,10 +81,10 @@ function uploadErrors(list) {
   box('Errors:', ...list.map((item) => `${icon('star')} ${item}`))
 }
 
-function progressBar(title, total, isCI) {
+function progressBar(title, total, explode = false) {
   let bar
 
-  if (isCI) {
+  if (explode) {
     completedAction(`Start Progress: ${title}`)
   } else {
     bar = new cliProgress.SingleBar(
@@ -100,7 +100,7 @@ function progressBar(title, total, isCI) {
   }
 
   return function (current, otherMetrics, fileToken) {
-    if (isCI) {
+    if (explode) {
       completedAction(
         `[${current} of ${total}, Errors: ${otherMetrics.errors}] ${fileToken.theme}`
       )

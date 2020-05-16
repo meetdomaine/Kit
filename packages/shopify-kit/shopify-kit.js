@@ -8,19 +8,16 @@ const {
   action,
   completedAction
 } = require('@halfhelix/terminal-kit')
-const sanitize = require('./src/sanitize')
-const sync = require('./src/syncToShopify')
-const chunkCSS = require('./src/chunkCSS')
-const renameTheme = require('./src/renameTheme')
+const sanitize = require('./src/fileTokenizationService')
+const sync = require('./src/themeFileUploadService')
+const chunkStylesheets = require('./src/stylesheetChunkingService')
+const renameTheme = require('./src/renameThemeService')
 
 function reverseSlashes(path) {
   return path.replace(/\\/g, '/')
 }
 
 async function getThemeFiles(settings) {
-  if (settings['css.chunk.configureSplitting']) {
-    return Promise.resolve([])
-  }
   return await globby(`${reverseSlashes(settings['path.src'])}/**/*.*`)
 }
 
@@ -57,9 +54,20 @@ async function addInConfig(files, settings) {
 }
 
 async function deployFiles(compiledAssets = [], settings) {
-  files = sanitize(await getThemeFiles(settings), compiledAssets)
+  if (settings['css.chunk.testSplitting']) {
+    files = sanitize(
+      [],
+      compiledAssets.filter((path) => {
+        return (
+          /[.]css/.test(path) || ~path.indexOf(settings['css.chunk.snippet'])
+        )
+      })
+    )
+  } else {
+    files = sanitize(await getThemeFiles(settings), compiledAssets)
+    await addInConfig(files, settings)
+  }
 
-  await addInConfig(files, settings)
   await sync(settings).sync(files)
 
   log(newLines())
@@ -114,14 +122,26 @@ async function deployFile(event, file, settings) {
   return Promise.resolve(true)
 }
 
+async function prepareForDeployment(settings) {
+  const spinner = action(`Setting theme "${settings['theme']}"`)
+  await wait(1000)
+  spinner.succeed()
+  await cleanseFiles(settings)
+  return Promise.resolve(true)
+}
+
 async function cleanseFiles(
   settings,
-  files = settings['filesToCleanInDev'](settings)
+  files = settings['shopify.generatedFiles'](settings)
 ) {
   for (let index in files) {
     await sync(settings, { label: 'Emptying' }).sync([
       {
-        content: settings['cleanFileContents'],
+        content: settings['shopify.generatedFilesEmptiedContents'](
+          files[index],
+          settings['shopify.defaultGeneratedFileContents'],
+          settings
+        ),
         theme: files[index]
       }
     ])
@@ -131,9 +151,9 @@ async function cleanseFiles(
 }
 
 module.exports = {
-  cleanseFiles,
+  prepareForDeployment,
   deployFiles,
   buildTheme,
   deployFile,
-  chunkCSS
+  chunkStylesheets
 }

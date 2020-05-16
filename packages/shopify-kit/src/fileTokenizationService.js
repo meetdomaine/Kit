@@ -22,9 +22,9 @@ function reverseSlashes(path) {
 
 function createTokens(path) {
   path = reverseSlashes(path)
-
+  const file = path.split('/').pop()
   const src = file.replace(/(.*)([.]section|[.]template)([.]liquid)/, '$1$3')
-  const base = getBase(path)
+  const base = getBase(path, file)
 
   const destination = /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
     ? {
@@ -45,9 +45,7 @@ function createTokens(path) {
   }
 }
 
-function getBase(path) {
-  const file = path.split('/').pop()
-
+function getBase(path, file) {
   if (/template/.test(path) && /[.]liquid/.test(file)) {
     if (/templates\/customers/.test(path)) {
       base = 'templates/customers'
@@ -73,11 +71,13 @@ function getBase(path) {
 
 function createCompiledAssetTokens(path) {
   path = reverseSlashes(path)
+  const file = path.split('/').pop()
+
   return {
     file: path.split('/').pop(),
     original: path,
     destination: path,
-    theme: `${getBase(path)}/${path.split('/').pop()}`,
+    theme: `${getBase(path, file)}/${path.split('/').pop()}`,
     contents: false
   }
 }

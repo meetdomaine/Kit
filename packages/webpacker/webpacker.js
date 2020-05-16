@@ -1,7 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs-extra')
-const util = require('util')
 const wait = require('w2t')
 const settings = require('@halfhelix/configure').settings
 const {
@@ -53,25 +52,25 @@ function webpackHasErrors(webpackError, webpackStats) {
   )
 }
 
-function writeToLogFile(json) {
-  fs.outputFileSync(
-    `${__dirname}/critical.kit.log`,
-    util.inspect(json, true, 10)
-  )
-}
-
 async function compileWithWebpack() {
-  if (settings.bypassWebpack) {
-    return Promise.resolve(settings)
+  if (settings['debug.cssSplitting']) {
+    return Promise.resolve([
+      `${settings['path.dist']}/assets/${settings['css.mainFileName'].replace(
+        '[name]',
+        'main'
+      )}`
+    ])
+  }
+  if (settings['debug.bypassWebpack']) {
+    return Promise.resolve([])
   }
   const spinner = action('Compiling assets with Webpack')
-
   await wait(1000)
 
   return new Promise((resolve, reject) => {
     interceptConsole()
     webpack(config(settings)).run(async (error, stats) => {
-      if (settings['writeWebpackOutputToFile']) {
+      if (settings['debug.writeWebpackOutputToFile']) {
         writeToLogFile(stats)
       }
 
@@ -120,7 +119,7 @@ module.exports.watch = async (watchCallback) => {
 
   spinner.succeed()
   browserSyncNotice({
-    target: settings.target(settings),
+    target: settings['bs.target'](settings),
     proxy: bs.options.getIn(['urls', 'local'])
   })
 

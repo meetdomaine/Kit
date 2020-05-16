@@ -112,7 +112,11 @@ module.exports = function init(settings, args = {}) {
       var spinner = false
       var cb = (function () {
         const total = queue.length
-        const update = output.progressBar('Uploading', total, settings.isCI())
+        const update = output.progressBar(
+          'Uploading',
+          total,
+          settings.isCI() || settings['debug.showDeploymentLog']
+        )
         return (remaining, token) => {
           update(
             total - remaining,

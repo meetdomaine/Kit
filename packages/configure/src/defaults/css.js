@@ -1,11 +1,20 @@
 module.exports = {
   'css.mainFileName': '[name].min.css.liquid',
+  'css.lintStyles': true,
+  'css.stylelintPaths'(settings) {
+    return [
+      // `src/assets/css/**/*.scss`,
+      `src/assets/scss/**/*.scss`,
+      `src/modules/**/*.scss`,
+      `src/sections/**/*.scss`
+    ]
+  },
   'css.chunk': true,
-  'css.chunk.globals': ['global', 'header', 'footer', 'nav'],
+  'css.chunk.globalFolders': ['global'],
+  'css.chunk.globalFiles': [],
   'css.chunk.inline': false,
-  'css.chunk.inlineMainFile': false,
   'css.chunk.snippet': 'snippets/stylesheets.liquid',
-  'css.chunk.configureSplitting': true,
+  'css.chunk.testSplitting': false,
   'css.chunk.conditionalFilter'(obj, defaultString) {
     return defaultString
   },
@@ -14,5 +23,6 @@ module.exports = {
   'css.chunk.folderDelimiter': '-',
   'css.chunk.snippetFilter'(obj, defaultString) {
     return defaultString
-  }
+  },
+  'css.chunk.updateOriginalFile': true
 }
