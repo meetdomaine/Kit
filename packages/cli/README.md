@@ -121,12 +121,14 @@ src/modules/cart/cart.template.liquid > templates/header.liquid
 
 The toolkit can be configured through a `kit.config.js` file that must be present in the root of the theme. In addition, an `.env` file is supported to store secrets that should not be stored in Git.
 
-```
-// .env (Git ignore)
+```bash
+# .env (Git ignore)
 THEME_ID=xxxx
 PASSWORD=xxxx
 STORE=xxxx.myshopify.com
+```
 
+```javascript
 // kit.config.js (store in Git)
 module.exports = {
   themes: {
@@ -158,9 +160,11 @@ module.exports = {
 }
 ```
 
-#### All kit.config.js options (with defaults)
+#### Basic kit.config.js options (with defaults)
 
-```
+There are 50+ settings that can be configured in the kit.config.js file that adjust how the build and deployment process functions, as well as settings that help with debugging issues. See below for a subset of the standard options along with their default values.
+
+```javascript
 {
   // Environment-specific theme configuration
   // The current environment's theme settings are merged
@@ -288,6 +292,117 @@ module.exports = {
 
   // Always log errors and info to the console
   'debug': false
+}
+```
+
+#### CSS Splitting options
+
+We've baked in some configurable logic that can automatically create dedicated CSS files for different pages of a Shopify site. So, you can have a CSS file that targets product pages, account pages or a specific page template individually.
+
+The functionality leverages the module grouping folders that were outlined in the "theme architecture" section. How CSS files are requested on certain pages are informed by these folder names. See below:
+
+```bash
+src
+  |- modules
+     |- global
+     |  |- header/
+     |  |- footer/
+     |
+     |- page
+     |  |- page-wysiwyg/
+     |
+     |- page-wishlist
+     |  |- wishlist-grid/
+```
+
+With default settings, this structure will culminate into the following snippet (named via the "css.chunk.snippet" setting) file being generated, with global styles kept into the main stylesheet:
+
+```liquid
+{% if request.page_type contains 'page' and template.suffix contains 'wishlist' %}
+<link type="text/css" href="{{ 'page-wishlist.min.css' | asset_url }}" rel="stylesheet">
+<link rel="prefetch" href="{{ 'page.min.css' | asset_url }}" as="style">
+{% elsif request.page_type contains 'page' %}
+<link type="text/css" href="{{ 'page.min.css' | asset_url }}" rel="stylesheet">
+<link rel="prefetch" href="{{ 'page-wishlist.min.css' | asset_url }}" as="style">
+{% endif %}
+```
+
+The "global" folder is marked by default as a location to put any global code. Then, the first word in the folder name before "-" maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
+
+See below an outline of CSS chunking specific options alongside their default values.
+
+```javascript
+{
+  // Should the main CSS file/s be chunked?
+  'css.chunk': false,
+
+  // What folder/s dictate CSS that should be on every page?
+  'css.chunk.globalFolders': ['global'],
+
+  // Any files here will be rolled up into global sheet
+  'css.chunk.globalFiles': [],
+
+  // Should CSS be inlined in the "css.chunk.snippet" file?
+  'css.chunk.inline': false,
+
+  // What is the name of the snippet that includes the conditional
+  // logic that loads in the specific files on the right pages
+  'css.chunk.snippet': 'snippets/stylesheets.liquid',
+
+  // Allow a developer to test the CSS splitting logic by
+  // only deploying the generated CSS rather than all theme files
+  'css.chunk.testSplitting': false,
+
+  // Sort the order of the conditionals in the 'css.chunk.snippet'
+  // file. The default order is alphabetically
+  'css.chunk.sortFunction': false,
+
+  // Override any of the conditionals in the 'css.chunk.snippet'
+  // file. This is called last before the snippet is written
+  'css.chunk.conditionalFilter'(obj, defaultString) {
+    return defaultString
+  },
+
+  // This allows you to map a folder name to a different conditional
+  // before the 'css.chunk.snippet' is generated. For example, if
+  // you had a {"account": "customers"} entry here, CSS in an "account"
+  // folder would be mapped to any 'css.chunk.firstConditionalProperty'
+  // liquid value that contains the string "customers"
+  'css.chunk.conditionalFolderMapping': {},
+
+  // This is the Liquid property used in the first component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.firstConditionalProperty': 'request.page_type',
+
+  // This is the Liquid property used to in the second component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.secondConditionalProperty': 'template.suffix',
+
+  // This is the Liquid conditional used to in the first component
+  // of the 'css.chunk.snippet' generated file. For example, you
+  // could change this to "==" for an exact match
+  'css.chunk.firstEqualityConditional': 'contains',
+
+  // This is the Liquid conditional used to in the second component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.secondEqualityConditional': 'contains',
+
+  // We are using the module folder name to inform on which pages
+  // the generated CSS file is rendered. We do this by breaking down
+  // the folder name. This is the character used when we break this
+  // down (see above writeup)
+  'css.chunk.folderDelimiter': '-',
+
+  // Provides the ability to change the written <link> html between
+  // each of the Liquid conditionals in the "css.chunk.snippet" file
+  'css.chunk.snippetFilter'(obj, defaultString) {
+    return defaultString
+  },
+
+  // Should the original CSS file be updated after
+  // the chunks have been split into their own CSS files? This
+  // will avoid duplicate CSS declarations
+  'css.chunk.updateOriginalFile': true
 }
 ```
 
