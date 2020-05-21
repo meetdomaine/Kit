@@ -327,7 +327,9 @@ With default settings, this structure will culminate into the following snippet 
 {% endif %}
 ```
 
-The "global" folder is marked by default as a location to put any global code. Then, the first word in the folder name before "-" maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
+The "global" folder is marked by default as a location to put any global code. Global styles are kept in the main stylesheet and not referenced in the snippet.
+
+For non global styles, the first word in the top level folder name before the "-" character maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
 
 See below an outline of CSS chunking specific options alongside their default values.
 
