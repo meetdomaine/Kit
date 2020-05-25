@@ -14,7 +14,7 @@ module.exports = {
     }
   },
   'bs.open': true,
-  'bs.reloadDelay': 1000,
+  'bs.reloadDelay': 1500,
   'bs.proxyReplacements': [
     {
       regex: /<script.*main(?:[.]min)?[.]js.[^>]*><\/script>/gi,
