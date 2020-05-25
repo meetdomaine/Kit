@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/kit",
-  "version": "0.0.1-beta.25",
+  "version": "0.0.1-beta.26",
   "description": "A Shopify development toolkit",
   "main": "index.js",
   "bin": {
