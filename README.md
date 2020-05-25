@@ -492,10 +492,8 @@ Most logs from core dependencies are relayed directly to the console. However, t
 
 #### Roadmap
 
-1. Renaming of Shopify theme/s upon deployment
-2. Theme scaffolding command/s
-3. Critical CSS support baked in
-4. Liquid linting (in progress...)
+1. Theme scaffolding command/s
+1. Liquid linting (in progress...)
 
 #### Bugs & Missing Information
 
