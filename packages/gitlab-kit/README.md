@@ -1,10 +1,9 @@
-# @halfhelix/gitlab-kit
+![](https://i.imgur.com/emcU0vv.gif)
 
-> This package is used internally by @halfhelix/kit
-
-A package that provides a series of interactions with Gitlab. The intention is that these run in the context of CI.
+> This is an internal dependency for [@halfhelix/kit](https://www.npmjs.com/package/@halfhelix/kit). Please refer to this package for further details.
 
 Currently this package provides the ability to do the following:
+
 - Create WIP merge requests
 - Validate commit email addresses
 - Validate commit messages
