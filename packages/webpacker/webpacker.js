@@ -11,9 +11,9 @@ const {
   browserSyncNotice
 } = require('@halfhelix/terminal-kit')
 const config = require('./src/webpack.config')
-const { interceptConsole, resetConsole, getLogs } = require('./src/console')
 const setUpProxy = require('./src/setUpProxy')
 const lint = require('./src/lint')
+const { interceptConsole, resetConsole, getLogs } = require('./src/console')
 
 function cleanseCompiledFileName(filePath) {
   return path.normalize(filePath.split('?').shift())
@@ -53,17 +53,24 @@ function webpackHasErrors(webpackError, webpackStats) {
 }
 
 async function compileWithWebpack() {
-  if (settings.bypassWebpack) {
-    return Promise.resolve(settings)
+  if (settings['debug.cssSplitting']) {
+    return Promise.resolve([
+      `${settings['path.dist']}/assets/${settings['css.mainFileName'].replace(
+        '[name]',
+        'main'
+      )}`
+    ])
+  }
+  if (settings['debug.bypassWebpack']) {
+    return Promise.resolve([])
   }
   const spinner = action('Compiling assets with Webpack')
-
   await wait(1000)
 
   return new Promise((resolve, reject) => {
     interceptConsole()
     webpack(config(settings)).run(async (error, stats) => {
-      if (settings['writeWebpackOutputToFile']) {
+      if (settings['debug.writeWebpackOutputToFile']) {
         writeToLogFile(stats)
       }
 
@@ -93,13 +100,13 @@ module.exports = (options) => {
 
 module.exports.watch = async (watchCallback) => {
   let spinner = action('Starting up BrowserSync proxy server')
+
   await wait(1000)
   spinner.succeed()
+
   spinner = action('Compiling with Webpack')
 
   interceptConsole()
-
-  // settings.mock && mockServer(settings)
 
   const { bs } = await setUpProxy(
     webpack(config(settings)),
@@ -112,7 +119,7 @@ module.exports.watch = async (watchCallback) => {
 
   spinner.succeed()
   browserSyncNotice({
-    target: settings.target(settings),
+    target: settings['bs.target'](settings),
     proxy: bs.options.getIn(['urls', 'local'])
   })
 

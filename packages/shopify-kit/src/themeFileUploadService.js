@@ -3,7 +3,7 @@ const wait = require('w2t')
 const fetch = require('node-fetch')
 const output = require('@halfhelix/terminal-kit')
 
-module.exports = function init(settings) {
+module.exports = function init(settings, args = {}) {
   /**
    * filled on each sync request, emptied when successful
    */
@@ -27,9 +27,12 @@ module.exports = function init(settings) {
   }
 
   function upload(token) {
-    const encoded = token.content
-      ? Buffer.from(token.content, 'utf-8').toString('base64')
-      : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString('base64')
+    const encoded =
+      typeof token.content !== 'undefined'
+        ? Buffer.from(token.content, 'utf-8').toString('base64')
+        : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString(
+            'base64'
+          )
 
     return api('PUT', {
       asset: {
@@ -101,13 +104,19 @@ module.exports = function init(settings) {
     }
 
     if (queue.length === 1) {
-      var spinner = output.action(`Uploading "${paths[0].theme}"`)
+      var spinner = output.action(
+        `${args.label || 'Uploading'} "${paths[0].theme}"`
+      )
       var cb = function () {}
     } else {
       var spinner = false
       var cb = (function () {
         const total = queue.length
-        const update = output.progressBar('Uploading', total, settings.isCI())
+        const update = output.progressBar(
+          'Uploading',
+          total,
+          settings.isCI() || settings['debug.showDeploymentLog']
+        )
         return (remaining, token) => {
           update(
             total - remaining,

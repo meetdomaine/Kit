@@ -1,6 +1,7 @@
 ![](https://i.imgur.com/emcU0vv.gif)
 
-***Installation:***
+**_Installation:_**
+
 ```
 npm i -g @halfhelix/kit
 ```
@@ -10,6 +11,7 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 > This package is currently in Beta. It is likely to change quickly as we prepare it for initial release.
 
 #### Core technologies included:
+
 - Webpack
 - Webpack Dev Middleware
 - Sass
@@ -19,6 +21,7 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 - Stylelint
 
 #### Core Benefits:
+
 - Compile easily and quickly with Webpack
 - See Javascript and CSS changes without a round-trip to Shopify
 - Browser Reloading after Liquid file upload to Shopify
@@ -30,7 +33,9 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 - Concatination of Shopify settings schema from multiple JSON files
 
 #### Commands
+
 Run these commands from the root of the theme
+
 ```
 kit build  --env [production|staging|development]
 kit deploy --env [production|staging|development]
@@ -88,6 +93,7 @@ src
 Here, the header, footer and newsletter-signup code is encapsulated inside module folders, in this example. These module folders are a concept that helps us reuse code and keep track of logic, markup and styles across complex themes.
 
 This toolbelt enables this architecture by supporting glob patterns like the examples provided below.
+
 ```
 // main.scss
 // Our Webpack loader takes this glob pattern and injects found
@@ -101,6 +107,7 @@ This toolbelt enables this architecture by supporting glob patterns like the exa
 import 'modules/**/*.js'
 
 ```
+
 In addition to style and Javascript files, Liquid is taken out of these module folders and sent to the Snippets, Sections or Templates theme directories. For example:
 
 ```
@@ -114,12 +121,14 @@ src/modules/cart/cart.template.liquid > templates/header.liquid
 
 The toolkit can be configured through a `kit.config.js` file that must be present in the root of the theme. In addition, an `.env` file is supported to store secrets that should not be stored in Git.
 
-```
-// .env (Git ignore)
+```bash
+# .env (Git ignore)
 THEME_ID=xxxx
 PASSWORD=xxxx
 STORE=xxxx.myshopify.com
+```
 
+```javascript
 // kit.config.js (store in Git)
 module.exports = {
   themes: {
@@ -151,9 +160,11 @@ module.exports = {
 }
 ```
 
-#### All kit.config.js options (with defaults)
+#### Basic kit.config.js options (with defaults)
 
-```
+There are 50+ settings that can be configured in the kit.config.js file that adjust how the build and deployment process functions, as well as settings that help with debugging issues. See below for a subset of the standard options along with their default values.
+
+```javascript
 {
   // Environment-specific theme configuration
   // The current environment's theme settings are merged
@@ -163,6 +174,21 @@ module.exports = {
       staging: {},
       production: {}
   },
+
+  // The Shopify theme custom domain, if enabled on the instance
+  // This is needed if the *Redirect to Primary Domain* Shopify setting is on
+  'domain': false, // e.g 'shop.halfhelix.com'
+
+  // What files should be watched for changes in 'watch'?
+  'watch': (settings) => {
+    return `${settings['path.src']}/**/*`
+  },
+
+  // Ignore certain files from being uploaded to Shopify
+  // Can be on this global level or on the theme level
+  'ignore': [
+    'config/settings_data.json'
+  ],
 
   // Babel configuration
   'babel': {},
@@ -185,28 +211,37 @@ module.exports = {
   // The theme's CDN URL (used in 'watch' only, relates to "addShopifyLoader")
   'path.cdn': 'https://cdn.shopify.com/replace-this',
 
-  // The global variable used in production to reference the Shopify CDN
-  'cdnPathVar': '__GLOBAL__.cdn',
-
   // The log file to use for non-errors (See 'logging')
   'path.stdout': `${CWD}/node_modules/.logs/kit-stdout.log`,
 
   // The log file to use for errors (See 'logging')
   'path.stderr': `${CWD}/node_modules/.logs/kit-stderr.log`,
 
+  // Should styles be linted with Stylelint?
+  'css.lintStyles': true,
+
+  // What files should be linted with Stylelint?
+  'css.stylelintPaths' (settings) {
+    return [
+      `src/assets/scss/**/*.scss`,
+      `src/modules/**/*.scss`,
+      `src/sections/**/*.scss`
+    ]
+  },
+
+  // What is the name of the CSS file generated in 'build|deploy'?
+  'css.mainFileName': '[name].min.css.liquid',
+
   // The function to return the BrowserSync proxy target URL
-  'target': (settings) => {
+  'bs.target': (settings) => {
     return `https://${(settings.domain || settings.store)}?preview_theme_id=${settings['theme']}`
   },
 
-  // The Shopify theme custom domain, if enabled on the instance
-  'domain': false, // e.g 'shop.halfhelix.com'
-
   // The local URL that should be used to access the proxy
-  'local': 'localhost',
+  'bs.local': 'localhost',
 
   // Customizes the placement of the BrowserSync snippet in 'watch'
-  'browserSyncSnippetPlacement' (settings) {
+  'bs.browserSyncSnippetPlacement' (settings) {
     return {
       match: /<\/body>/i,
       fn: function (snippet, match) {
@@ -215,53 +250,18 @@ module.exports = {
     }
   },
 
-  // Should Webpack Hot Module Reloading be enabled?
-  'hmr': true,
-
-  // Ignore certain files from being uploaded to Shopify
-  // Can be on this global level or on the theme level
-  'ignore': [
-    'config/settings_data.json'
-  ],
-
-  // Should styles be linted with Stylelint?
-  'lintStyles': true,
-
-  // What files should be linted with Stylelint?
-  'stylelintPaths' (settings) {
-    return [
-      `src/assets/scss/**/*.scss`,
-      `src/modules/**/*.scss`,
-      `src/sections/**/*.scss`
-    ]
-  },
-
-  // Should CSS be autoprefixed in the 'watch' command?
-  'autoprefixInDev': false,
-
   // Should BrowserSync automatically open a new tab in 'watch'?
-  'open': true,
-
-  // What files should be watched for changes in 'watch'?
-  'watch': (settings) => {
-    return `${settings['path.src']}/**/*`
-  },
-
-  // What is the name of the CSS file generated in 'build|deploy'?
-  'cssName': '[name].min.css.liquid',
+  'bs.open': true,
 
   // The delay between the Shopify upload and the browser reload
-  'reloadDelay': 700,
-
-  // Customize the order of assets returned in the CSS/ JS globs
-  'sortFunction': false, // (files = [], javascript?) => {}
+  'bs.reloadDelay': 700,
 
   // Perform replacements of asset strings with 'watch'
-  'replaceAssets': true,
+  'bs.replaceAssets': true,
 
   // The theme HTML asset strings to dynamically replace. We do this
   // to support Hot Module Reloading in 'watch'
-  'proxyReplacements': [{
+  'bs.proxyReplacements': [{
     'regex': /<script.*main(?:[.]min)?[.]js.[^>]*><\/script>/ig,
     'replacement' () {}
   },{
@@ -271,15 +271,140 @@ module.exports = {
     }
   }],
 
+  // Should Webpack Hot Module Reloading be enabled?
+  'js.hmr': true,
+
+  // Should CSS be autoprefixed in the 'watch' command?
+  'js.autoprefixInDev': false,
+
+  // Customize the order of assets returned in the CSS/ JS globs
+  'js.chunkSortFunction': false, // (files = [], javascript?) => {}
+
   // Auto-chunk the main JS bundle based on module parent directory
-  'autoChunk': true,
+  'js.autoChunk': true,
 
   // Interpret {{ ... | asset_url }} tags in Sass files, in 'watch'
   // The 'path.cdn' is used to replace the 'asset_url' filter
-  'addShopifyLoader': true,
+  'shopify.addShopifyLoader': true,
+
+  // The global variable used in production to reference the Shopify CDN
+  'shopify.cdnPathVar': '__GLOBAL__.cdn',
 
   // Always log errors and info to the console
   'debug': false
+}
+```
+
+#### CSS Splitting options
+
+We've baked in some configurable logic that can automatically create dedicated CSS files for different pages of a Shopify site. So, you can have a CSS file that targets product pages, account pages or a specific page template individually.
+
+The functionality leverages the module grouping folders that were outlined in the "theme architecture" section. How CSS files are requested on certain pages are informed by these folder names. See below:
+
+```bash
+src
+  |- modules
+     |- global
+     |  |- header/
+     |  |- footer/
+     |
+     |- page
+     |  |- page-wysiwyg/
+     |
+     |- page-wishlist
+     |  |- wishlist-grid/
+```
+
+With default settings, this structure will culminate into the following snippet (named via the "css.chunk.snippet" setting) file being generated, with global styles kept into the main stylesheet:
+
+```liquid
+{% if request.page_type contains 'page' and template.suffix contains 'wishlist' %}
+<link type="text/css" href="{{ 'page-wishlist.min.css' | asset_url }}" rel="stylesheet">
+<link rel="prefetch" href="{{ 'page.min.css' | asset_url }}" as="style">
+{% elsif request.page_type contains 'page' %}
+<link type="text/css" href="{{ 'page.min.css' | asset_url }}" rel="stylesheet">
+<link rel="prefetch" href="{{ 'page-wishlist.min.css' | asset_url }}" as="style">
+{% endif %}
+```
+
+The "global" folder is marked by default as a location to put any global code. Global styles are kept in the main stylesheet and not referenced in the snippet.
+
+For non global styles, the first word in the top level folder name before the "-" character maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
+
+See below an outline of CSS chunking specific options alongside their default values.
+
+```javascript
+{
+  // Should the main CSS file/s be chunked?
+  'css.chunk': false,
+
+  // What folder/s dictate CSS that should be on every page?
+  'css.chunk.globalFolders': ['global'],
+
+  // Any files here will be rolled up into global sheet
+  'css.chunk.globalFiles': [],
+
+  // Should CSS be inlined in the "css.chunk.snippet" file?
+  'css.chunk.inline': false,
+
+  // What is the name of the snippet that includes the conditional
+  // logic that loads in the specific files on the right pages
+  'css.chunk.snippet': 'snippets/stylesheets.liquid',
+
+  // Allow a developer to test the CSS splitting logic by
+  // only deploying the generated CSS rather than all theme files
+  'css.chunk.testSplitting': false,
+
+  // Sort the order of the conditionals in the 'css.chunk.snippet'
+  // file. The default order is alphabetically
+  'css.chunk.sortFunction': false,
+
+  // Override any of the conditionals in the 'css.chunk.snippet'
+  // file. This is called last before the snippet is written
+  'css.chunk.conditionalFilter'(obj, defaultString) {
+    return defaultString
+  },
+
+  // This allows you to map a folder name to a different conditional
+  // before the 'css.chunk.snippet' is generated. For example, if
+  // you had a {"account": "customers"} entry here, CSS in an "account"
+  // folder would be mapped to any 'css.chunk.firstConditionalProperty'
+  // liquid value that contains the string "customers"
+  'css.chunk.conditionalFolderMapping': {},
+
+  // This is the Liquid property used in the first component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.firstConditionalProperty': 'request.page_type',
+
+  // This is the Liquid property used to in the second component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.secondConditionalProperty': 'template.suffix',
+
+  // This is the Liquid conditional used to in the first component
+  // of the 'css.chunk.snippet' generated file. For example, you
+  // could change this to "==" for an exact match
+  'css.chunk.firstEqualityConditional': 'contains',
+
+  // This is the Liquid conditional used to in the second component
+  // of the 'css.chunk.snippet' generated file
+  'css.chunk.secondEqualityConditional': 'contains',
+
+  // We are using the module folder name to inform on which pages
+  // the generated CSS file is rendered. We do this by breaking down
+  // the folder name. This is the character used when we break this
+  // down (see above writeup)
+  'css.chunk.folderDelimiter': '-',
+
+  // Provides the ability to change the written <link> html between
+  // each of the Liquid conditionals in the "css.chunk.snippet" file
+  'css.chunk.snippetFilter'(obj, defaultString) {
+    return defaultString
+  },
+
+  // Should the original CSS file be updated after
+  // the chunks have been split into their own CSS files? This
+  // will avoid duplicate CSS declarations
+  'css.chunk.updateOriginalFile': true
 }
 ```
 
@@ -347,6 +472,7 @@ module.exports = {
 }
 
 ```
+
 #### NPM Dependencies
 
 Most of the dependencies that are used to compile assets with the Webpack configuration above are declared and managed in this package. However, there are some that will need to be dev dependencies of the theme itself. Currently, the theme dev dependencies we use for the configuration above are:
@@ -378,6 +504,7 @@ This package is currently unstable and in it's initial stages. Expect bugs and m
 #### Testing changes when contributing
 
 Currently, the recommended way to test new changes to this repo is via the following steps:
+
 - Clone this monorepo
 - Install lerna globally
 - In the root of the repo, run `lerna bootstrap`

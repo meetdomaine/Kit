@@ -22,21 +22,19 @@ function makeConfig(webpack, settings, watchCallback) {
 
   const config = {
     proxy: {
-      target: settings.mock
-        ? settings.mockTarget(settings)
-        : settings.target(settings),
+      target: settings['bs.target'](settings),
       middleware: [wdm]
     },
-    open: settings['open']
-      ? isLocalhost(settings['local'])
+    open: settings['bs.open']
+      ? isLocalhost(settings['bs.local'])
         ? 'internal'
         : 'external'
       : false,
-    host: settings['local'],
+    host: settings['bs.local'],
     https: true,
     notify: false,
     snippetOptions: {
-      rule: settings.browserSyncSnippetPlacement(settings)
+      rule: settings['bs.snippetPlacement'](settings)
     },
     files: [
       {
@@ -52,7 +50,7 @@ function makeConfig(webpack, settings, watchCallback) {
                 return
               }
               const spinner = action('Reloading your browser')
-              await wait(settings.reloadDelay || 1000)
+              await wait(settings['bs.reloadDelay'] || 1000)
               browserSync.reload()
               await wait(500)
               spinner.succeed()
@@ -64,8 +62,8 @@ function makeConfig(webpack, settings, watchCallback) {
     logLevel: 'silent'
   }
 
-  if (settings.replaceAssets) {
-    config.rewriteRules = settings.proxyReplacements.map((rule) => {
+  if (settings['bs.replaceAssets']) {
+    config.rewriteRules = settings['bs.proxyReplacements'].map((rule) => {
       return {
         match: rule.regex,
         fn: (req, res, match) => {
@@ -75,7 +73,7 @@ function makeConfig(webpack, settings, watchCallback) {
     })
   }
 
-  if (settings.hmr) {
+  if (settings['js.hmr']) {
     config.proxy.middleware.push(WHM(webpack))
   }
 

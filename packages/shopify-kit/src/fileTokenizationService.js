@@ -24,27 +24,7 @@ function createTokens(path) {
   path = reverseSlashes(path)
   const file = path.split('/').pop()
   const src = file.replace(/(.*)([.]section|[.]template)([.]liquid)/, '$1$3')
-  let base = ''
-
-  if (/template/.test(path) && /[.]liquid/.test(file)) {
-    if (/templates\/customers/.test(path)) {
-      base = 'templates/customers'
-    } else {
-      base = 'templates'
-    }
-  } else if (/section/.test(path) && !/snippet/.test(path)) {
-    base = 'sections'
-  } else if (/locales\//.test(path)) {
-    base = 'locales'
-  } else if (/layout\//.test(path)) {
-    base = 'layout'
-  } else if (/(?:s?css|js)[.]liquid$/.test(file)) {
-    base = 'assets'
-  } else if (!/[.]liquid$/.test(file)) {
-    base = 'assets'
-  } else {
-    base = 'snippets'
-  }
+  const base = getBase(path, file)
 
   const destination = /.*[.](css|js|svg|jpe?g|gif|png)$/.test(path)
     ? {
@@ -65,13 +45,39 @@ function createTokens(path) {
   }
 }
 
+function getBase(path, file) {
+  if (/template/.test(path) && /[.]liquid/.test(file)) {
+    if (/templates\/customers/.test(path)) {
+      base = 'templates/customers'
+    } else {
+      base = 'templates'
+    }
+  } else if (/section/.test(path) && !/snippet/.test(path)) {
+    base = 'sections'
+  } else if (/locales\//.test(path)) {
+    base = 'locales'
+  } else if (/layout\//.test(path)) {
+    base = 'layout'
+  } else if (/(?:s?css|js)[.]liquid$/.test(file)) {
+    base = 'assets'
+  } else if (!/[.]liquid$/.test(file)) {
+    base = 'assets'
+  } else {
+    base = 'snippets'
+  }
+
+  return base
+}
+
 function createCompiledAssetTokens(path) {
   path = reverseSlashes(path)
+  const file = path.split('/').pop()
+
   return {
     file: path.split('/').pop(),
     original: path,
     destination: path,
-    theme: `assets/${path.split('/').pop()}`,
+    theme: `${getBase(path, file)}/${path.split('/').pop()}`,
     contents: false
   }
 }

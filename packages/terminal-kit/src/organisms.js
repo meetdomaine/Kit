@@ -31,6 +31,13 @@ function webpackResponse(stats, settings) {
   ;(asJson.errors || []).length && log((asJson.errors || []).join('\n') + '\n')
 }
 
+function genericListBox(header = '', list = [], settings) {
+  const strings = list.map((element) => {
+    return `${icon('star')} ${element}`
+  })
+  box(title(header), ...strings)
+}
+
 function epilogue({
   error = false,
   title: foo = false,
@@ -74,10 +81,10 @@ function uploadErrors(list) {
   box('Errors:', ...list.map((item) => `${icon('star')} ${item}`))
 }
 
-function progressBar(title, total, isCI) {
+function progressBar(title, total, explode = false) {
   let bar
 
-  if (isCI) {
+  if (explode) {
     completedAction(`Start Progress: ${title}`)
   } else {
     bar = new cliProgress.SingleBar(
@@ -93,7 +100,7 @@ function progressBar(title, total, isCI) {
   }
 
   return function (current, otherMetrics, fileToken) {
-    if (isCI) {
+    if (explode) {
       completedAction(
         `[${current} of ${total}, Errors: ${otherMetrics.errors}] ${fileToken.theme}`
       )
@@ -110,6 +117,7 @@ module.exports = {
   splash,
   action,
   webpackResponse,
+  genericListBox,
   completedAction,
   epilogue,
   browserSyncNotice,

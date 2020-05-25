@@ -43,7 +43,7 @@ const lintCSS = (fix, settings) => {
     .lint({
       fix,
       configBasedir: settings['path.cwd'],
-      files: settings.stylelintPaths(settings),
+      files: settings['css.stylelintPaths'](settings),
       formatter: 'string'
     })
     .then(function (results) {
