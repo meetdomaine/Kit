@@ -2,7 +2,6 @@ const fs = require('fs-extra')
 const wait = require('w2t')
 const fetch = require('node-fetch')
 const output = require('@halfhelix/terminal-kit')
-
 module.exports = function init(settings, args = {}) {
   /**
    * filled on each sync request, emptied when successful
@@ -27,17 +26,22 @@ module.exports = function init(settings, args = {}) {
   }
 
   function upload(token) {
-    const encoded =
-      typeof token.content !== 'undefined'
-        ? Buffer.from(token.content, 'utf-8').toString('base64')
-        : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString(
-            'base64'
-          )
+    // Caters to a super weird nuance of the asset API
+    // Where attempting to update Shopify Plus checkout template
+    // using "attachment" returns success but does nothing
+    const isCheckout = token.theme === 'layout/checkout.liquid'
+    const encoded = isCheckout
+      ? typeof token.content !== 'undefined'
+        ? token.content
+        : fs.readFileSync(token.original, 'utf-8')
+      : typeof token.content !== 'undefined'
+      ? Buffer.from(token.content, 'utf-8').toString('base64')
+      : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString('base64')
 
     return api('PUT', {
       asset: {
         key: token.theme,
-        attachment: encoded
+        [isCheckout ? 'value' : 'attachment']: encoded
       }
     })
       .then((response) => {
