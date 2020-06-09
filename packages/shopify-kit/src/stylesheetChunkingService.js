@@ -15,13 +15,6 @@ function reverseSlashes(path) {
   return path.replace(/\\/g, '/')
 }
 
-function writeToLogFile(json) {
-  fs.outputFileSync(
-    `${__dirname}/critical.kit.log`,
-    util.inspect(json, true, 10)
-  )
-}
-
 /**
  * Takes the original array of Webpack compiled
  * files, filters to get only CSS and tokenizes
@@ -35,7 +28,6 @@ const getCSSFiles = (files) => {
     .map((file) => {
       const directory = reverseSlashes(file).split('/')
       const fileName = directory.pop()
-
       return {
         file,
         directory: path.normalize(directory.join('/')),
@@ -305,7 +297,6 @@ module.exports = async function (originalFiles, settings) {
   spinner.succeed()
 
   const cssFilesAsTokens = getCSSFiles(originalFiles)
-
   const newFiles = cssFilesAsTokens.map((originalFile) => {
     const CSSChunkTokens = splitCSSByComment(originalFile, settings)
     const compiledChunkFiles = compileNewFiles(
@@ -313,6 +304,7 @@ module.exports = async function (originalFiles, settings) {
       originalFile,
       settings
     )
+
     const writtenFiles = writeNewFiles(
       compiledChunkFiles,
       originalFile,
@@ -353,3 +345,5 @@ module.exports = async function (originalFiles, settings) {
   newFiles.push(originalFiles)
   return newFiles.flat()
 }
+
+module.exports.createLiquidSnippet = createLiquidSnippet
