@@ -83,7 +83,6 @@ function makeConfig(webpack, settings, watchCallback) {
 module.exports = (webpack, settings, watchCallback) => {
   const { wdm, config } = makeConfig(webpack, settings, watchCallback)
   let spinner = false
-
   wdm.context.compiler.hooks.invalid.tap('kit', () => {
     spinner = action('Rebuilding bundle')
   })

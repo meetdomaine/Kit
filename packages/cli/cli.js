@@ -84,7 +84,7 @@ Promise.resolve(
     }
 
     if (~['watch'].indexOf(command)) {
-      webpacker.watch((event, file, settings) =>
+      webpacker.watch(settings, (event, file, settings) =>
         deployFile(event, file, settings)
       )
       return
@@ -92,10 +92,13 @@ Promise.resolve(
 
     if (~['lint'].indexOf(command)) {
       webpacker
-        .lint({
-          include: program.include.split(','),
-          fix: program.fix
-        })
+        .lint(
+          {
+            include: program.include.split(','),
+            fix: program.fix
+          },
+          settings
+        )
         .then(() => {
           epilogue()
         })

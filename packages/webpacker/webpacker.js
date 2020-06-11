@@ -2,7 +2,6 @@ const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs-extra')
 const wait = require('w2t')
-const settings = require('@halfhelix/configure').settings
 const {
   log,
   action,
@@ -39,7 +38,7 @@ function getCompiledFilePaths(stats) {
   }, [])
 }
 
-function writeToLogFile(stats) {
+function writeToLogFile(stats, settings) {
   fs.outputJsonSync(`${settings['path.cwd']}/webpack.kit.log`, stats.toJson(), {
     spaces: 2
   })
@@ -52,7 +51,7 @@ function webpackHasErrors(webpackError, webpackStats) {
   )
 }
 
-async function compileWithWebpack() {
+async function compileWithWebpack(settings) {
   if (settings['debug.cssSplitting']) {
     return Promise.resolve([
       `${settings['path.dist']}/assets/${settings['css.mainFileName'].replace(
@@ -71,12 +70,11 @@ async function compileWithWebpack() {
     interceptConsole()
     webpack(config(settings)).run(async (error, stats) => {
       if (settings['debug.writeWebpackOutputToFile']) {
-        writeToLogFile(stats)
+        writeToLogFile(stats, settings)
       }
 
       resetConsole(false)
       spinner.succeed()
-
       const hasErrors = webpackHasErrors(error, stats)
       if (hasErrors) {
         return reject(hasErrors)
@@ -94,11 +92,11 @@ async function compileWithWebpack() {
   })
 }
 
-module.exports = (options) => {
-  return compileWithWebpack()
+module.exports = (settings) => {
+  return compileWithWebpack(settings)
 }
 
-module.exports.watch = async (watchCallback) => {
+module.exports.watch = async (settings, watchCallback) => {
   let spinner = action('Starting up BrowserSync proxy server')
 
   await wait(1000)
@@ -129,6 +127,6 @@ module.exports.watch = async (watchCallback) => {
   return Promise.resolve()
 }
 
-module.exports.lint = (options) => {
+module.exports.lint = (options, settings) => {
   return lint(options, settings)
 }
