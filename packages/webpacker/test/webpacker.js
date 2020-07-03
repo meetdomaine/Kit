@@ -16,12 +16,12 @@ test.beforeEach((t) => {
 const consoleHelpers = require('./../src/console')
 consoleHelpers.interceptConsole = sinon.stub()
 
-test('Focus: Webpack returns set of compiled files on build', async (t) => {
+test('Webpack returns set of compiled files on build', async (t) => {
   const files = await webpacker(t.context.settings)
   t.true(files.length === 18)
 })
 
-test('Focus: Config is correctly configured in staging', async (t) => {
+test('Config is correctly configured in staging', async (t) => {
   const stub = sinon.stub(t.context.settings, 'js.overrideWebpack')
   await webpacker({
     ...t.context.settings,
@@ -31,7 +31,7 @@ test('Focus: Config is correctly configured in staging', async (t) => {
   t.true(stub.getCall(0).args[0].devtool === '')
 })
 
-test('Focus: Config is correctly configured in production', async (t) => {
+test('Config is correctly configured in production', async (t) => {
   const stub = sinon.stub(t.context.settings, 'js.overrideWebpack')
   await webpacker({
     ...t.context.settings,
@@ -41,7 +41,7 @@ test('Focus: Config is correctly configured in production', async (t) => {
   t.true(stub.getCall(0).args[0].devtool === '')
 })
 
-test('Focus: Plugins are correctly set in in production', async (t) => {
+test('Plugins are correctly set in in production', async (t) => {
   process.env.NODE_ENV = 'production'
   const stub = sinon.stub(t.context.settings, 'js.overrideWebpack')
   await webpacker({
@@ -63,7 +63,7 @@ test('Focus: Plugins are correctly set in in production', async (t) => {
   )
 })
 
-test('Focus: Plugins are correctly set in watch command', async (t) => {
+test('Plugins are correctly set in watch command', async (t) => {
   process.env.NODE_ENV = 'development'
   const stub = sinon.stub(t.context.settings, 'js.overrideWebpack')
   await webpacker.watch({

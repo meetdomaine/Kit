@@ -23,6 +23,7 @@
   "devDependencies": {
     "ava": "^3.8.2",
     "lodash.clonedeep": "^4.5.0",
+    "nock": "^13.0.2",
     "pirates": "^4.0.1",
     "sinon": "^9.0.2"
   }

@@ -4,6 +4,9 @@ module.exports = {
   'shopify.clearGeneratedFiles'(settings) {
     return settings['css.chunk']
   },
+  'shopify.dontClearOnLive'(settings) {
+    return true
+  },
   'shopify.generatedFiles'(settings) {
     return [settings['css.chunk.snippet']]
   },

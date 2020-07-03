@@ -1,7 +1,6 @@
 const globby = require('globby')
 const fs = require('fs-extra')
 const wait = require('w2t')
-
 const {
   log,
   newLines,
@@ -12,15 +11,36 @@ const sanitize = require('./src/fileTokenizationService')
 const sync = require('./src/themeFileUploadService')
 const chunkStylesheets = require('./src/stylesheetChunkingService')
 const renameTheme = require('./src/renameThemeService')
+const { isProductionTheme } = require('./src/util')
 
+/**
+ * We do this for windows support.
+ *
+ * @param {String} path
+ */
 function reverseSlashes(path) {
   return path.replace(/\\/g, '/')
 }
 
+/**
+ * Get a list of file names from the local directory
+ * using a Glob package.
+ *
+ * @param {Object} settings
+ */
 async function getThemeFiles(settings) {
   return await globby(`${reverseSlashes(settings['path.src'])}/**/*.*`)
 }
 
+/**
+ * Supports the ability to split the Shopify config
+ * file into more digestible partials. Here, we get
+ * these partials and concat them into a master json
+ * object that gets sent to Shopify.
+ *
+ * @param {Array} files
+ * @param {Object} settings
+ */
 async function addInConfig(files, settings) {
   const configs = await globby(
     `${reverseSlashes(settings['path.src'])}/config/lib/*.json`
@@ -53,6 +73,16 @@ async function addInConfig(files, settings) {
   return files
 }
 
+/**
+ * This is called after Webpack does it's compiling.
+ * The compiled Webpack assets are passed in, and we then
+ * concat them with non-compiled theme assets and
+ * standardize them into tokens before sending them
+ * to Shopify via the API.
+ *
+ * @param {Array} compiledAssets
+ * @param {Object} settings
+ */
 async function deployFiles(compiledAssets = [], settings) {
   if (settings['css.chunk.testSplitting']) {
     files = sanitize(
@@ -82,6 +112,14 @@ async function deployFiles(compiledAssets = [], settings) {
   return Promise.resolve(true)
 }
 
+/**
+ * This function has similarities to the deploy
+ * function above but we simple build the theme
+ * and spit out the theme files locally without
+ * sending them through to Shopify.
+ *
+ * @param {Object} settings
+ */
 async function buildTheme(settings) {
   const spinner = action('Copying theme files')
 
@@ -106,6 +144,15 @@ async function buildTheme(settings) {
   return Promise.resolve(true)
 }
 
+/**
+ * This allows the deployment of a single file
+ * rather than the whole theme. This is used for
+ * one-off file change events.
+ *
+ * @param {String} event
+ * @param {String} file
+ * @param {Object} settings
+ */
 async function deployFile(event, file, settings) {
   if (!~['add', 'change'].indexOf(event)) {
     return Promise.resolve(false)
@@ -122,20 +169,40 @@ async function deployFile(event, file, settings) {
   return Promise.resolve(true)
 }
 
+/**
+ * This is a rather new introduction. It allows
+ * us to perform some setup steps before our
+ * primary watch|build|deploy commands. We use this
+ * to conditionally clear any compiled files from
+ * the Shopify theme. This is relevant to the OOTB
+ * code splitting functionality we've built it.
+ *
+ * @param {Object} settings
+ */
 async function prepareForDeployment(settings) {
   const spinner = action(`Setting theme "${settings['theme']}"`)
   await wait(1000)
   spinner.succeed()
-  await cleanseFiles(settings)
+  await cleanseFiles(settings, settings['shopify.generatedFiles'](settings))
   return Promise.resolve(true)
 }
 
-async function cleanseFiles(
-  settings,
-  files = settings['shopify.generatedFiles'](settings)
-) {
+/**
+ * Conditionally clear an array of theme assets.
+ *
+ * @param {Object} settings
+ * @param {Array} files
+ */
+async function cleanseFiles(settings, files) {
   if (!settings['shopify.clearGeneratedFiles'](settings)) {
     return Promise.resolve(true)
+  }
+  if (settings['shopify.dontClearOnLive']) {
+    const spinner = action(`Checking if this is the production theme`)
+    if (await isProductionTheme(settings)) {
+      spinner.succeed()
+      throw new Error('Warning! This is the production theme. Exiting')
+    }
   }
   for (let index in files) {
     await sync(settings, { label: 'Emptying' }).sync([

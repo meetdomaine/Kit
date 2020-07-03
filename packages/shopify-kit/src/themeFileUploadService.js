@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
-const wait = require('w2t')
-const fetch = require('node-fetch')
 const output = require('@halfhelix/terminal-kit')
+const { shopifyApiRequest } = require('./util')
+
 module.exports = function init(settings, args = {}) {
   /**
    * filled on each sync request, emptied when successful
@@ -9,21 +9,6 @@ module.exports = function init(settings, args = {}) {
   let queue = []
   let errors = []
   let successes = []
-
-  function api(method, body) {
-    return fetch(
-      `https://${settings.store}/admin/themes/${settings.theme}/assets.json`,
-      {
-        method,
-        headers: {
-          'X-Shopify-Access-Token': settings.password,
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(body)
-      }
-    )
-  }
 
   function upload(token) {
     // Caters to a super weird nuance of the asset API
@@ -38,21 +23,24 @@ module.exports = function init(settings, args = {}) {
       ? Buffer.from(token.content, 'utf-8').toString('base64')
       : Buffer.from(fs.readFileSync(token.original), 'utf-8').toString('base64')
 
-    return api('PUT', {
-      asset: {
-        key: token.theme,
-        [isCheckout ? 'value' : 'attachment']: encoded
-      }
-    })
-      .then((response) => {
-        return response.json()
-      })
+    return shopifyApiRequest(
+      'PUT',
+      `/themes/${settings.theme}/assets.json`,
+      {
+        asset: {
+          key: token.theme,
+          [isCheckout ? 'value' : 'attachment']: encoded
+        }
+      },
+      settings
+    )
       .then(({ errors: error, asset }) => {
         if (error) {
           errors.push({ token, error })
         } else {
           successes.push({ token, asset })
         }
+        return Promise.resolve(true)
       })
       .catch((error) => {
         errors.push({ token, error })
@@ -60,11 +48,16 @@ module.exports = function init(settings, args = {}) {
   }
 
   function enqueue(action, cb) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       ;(function push(token) {
         if (!token) resolve()
 
-        wait(500, [action(token)])
+        Promise.all([
+          new Promise((resolve) => {
+            setTimeout(() => resolve(), 500)
+          }),
+          action(token)
+        ])
           .then(() => {
             cb && cb(queue.length, token)
             if (queue.length) return push(queue.pop())

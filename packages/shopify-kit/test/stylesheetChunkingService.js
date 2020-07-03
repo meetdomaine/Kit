@@ -21,7 +21,7 @@ test.afterEach((t) => {
   t.context.spy.resetHistory()
 })
 
-test('Focus: Outputs file stylesheet snippet', async (t) => {
+test('Outputs file stylesheet snippet', async (t) => {
   await chunkStylesheets(files, settings)
   t.true(
     t.context.spy.withArgs('/dummy/user/dist/snippets/stylesheets.liquid')
@@ -29,7 +29,7 @@ test('Focus: Outputs file stylesheet snippet', async (t) => {
   )
 })
 
-test('Focus: Renders request.type and templates.suffix conditionals', async (t) => {
+test('Renders request.type and templates.suffix conditionals', async (t) => {
   const output = chunkStylesheets.createLiquidSnippet(
     require('./mocks/fileTokens'),
     settings
