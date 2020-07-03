@@ -2,15 +2,20 @@ const test = require('ava')
 const sinon = require('sinon')
 const fs = require('fs-extra')
 const path = require('path')
-const chunkStylesheets = require('./../src/stylesheetChunkingService')
+const chunkStylesheets = require('./../services/stylesheetChunking')
 
 const settings = require('@halfhelix/configure/src/defaults/css')
 settings['path.src'] = '/dummy/user/src/'
 settings['path.dist'] = '/dummy/user/dist'
 
-const files = ['/dummy/user/assets/main.min.css.liquid']
 const mock = require(path.resolve(__dirname, './mocks/main.min.css.liquid'))
 
+function getFileWriteData(t, filePath) {
+  return t.context.spy.withArgs(`/dummy/user/${filePath}`).args[0][1]
+}
+function getFileWriteCall(t, filePath) {
+  return t.context.spy.withArgs(`/dummy/user/${filePath}`)
+}
 test.before((t) => {
   fs.existsSync = sinon.stub().returns(true)
   fs.readFileSync = sinon.stub().returns(mock)
@@ -21,15 +26,15 @@ test.afterEach((t) => {
   t.context.spy.resetHistory()
 })
 
-test('Outputs file stylesheet snippet', async (t) => {
-  await chunkStylesheets(files, settings)
+test.serial('Outputs file stylesheet snippet', async (t) => {
+  await chunkStylesheets(['/dummy/user/assets/main.min.css.liquid'], settings)
   t.true(
     t.context.spy.withArgs('/dummy/user/dist/snippets/stylesheets.liquid')
       .called
   )
 })
 
-test('Renders request.type and templates.suffix conditionals', async (t) => {
+test.serial('Renders request.type and templates.suffix', async (t) => {
   const output = chunkStylesheets.createLiquidSnippet(
     require('./mocks/fileTokens'),
     settings
@@ -42,4 +47,34 @@ test('Renders request.type and templates.suffix conditionals', async (t) => {
       `request.page_type contains 'page' and template.suffix contains 'faq'`
     )
   )
+})
+
+test.serial('Reviews partial is rolled chunk', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/assets/main.min.css.liquid'],
+    Object.assign({}, settings, {
+      'css.chunk.partials': {
+        reviews: ['product', 'account']
+      }
+    })
+  )
+
+  const accountStyles = getFileWriteData(t, 'assets/account.min.css.liquid')
+  const productStyles = getFileWriteData(t, 'assets/product.min.css.liquid')
+  const reviewStyles = getFileWriteCall(t, 'assets/reviews.min.css.liquid')
+
+  t.false(reviewStyles.called)
+  t.true(!!~productStyles.indexOf('product-reviews'))
+  t.true(!!~productStyles.indexOf('reviews-form'))
+  t.true(!!~accountStyles.indexOf('product-reviews'))
+  t.true(!!~accountStyles.indexOf('reviews-form'))
+})
+
+test.serial('Honors main file mime type', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/assets/main.min.css'],
+    Object.assign({}, settings)
+  )
+  const accountStyles = getFileWriteCall(t, 'assets/account.min.css')
+  t.true(accountStyles.called)
 })

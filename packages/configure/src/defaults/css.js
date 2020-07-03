@@ -10,6 +10,7 @@ module.exports = {
     ]
   },
   'css.chunk': false,
+  'css.chunk.fileToProcess': 'main.min.css',
   'css.chunk.globalFolders': ['global'],
   'css.chunk.globalFiles': [],
   'css.chunk.inline': false,
@@ -28,5 +29,10 @@ module.exports = {
   'css.chunk.snippetFilter'(obj, defaultString) {
     return defaultString
   },
-  'css.chunk.updateOriginalFile': true
+  'css.chunk.updateOriginalFile': true,
+  'css.chunk.defaultCSSInclude'(settings) {
+    return `{{ 'main.min.css' | asset_url | stylesheet_tag }}`
+  },
+  'css.chunk.deferCSS': ['index', 'product', 'collection'],
+  'css.chunk.partials': {}
 }

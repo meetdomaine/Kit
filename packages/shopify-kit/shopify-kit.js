@@ -7,11 +7,11 @@ const {
   action,
   completedAction
 } = require('@halfhelix/terminal-kit')
-const sanitize = require('./src/fileTokenizationService')
-const sync = require('./src/themeFileUploadService')
-const chunkStylesheets = require('./src/stylesheetChunkingService')
-const renameTheme = require('./src/renameThemeService')
-const { isProductionTheme } = require('./src/util')
+const sanitize = require('./services/tokenization')
+const sync = require('./services/assetUpload')
+const chunkStylesheets = require('./services/stylesheetChunking')
+const renameTheme = require('./services/themeNaming')
+const { isProductionTheme } = require('./services/util')
 
 /**
  * We do this for windows support.

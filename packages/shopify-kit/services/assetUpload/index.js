@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const output = require('@halfhelix/terminal-kit')
-const { shopifyApiRequest } = require('./util')
+const { shopifyApiRequest } = require('./../util')
 
 module.exports = function init(settings, args = {}) {
   /**

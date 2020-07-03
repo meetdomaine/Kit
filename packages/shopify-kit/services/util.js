@@ -1,4 +1,6 @@
 const fetch = require('node-fetch')
+const fs = require('fs-extra')
+const util = require('util')
 
 function shopifyApiRequest(method, url, body, settings) {
   return fetch(`https://${settings.store}${url}`, {
@@ -33,8 +35,17 @@ async function isProductionTheme(settings) {
   return response.theme.role === 'main'
 }
 
+function writeToLogFile(json) {
+  console.log(util.inspect(json, true, 10))
+  fs.outputFileSync(
+    `${__dirname}/critical.kit.log`,
+    util.inspect(json, true, 10)
+  )
+}
+
 module.exports = {
   shopifyApiRequest,
   getTheme,
-  isProductionTheme
+  isProductionTheme,
+  writeToLogFile
 }
