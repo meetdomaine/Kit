@@ -27,5 +27,19 @@ module.exports = {
       }
     }
   ],
+  'bs.proxyReplacementsFilter'(settings) {
+    return settings['bs.proxyReplacements']
+  },
+  'bs.whitelist': [
+    '/',
+    '/collections',
+    '/collections/**',
+    '/blogs',
+    '/blogs/**',
+    '/products/**',
+    '/checkout/**',
+    '/cart',
+    '/pages/**'
+  ],
   'bs.replaceAssets': true
 }
