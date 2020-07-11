@@ -52,19 +52,11 @@ function webpackHasErrors(webpackError, webpackStats) {
 }
 
 async function compileWithWebpack(settings) {
-  if (settings['debug.cssSplitting']) {
-    return Promise.resolve([
-      `${settings['path.dist']}/assets/${settings['css.mainFileName'].replace(
-        '[name]',
-        'main'
-      )}`
-    ])
-  }
   if (settings['debug.bypassWebpack']) {
     return Promise.resolve([])
   }
   const spinner = action('Compiling assets with Webpack')
-  await wait(1000)
+  !settings.quick && (await wait(1000))
 
   return new Promise((resolve, reject) => {
     interceptConsole()
@@ -76,12 +68,13 @@ async function compileWithWebpack(settings) {
       resetConsole(false)
       spinner.succeed()
       const hasErrors = webpackHasErrors(error, stats)
+
       if (hasErrors) {
         return reject(hasErrors)
       }
 
       webpackResponse(stats, settings)
-      await wait(1000)
+      !settings.quick && (await wait(1000))
 
       const files = getCompiledFilePaths(stats)
       resolve(files, settings)
@@ -94,6 +87,15 @@ async function compileWithWebpack(settings) {
 
 module.exports = (settings) => {
   return compileWithWebpack(settings)
+}
+
+module.exports.critical = async (settings, watchCallback) => {
+  interceptConsole()
+  webpack(config(settings)).watch({}, (error, stats) => {
+    resetConsole(false)
+    webpackResponse(stats, settings)
+    watchCallback(getCompiledFilePaths(stats))
+  })
 }
 
 module.exports.watch = async (settings, watchCallback) => {

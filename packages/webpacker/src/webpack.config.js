@@ -76,12 +76,12 @@ function prepareDevtool(settings) {
 function prepareEntry(settings) {
   const { entry } = settings.webpack
 
-  if (settings.task !== 'watch' || !settings['js.hmr']) {
+  if (!~['critical', 'watch'].indexOf(settings.task) || !settings['js.hmr']) {
     return entry
   }
 
   if (typeof entry === 'string') {
-    return [entry].push(settings['path.hmr'])
+    return mutateEntry([entry], settings)
   }
 
   return Object.keys(entry).reduce((obj, key) => {
@@ -90,9 +90,21 @@ function prepareEntry(settings) {
     } else {
       obj[key] = entry[key]
     }
-    obj[key].push(settings['path.hmr'])
+    obj[key] = mutateEntry(obj[key], settings)
     return obj
   }, {})
+}
+
+function mutateEntry(entry, settings) {
+  if (settings.task === 'watch') {
+    entry.push(settings['path.hmr'])
+  }
+
+  if (settings.task === 'critical') {
+    entry = entry.filter((file) => /s?css|sass|less/.test(file))
+  }
+
+  return entry
 }
 
 function prepareOutput(settings) {

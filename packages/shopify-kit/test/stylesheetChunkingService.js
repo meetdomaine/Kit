@@ -78,3 +78,74 @@ test.serial('Honors main file mime type', async (t) => {
   const accountStyles = getFileWriteCall(t, 'assets/account.min.css')
   t.true(accountStyles.called)
 })
+
+test.serial('Critical CSS writes non critical main file', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/dist/assets/main.min.css'],
+    Object.assign({}, settings, {
+      'css.chunk.critical': true
+    })
+  )
+  const nonCriticalMainStyles = getFileWriteCall(
+    t,
+    'dist/assets/main-non-critical.min.css'
+  )
+  t.true(nonCriticalMainStyles.called)
+})
+
+test.serial('Critical CSS uses liquid template markup', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/dist/assets/main.min.css'],
+    Object.assign({}, settings, {
+      'css.chunk.critical': true
+    })
+  )
+
+  const liquidSnippet = getFileWriteCall(t, 'dist/snippets/stylesheets.liquid')
+    .args[0][1]
+
+  t.true(!!~liquidSnippet.indexOf('kit_chunked_styles'))
+})
+
+test.serial('Critical CSS does not use liquid template markup', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/dist/assets/main.min.css'],
+    Object.assign({}, settings, {
+      'css.chunk.critical': false
+    })
+  )
+
+  const liquidSnippet = getFileWriteCall(t, 'dist/snippets/stylesheets.liquid')
+    .args[0][1]
+
+  t.true(!~liquidSnippet.indexOf('kit_chunked_styles'))
+})
+
+test.serial('Critical CSS conditionally does remove critical', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/dist/assets/main.min.css'],
+    Object.assign({}, settings, {
+      'css.chunk.critical': true
+    })
+  )
+
+  const produceStyles = getFileWriteCall(t, 'dist/assets/product.min.css')
+    .args[0][1]
+  t.true(!~produceStyles.indexOf('/*! critical */'))
+})
+
+test.serial(
+  'Critical CSS conditionally does not remove critical',
+  async (t) => {
+    await chunkStylesheets(
+      ['/dummy/user/dist/assets/main.min.css'],
+      Object.assign({}, settings, {
+        'css.chunk.critical': false
+      })
+    )
+
+    const produceStyles = getFileWriteCall(t, 'dist/assets/product.min.css')
+      .args[0][1]
+    t.true(!!~produceStyles.indexOf('/*! critical */'))
+  }
+)

@@ -1,11 +1,12 @@
 const fs = require('fs-extra')
 const wait = require('w2t')
 const output = require('@halfhelix/terminal-kit')
-const { reverseSlashes } = require('./lib/util')
+const { reverseSlashes, logTokensWithoutCSS } = require('./lib/util')
 
 const {
   getCSSFiles,
   splitCSSByComment,
+  getOriginalFileCriticalCSS,
   rollPartialsIntoChunks,
   compileNewFiles,
   writeNewFiles
@@ -51,8 +52,7 @@ module.exports = async function (originalFiles, settings) {
     process.exit()
   }
 
-  newFiles.push(originalFiles)
-  return Promise.resolve(newFiles)
+  return Promise.resolve(newFiles.concat(originalFiles))
 }
 
 /**
@@ -69,12 +69,17 @@ const processCSSFile = async (originalFile, settings) => {
   const CSSChunkTokens = splitCSSByComment(originalFile, settings)
 
   await rollPartialsIntoChunks(CSSChunkTokens, settings)
-  // logWithout(CSSChunkTokens, ['original', 'cleansed'])
+  // logTokensWithoutCSS(CSSChunkTokens, ['index'], true)
+
   const compiledChunkFiles = compileNewFiles(
     CSSChunkTokens,
     originalFile,
     settings
   )
+
+  if (settings['css.chunk.critical']) {
+    await getOriginalFileCriticalCSS(originalFile)
+  }
 
   const writtenFiles = writeNewFiles(compiledChunkFiles, originalFile, settings)
 
@@ -93,6 +98,10 @@ const processCSSFile = async (originalFile, settings) => {
     settings['css.chunk.updateOriginalFile']
   ) {
     fs.outputFileSync(originalFile.file, originalFile.content)
+    if (settings['css.chunk.critical']) {
+      fs.outputFileSync(originalFile.nonCriticalFile, originalFile.nonCritical)
+      writtenFiles.push({ path: originalFile.nonCriticalFile, written: true })
+    }
   }
 
   return writtenFiles.filter(({ written }) => written).map(({ path }) => path)

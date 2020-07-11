@@ -1,7 +1,12 @@
 const path = require('path')
 const fs = require('fs-extra')
 const output = require('@halfhelix/terminal-kit')
-const { reverseSlashes, getChunkName, logTokensWithoutCSS } = require('./util')
+const {
+  reverseSlashes,
+  getChunkName,
+  logTokensWithoutCSS,
+  shouldRenderCritical
+} = require('./util')
 
 /**
  * Takes the original array of Webpack compiled
@@ -16,10 +21,12 @@ const getCSSFiles = (files) => {
     .map((file) => {
       const directory = reverseSlashes(file).split('/')
       const fileName = directory.pop()
+      const mimeType = fileName.match(/(.[^.]*)(.*)/)[2]
       return {
         file,
+        fileName,
+        mimeType,
         directory: path.normalize(directory.join('/')),
-        mimeType: fileName.match(/(.[^.]*)(.*)/)[2],
         content: fs.readFileSync(file, 'utf8')
       }
     })
@@ -45,18 +52,76 @@ const splitCSSByComment = (token, settings) => {
       obj[group] = []
     }
 
+    const { nonCritical = '', critical = '' } = parseCriticalCSS(string)
+
     obj[group].push({
+      critical,
       file: token.file,
       module: path[1],
       fileName: reverseSlashes(path[1]).split('/').pop(),
       original: '/*! path: ' + string,
-      cleansed: string.replace(path[0], '')
+      nonCritical: nonCritical.replace(path[0], '').replace(/\n/gm, ''),
+      cleansed: string.replace(path[0], '').replace(/\n/gm, '')
     })
 
     return obj
   }, {})
 }
 
+/**
+ * Strips out critical CSS from each token, returns
+ * aggregate of all matches.
+ *
+ * @param {String} string
+ */
+const parseCriticalCSS = (string) => {
+  const regex = /\/[*]! ?critical ?[*]\/((?:\W|\w)[^/]*)\/[*]! ?end ?critical ?[*]\//gm
+  let matches,
+    output = [],
+    nonCritical = string + ''
+  while ((matches = regex.exec(string))) {
+    output.push({
+      string: matches[0],
+      match: matches[1]
+    })
+  }
+  output.forEach((token) => {
+    nonCritical = nonCritical.replace(token.string, '')
+  })
+
+  return {
+    nonCritical,
+    critical: output
+      .reduce((str, obj) => {
+        str += obj.match
+        return str
+      }, '')
+      .replace(/\n/gm, '')
+  }
+}
+
+const getOriginalFileCriticalCSS = async (token) => {
+  const { nonCritical = '', critical = '' } = parseCriticalCSS(token.content)
+  const fileName = `${token.fileName.replace(token.mimeType, '')}-non-critical${
+    token.mimeType
+  }`
+
+  Object.assign(token, {
+    critical,
+    nonCriticalFile: `${token.directory}/${fileName}`,
+    nonCriticalFileName: fileName,
+    nonCritical: nonCritical.replace(/\n/gm, '')
+  })
+}
+
+/**
+ * Allows a module group's stylesheets to be rolled into
+ * other groups rather than being it's own CSS compiled file.
+ * This helps to maintain global bundle size.
+ *
+ * @param {*} tokens
+ * @param {*} settings
+ */
 const rollPartialsIntoChunks = (tokens, settings) => {
   let partials = {}
   for (key in tokens) {
@@ -105,20 +170,32 @@ const compileNewFiles = (CSSChunkTokens, originalFile, settings) => {
       return obj
     }
 
-    obj[key] = CSSChunkTokens[key].reduce((string, token) => {
-      if (
-        ~(settings['css.chunk.globalFiles'] || []).indexOf(token['fileName'])
-      ) {
-        output.completedAction(
-          `"${token['fileName']}" rolled into main CSS bundle`
-        )
-        return string
+    obj[key] = CSSChunkTokens[key].reduce(
+      (_obj, token) => {
+        if (
+          ~(settings['css.chunk.globalFiles'] || []).indexOf(token['fileName'])
+        ) {
+          output.completedAction(
+            `"${token['fileName']}" rolled into main CSS bundle`
+          )
+          return _obj
+        }
+
+        // When we add to the bundle, we take away from the original
+        originalFile.content = originalFile.content.replace(token.original, '')
+
+        _obj.cleansed += token.cleansed || ''
+        _obj.critical += token.critical || ''
+        _obj.nonCritical += token.nonCritical || ''
+        return _obj
+      },
+      {
+        cleansed: '',
+        critical: '',
+        nonCritical: ''
       }
-      // When we add to the bundle, we take away from the original
-      originalFile.content = originalFile.content.replace(token.original, '')
-      string += token.cleansed
-      return string
-    }, '')
+    )
+
     return obj
   }, {})
 }
@@ -134,23 +211,33 @@ const writeNewFiles = (compiledChunkFiles, originalFile, settings) => {
   return Object.keys(compiledChunkFiles).map((key) => {
     const file = `${key}${originalFile.mimeType}`
     const path = `${originalFile.directory}/${file}`
+    let content = shouldRenderCritical(key, settings)
+      ? compiledChunkFiles[key].nonCritical
+      : compiledChunkFiles[key].cleansed
 
-    !settings['css.chunk.inline'] &&
-      fs.outputFileSync(path, compiledChunkFiles[key])
-
-    return {
+    return Object.assign(compiledChunkFiles[key], {
+      written: outputChunkFile(path, content, settings),
+      content,
       file,
       path,
-      key,
-      written: !settings['css.chunk.inline'],
-      content: compiledChunkFiles[key]
-    }
+      key
+    })
   })
+}
+
+const outputChunkFile = (path, content, settings) => {
+  if (settings['css.chunk.inline']) {
+    return false
+  }
+
+  fs.outputFileSync(path, content)
+  return true
 }
 
 module.exports = {
   getCSSFiles,
   splitCSSByComment,
+  getOriginalFileCriticalCSS,
   rollPartialsIntoChunks,
   compileNewFiles,
   writeNewFiles

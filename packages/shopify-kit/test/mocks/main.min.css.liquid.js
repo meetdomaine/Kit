@@ -3,6 +3,11 @@ module.exports = `
 https://flickity.metafizzy.co
 ---------------------------------------------- */
 
+/*! critical */
+.flickity {
+  width: 100%;
+}
+/*! end critical */
 .flickity-enabled {
   position: relative;
 }
@@ -23,6 +28,8 @@ https://flickity.metafizzy.co
   transform: translateY(-50%);
 }
 
+
+/*! critical */
 html,
 body,
 div,
@@ -63,6 +70,7 @@ pre,
   font-weight: normal;
   font-style: normal;
 }
+/*! end critical */
 :focus {
   outline: 0.05px solid #0b163b !important;
 } /*! path: /dummy/user/src/modules/404/404.scss */
@@ -154,13 +162,22 @@ pre,
     padding: 0;
   }
 } /*! path: /dummy/user/src/modules/product/pdp.scss */
+/*! critical */
 .pdp {
   display: block;
   padding-bottom: 1px;
 }
+/*! end critical */
 .pdp--bottom {
   padding-bottom: 1px;
-} /*! path: /dummy/user/src/modules/collection-editorial/editorial-grid/editorial-grid.scss */
+}
+/*! critical */
+.pdp--bottom {
+  display: block;
+}
+/*! end critical */
+
+/*! path: /dummy/user/src/modules/collection-editorial/editorial-grid/editorial-grid.scss */
 .plp-editorial__grid {
   padding: 0 30px;
   -webkit-box-align: stretch;

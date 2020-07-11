@@ -29,10 +29,36 @@ module.exports = {
   'css.chunk.snippetFilter'(obj, defaultString) {
     return defaultString
   },
+  'css.chunk.createPreRenderLinks': false,
   'css.chunk.updateOriginalFile': true,
   'css.chunk.defaultCSSInclude'(settings) {
     return `{{ 'main.min.css' | asset_url | stylesheet_tag }}`
   },
-  'css.chunk.deferCSS': ['index', 'product', 'collection'],
-  'css.chunk.partials': {}
+  'css.chunk.critical': true,
+  'css.chunk.criticalWhitelist': ['index', 'product', 'collection'],
+  'css.chunk.partials': {
+    reviews: ['product']
+  },
+  'css.chunk.criticalChunk'(token, settings) {
+    return `<style data-critical>${token.critical}</style>`
+  },
+  'css.chunk.deferredChunkLink'(assetPath, settings) {
+    return `
+      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
+      `
+  },
+  'css.chunk.filterLiquidSnippetTemplate'(template, settings) {
+    return template
+  },
+  'css.chunk.filterLiquidSnippetTag'(tag, settings) {
+    return tag
+  },
+  'css.chunk.criticalUploadFilter'(token, settings) {
+    if (settings.upload) {
+      return new RegExp(`main|snippet|${settings.upload}`).test(token.theme)
+    }
+
+    return true
+  }
 }

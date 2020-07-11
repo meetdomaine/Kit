@@ -84,7 +84,7 @@ async function addInConfig(files, settings) {
  * @param {Object} settings
  */
 async function deployFiles(compiledAssets = [], settings) {
-  if (settings['css.chunk.testSplitting']) {
+  if (settings['css.chunk.testSplitting'] || settings.task === 'critical') {
     files = sanitize(
       [],
       compiledAssets.filter((path) => {
@@ -92,6 +92,8 @@ async function deployFiles(compiledAssets = [], settings) {
           /[.]css/.test(path) || ~path.indexOf(settings['css.chunk.snippet'])
         )
       })
+    ).filter((token) =>
+      settings['css.chunk.criticalUploadFilter'](token, settings)
     )
   } else {
     files = sanitize(await getThemeFiles(settings), compiledAssets)
@@ -181,7 +183,7 @@ async function deployFile(event, file, settings) {
  */
 async function prepareForDeployment(settings) {
   const spinner = action(`Setting theme "${settings['theme']}"`)
-  await wait(1000)
+  !settings['quick'] && (await wait(1000))
   spinner.succeed()
   await cleanseFiles(settings, settings['shopify.generatedFiles'](settings))
   return Promise.resolve(true)

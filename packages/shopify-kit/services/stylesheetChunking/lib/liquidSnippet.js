@@ -1,4 +1,7 @@
 const fs = require('fs-extra')
+const output = require('@halfhelix/terminal-kit')
+const liquidTemplate = require('./liquidSnippetTemplate')
+const { shouldRenderCritical } = require('./util')
 
 /**
  * Generate the text that will go inside the Liquid snippet that
@@ -24,7 +27,10 @@ const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
     }, '')
     .replace(/\s\s/g, '')
 
-  if (settings['css.chunk.inline']) {
+  if (
+    settings['css.chunk.inline'] ||
+    !settings['css.chunk.createPreRenderLinks']
+  ) {
     html += `{% endif %}`
   } else {
     html += `
@@ -34,12 +40,9 @@ const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
     `
   }
 
-  return html
-    .replace(/\s\s/g, '')
-    .split('<link')
-    .join('\n<link')
-    .split('{%')
-    .join('\n{%')
+  return addWhiteSpaceBeforeEachLine(
+    applyLiquidTemplate(html, originalFile, settings)
+  )
 }
 
 /**
@@ -90,27 +93,36 @@ const generateRenderConditional = (folderName, settings) => {
  * @param {Array} allFiles
  * @param {Object} settings
  */
-const generateStylesheetLinks = (
-  { file = '', key = '', path = '' } = {},
-  allFiles,
-  settings
-) => {
+const generateStylesheetLinks = (token = {}, allFiles, settings) => {
+  const { file = '', key = '', path = '' } = token
   const string = `
+    ${file ? generateStylesheetLink(token, settings) : ''}
     ${
-      file
-        ? `<link type="text/css" href="{{ '${file.replace(
-            '.liquid',
-            ''
-          )}' | asset_url }}" rel="stylesheet">`
-        : ''
+      (settings['css.chunk.createPreRenderLinks'] &&
+        allFiles
+          .map(({ file: _file, key: _key }) =>
+            _key !== key ? generatePrefetchLink(_file) : ''
+          )
+          .join('')) ||
+      ''
     }
-    ${allFiles
-      .map(({ file: _file, key: _key }) =>
-        _key !== key ? generatePrefetchLink(_file) : ''
-      )
-      .join('')}
   `
   return settings['css.chunk.snippetFilter']({ file, key, path }, string)
+}
+
+const generateStylesheetLink = (token, settings) => {
+  const assetPath = token.file.replace('.liquid', '')
+
+  if (shouldRenderCritical(token.key, settings)) {
+    return `
+    ${
+      token.critical ? settings['css.chunk.criticalChunk'](token, settings) : ''
+    }
+    ${settings['css.chunk.deferredChunkLink'](assetPath, settings)}
+    `
+  } else {
+    return `<link type="text/css" href="{{ '${assetPath}' | asset_url }}" rel="stylesheet">`
+  }
 }
 
 /**
@@ -128,6 +140,39 @@ const generatePrefetchLink = (file) => {
     : ''
 }
 
+const applyLiquidTemplate = (html, originalFile, settings) => {
+  if (!settings['css.chunk.critical']) {
+    return html
+  }
+  return settings['css.chunk.filterLiquidSnippetTemplate'](
+    liquidTemplate,
+    settings
+  )
+    .replace(
+      settings['css.chunk.filterLiquidSnippetTag']('<!-- styles -->', settings),
+      html
+    )
+    .replace(
+      settings['css.chunk.filterLiquidSnippetTag'](
+        '<!-- critical-main -->',
+        settings
+      ),
+      settings['css.chunk.criticalChunk'](originalFile) +
+        settings['css.chunk.deferredChunkLink'](
+          originalFile.nonCriticalFileName.replace('.liquid', '')
+        )
+    )
+    .replace(
+      settings['css.chunk.filterLiquidSnippetTag'](
+        '<!-- non-critical-main -->',
+        settings
+      ),
+      settings['css.chunk.defaultCSSInclude'](
+        originalFile.fileName.replace('.liquid', '')
+      )
+    )
+}
+
 /**
  * Write the Liquid snippet to disk.
  *
@@ -138,6 +183,12 @@ const writeLiquidSnippet = (contents, settings) => {
   const snippetName = `${settings['path.dist']}/${settings['css.chunk.snippet']}`
   fs.outputFileSync(snippetName, contents)
   return snippetName
+}
+
+const addWhiteSpaceBeforeEachLine = (html) => {
+  return html
+    .replace(/\s\s/g, '')
+    .replace(/({%|(?<=%}){{|<noscript|(?<!noscript>)<link|<style)/g, '\n$1')
 }
 
 module.exports = {

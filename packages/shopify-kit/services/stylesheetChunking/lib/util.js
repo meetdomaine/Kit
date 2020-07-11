@@ -25,24 +25,40 @@ function getChunkName(path, settings) {
   return split[1] || 'general'
 }
 
-function logTokensWithoutCSS(obj, showOnly) {
+function logTokensWithoutCSS(obj, showOnly, disable = false) {
   const restricted = Object.keys(obj).reduce((newObj, key) => {
     if (showOnly && !~showOnly.indexOf(key)) {
       return newObj
     }
+
     newObj[key] = obj[key].map((token) =>
-      Object.assign({}, token, {
-        cleansed: '',
-        original: ''
-      })
+      Object.assign(
+        {},
+        token,
+        disable
+          ? {}
+          : {
+              cleansed: '',
+              original: ''
+            }
+      )
     )
     return newObj
   }, {})
-  console.dir(restricted, { depth: 2 })
+
+  console.log(restricted)
+}
+
+const shouldRenderCritical = (key, settings) => {
+  return (
+    settings['css.chunk.critical'] &&
+    ~(settings['css.chunk.criticalWhitelist'] || []).indexOf(key)
+  )
 }
 
 module.exports = {
   reverseSlashes,
   getChunkName,
-  logTokensWithoutCSS
+  logTokensWithoutCSS,
+  shouldRenderCritical
 }

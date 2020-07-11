@@ -22,8 +22,9 @@ program
   .version(pkg.version)
   .version('0.1.0')
   .arguments('<cmd>')
-  .usage('[watch|build|deploy|lint|gitlab]')
+  .usage('[watch|build|deploy|lint|gitlab|critical]')
   .option('-e --env [env]', 'specify an environment')
+  .option('-u --upload [upload]', 'upload specific file in critical command')
   .option('-q --quick', 'hide the loading screen')
   .option(
     '-i --include [include]',
@@ -42,14 +43,18 @@ program
   .parse(process.argv)
 
 Promise.resolve(
-  splash({
-    title: 'Half Helix Kit',
-    subtitle: 'The developer toolbelt'
-  })
+  program.quick
+    ? true
+    : splash({
+        title: 'Half Helix Kit',
+        subtitle: 'The developer toolbelt'
+      })
 ).then(
   protect(async () => {
     const settings = configure({
       simple: program['quick'],
+      quick: program.quick,
+      upload: program.upload,
       env: program.env || 'development',
       task: command
     })
@@ -80,6 +85,15 @@ Promise.resolve(
         .then((result) => {
           epilogue({ error: !result })
         })
+      return
+    }
+
+    if (~['critical'].indexOf(command)) {
+      webpacker.critical(settings, (files) => {
+        chunkStylesheets(files, settings).then((files) => {
+          deployFiles(files, settings)
+        })
+      })
       return
     }
 

@@ -3,7 +3,7 @@ const fs = require('fs-extra')
 const util = require('util')
 
 function shopifyApiRequest(method, url, body, settings) {
-  return fetch(`https://${settings.store}${url}`, {
+  return fetch(`https://${settings.store}/admin${url}`, {
     method,
     headers: {
       'X-Shopify-Access-Token': settings.password,
@@ -36,11 +36,7 @@ async function isProductionTheme(settings) {
 }
 
 function writeToLogFile(json) {
-  console.log(util.inspect(json, true, 10))
-  fs.outputFileSync(
-    `${__dirname}/critical.kit.log`,
-    util.inspect(json, true, 10)
-  )
+  fs.outputFileSync(`${__dirname}/critical.kit.log`, json)
 }
 
 module.exports = {
