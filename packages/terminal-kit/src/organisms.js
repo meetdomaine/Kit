@@ -68,13 +68,14 @@ function browserSyncNotice({ target, proxy }) {
   )
 }
 
-function error(e) {
+function error(e, renderToString = true, shouldExit = false) {
   box(
     e.message ? title('Error:') : title(`Oh dang it!`),
     e.message || 'An error occurred'
   )
 
-  log(e.toString())
+  renderToString && log(e.toString())
+  shouldExit && process.exit()
 }
 
 function uploadErrors(list) {

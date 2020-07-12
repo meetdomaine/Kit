@@ -16,23 +16,17 @@ function shopifyApiRequest(method, url, body, settings) {
   })
 }
 
-async function getTheme() {
-  shopifyApiRequest('GET', `/themes/${settings.theme}.json`)
-}
-
-async function isProductionTheme(settings) {
-  const response = await shopifyApiRequest(
+async function getTheme(settings) {
+  return shopifyApiRequest(
     'GET',
     `/themes/${settings.theme}.json`,
     false,
     settings
   )
+}
 
-  if (!response || !response.theme || !response.theme.role) {
-    throw new Error('Could not get theme info from Shopify')
-  }
-
-  return response.theme.role === 'main'
+function isProductionTheme(settings) {
+  return settings.themeInfo.role === 'main'
 }
 
 function writeToLogFile(json) {

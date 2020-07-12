@@ -13,7 +13,8 @@ const {
   deployFiles,
   buildTheme,
   deployFile,
-  chunkStylesheets
+  chunkStylesheets,
+  getThemeInformation
 } = require('@halfhelix/shopify-kit')
 
 let command = false
@@ -71,6 +72,7 @@ Promise.resolve(
     const settings = configure(commandLineOptions)
 
     if (~['deploy', 'watch']) {
+      await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }
 

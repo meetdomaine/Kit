@@ -40,11 +40,16 @@ function prefix() {
   return `${time()} / `
 }
 
+function color(color, string) {
+  return chalk[color](string)
+}
+
 module.exports = {
   logo,
   box,
   title,
   subtitle,
   prefix,
-  spinner
+  spinner,
+  color
 }

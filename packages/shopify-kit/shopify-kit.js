@@ -5,13 +5,18 @@ const {
   log,
   newLines,
   action,
-  completedAction
+  completedAction,
+  box,
+  title,
+  subtitle,
+  error,
+  color
 } = require('@halfhelix/terminal-kit')
 const sanitize = require('./services/tokenization')
 const sync = require('./services/assetUpload')
 const chunkStylesheets = require('./services/stylesheetChunking')
 const renameTheme = require('./services/themeNaming')
-const { isProductionTheme } = require('./services/util')
+const { isProductionTheme, getTheme } = require('./services/util')
 
 /**
  * We do this for windows support.
@@ -172,6 +177,47 @@ async function deployFile(event, file, settings) {
 }
 
 /**
+ * Gets theme information via a request to Shopify
+ * and prints out the information, conditionally
+ * exiting if it's the production theme.
+ *
+ * @param {Object} settings
+ */
+async function getThemeInformation(settings) {
+  let spinner = action(`Fetching theme information...`)
+  !settings['quick'] && (await wait(1000))
+  spinner.succeed()
+
+  const response = await getTheme(settings)
+  Object.assign(settings, {
+    themeInfo: response.theme || {}
+  })
+
+  const isProduction = isProductionTheme(settings)
+
+  const shouldExit =
+    settings['shopify.restrictLiveTheme'](settings) && isProduction
+
+  box(
+    title('Theme information:'),
+    subtitle(`Theme name: ${settings.themeInfo.name}`),
+    subtitle(
+      `Theme role: ${color(
+        isProduction ? 'red' : 'green',
+        `"${settings.themeInfo.role}"`
+      )}`
+    ),
+    subtitle(`Theme id: ${settings.themeInfo.id}`)
+  )
+
+  if (shouldExit) {
+    error(new Error('Live theme editing is disabled. Exiting.'), false, true)
+  }
+
+  return response
+}
+
+/**
  * This is a rather new introduction. It allows
  * us to perform some setup steps before our
  * primary watch|build|deploy commands. We use this
@@ -182,9 +228,6 @@ async function deployFile(event, file, settings) {
  * @param {Object} settings
  */
 async function prepareForDeployment(settings) {
-  const spinner = action(`Setting theme "${settings['theme']}"`)
-  !settings['quick'] && (await wait(1000))
-  spinner.succeed()
   await cleanseFiles(settings, settings['shopify.generatedFiles'](settings))
   return Promise.resolve(true)
 }
@@ -198,13 +241,6 @@ async function prepareForDeployment(settings) {
 async function cleanseFiles(settings, files) {
   if (!settings['shopify.clearGeneratedFiles'](settings)) {
     return Promise.resolve(true)
-  }
-  if (settings['shopify.dontClearOnLive']) {
-    const spinner = action(`Checking if this is the production theme`)
-    if (await isProductionTheme(settings)) {
-      spinner.succeed()
-      throw new Error('Warning! This is the production theme. Exiting')
-    }
   }
   for (let index in files) {
     await sync(settings, { label: 'Emptying' }).sync([
@@ -224,6 +260,7 @@ async function cleanseFiles(settings, files) {
 
 module.exports = {
   prepareForDeployment,
+  getThemeInformation,
   deployFiles,
   buildTheme,
   deployFile,
