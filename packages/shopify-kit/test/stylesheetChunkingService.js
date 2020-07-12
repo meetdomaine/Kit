@@ -34,16 +34,22 @@ test.serial('Outputs file stylesheet snippet', async (t) => {
   )
 })
 
-test.serial('Renders request.type and templates.suffix', async (t) => {
+test.serial('Focus: Renders request.type and templates.suffix', async (t) => {
   const output = chunkStylesheets.createLiquidSnippet(
     require('./mocks/fileTokens'),
-    settings
+    settings,
+    {
+      critical: '',
+      fileName: 'main.css.min.liquid',
+      nonCriticalFileName: 'non-critical-main.css.min.liquid'
+    }
   )
   const conditionals = output.match(/\{\%.[^}]*\%\}/gi)
-  t.true(!!~conditionals[0].indexOf(`request.page_type contains '404'`))
-  t.true(!!~conditionals[1].indexOf(`request.page_type contains 'product'`))
+
+  t.true(!!~conditionals[1].indexOf(`request.page_type contains '404'`))
+  t.true(!!~conditionals[2].indexOf(`request.page_type contains 'product'`))
   t.true(
-    !!~conditionals[2].indexOf(
+    !!~conditionals[3].indexOf(
       `request.page_type contains 'page' and template.suffix contains 'faq'`
     )
   )

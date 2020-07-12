@@ -28,12 +28,17 @@ addHook(
     },
     completedAction () {},
     genericListBox () {},
-    error (error) {
-      console.log('error: ')
-      console.log(error)
+    error (error, log = true, exit = false) {
+      log && console.log('error: ')
+      log && console.log(error)
+      exit && process.exit()
     },
     webpackResponse () {},
-    browserSyncNotice () {}
+    browserSyncNotice () {},
+    title () {},
+    subtitle () {},
+    color () {},
+    box () {}
   }
   `
   },

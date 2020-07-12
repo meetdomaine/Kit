@@ -3,7 +3,10 @@ const sinon = require('sinon')
 const fs = require('fs-extra')
 const path = require('path')
 const nock = require('nock')
-const { prepareForDeployment } = require('./../shopify-kit')
+const {
+  prepareForDeployment,
+  getThemeInformation
+} = require('./../shopify-kit')
 
 const settings = require('@halfhelix/configure/src/defaults/shopify')
 settings['path.src'] = '/dummy/user/src/'
@@ -20,7 +23,8 @@ test.before((t) => {
   // fs.existsSync = sinon.stub().returns(true)
   // fs.readFileSync = sinon.stub().returns(mock)
 
-  t.context.spy = fs.outputFileSync = sinon.stub()
+  t.context.outputFileSync = fs.outputFileSync = sinon.stub()
+  t.context.processExit = sinon.stub(process, 'exit')
 })
 
 test.beforeEach((t) => {
@@ -42,46 +46,33 @@ test.beforeEach((t) => {
 })
 
 test.afterEach((t) => {
-  t.context.spy.resetHistory()
+  t.context.outputFileSync.resetHistory()
+  t.context.processExit.resetHistory()
   nock.cleanAll()
 })
 
 test.serial(
   "Don't clear theme assets if production theme and setting set",
   async (t) => {
-    try {
-      await prepareForDeployment(
-        Object.assign({}, settings, {
-          'shopify.dontClearOnLive': true
-        })
-      )
-    } catch (e) {
-      t.pass()
-    }
-  }
-)
-
-test.serial(
-  'Error is not thrown if clearGeneratedFiles is false',
-  async (t) => {
-    await prepareForDeployment(
+    await getThemeInformation(
       Object.assign({}, settings, {
-        'shopify.dontClearOnLive': true,
-        'shopify.clearGeneratedFiles': () => false
+        'shopify.restrictLiveTheme': () => true
       })
     )
-    t.pass()
+    t.true(t.context.processExit.called)
   }
 )
 
 test.serial(
   'Clear theme assets if production theme and setting not set',
   async (t) => {
-    await prepareForDeployment(
-      Object.assign({}, settings, {
-        'shopify.dontClearOnLive': false
-      })
-    )
+    const settingsObj = Object.assign({}, settings, {
+      'shopify.restrictLiveTheme': () => false
+    })
+    await getThemeInformation(settingsObj)
+    await prepareForDeployment(settingsObj)
+
+    t.true(!t.context.processExit.called)
     t.true(t.context.updateAssetMock.isDone())
   }
 )
