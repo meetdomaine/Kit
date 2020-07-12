@@ -25,7 +25,10 @@ program
   .usage('[watch|build|deploy|lint|gitlab|critical]')
   .option('-e --env [env]', 'specify an environment')
   .option('-u --upload [upload]', 'upload specific file in critical command')
-  .option('-q --quick', 'hide the loading screen')
+  .option('-q --quick', 'hide the loading screen and any synthetic pauses')
+  .option('--debug', 'turn the debug flag on')
+  .option('--once', 'close critical command after processing once')
+  .option('--no-open', 'do not open the default browser')
   .option(
     '-i --include [include]',
     'specify the type of files to include',
@@ -51,13 +54,21 @@ Promise.resolve(
       })
 ).then(
   protect(async () => {
-    const settings = configure({
+    const commandLineOptions = {
       simple: program['quick'],
+      once: program.once,
+      debug: program.debug,
       quick: program.quick,
       upload: program.upload,
       env: program.env || 'development',
       task: command
-    })
+    }
+
+    if (program.open === false) {
+      commandLineOptions['bs.open'] = false
+    }
+
+    const settings = configure(commandLineOptions)
 
     if (~['deploy', 'watch']) {
       await prepareForDeployment(settings)

@@ -91,10 +91,11 @@ module.exports = (settings) => {
 
 module.exports.critical = async (settings, watchCallback) => {
   interceptConsole()
-  webpack(config(settings)).watch({}, (error, stats) => {
+  const watching = webpack(config(settings)).watch({}, (error, stats) => {
     resetConsole(false)
     webpackResponse(stats, settings)
     watchCallback(getCompiledFilePaths(stats))
+    watching.close()
   })
 }
 
