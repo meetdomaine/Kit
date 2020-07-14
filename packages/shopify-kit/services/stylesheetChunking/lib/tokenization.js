@@ -75,7 +75,7 @@ const splitCSSByComment = (token, settings) => {
  * @param {String} string
  */
 const parseCriticalCSS = (string) => {
-  const regex = /\/[*]! ?critical ?[*]\/((?:\W|\w)[^/]*)\/[*]! ?end ?critical ?[*]\//gm
+  const regex = /\/[*]! ?critical ?[*]\/((?:\W|\w)*?)\/[*]! ?end ?critical ?[*]\//gm
   let matches,
     output = [],
     nonCritical = string + ''

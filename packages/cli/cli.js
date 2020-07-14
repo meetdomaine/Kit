@@ -28,7 +28,7 @@ program
   .option('-u --upload [upload]', 'upload specific file in critical command')
   .option('-q --quick', 'hide the loading screen and any synthetic pauses')
   .option('--debug', 'turn the debug flag on')
-  .option('--once', 'close critical command after processing once')
+  .option('--close', 'close critical command after processing once')
   .option('--no-open', 'do not open the default browser')
   .option(
     '-i --include [include]',
@@ -57,7 +57,7 @@ Promise.resolve(
   protect(async () => {
     const commandLineOptions = {
       simple: program['quick'],
-      once: program.once,
+      close: program.close,
       debug: program.debug,
       quick: program.quick,
       upload: program.upload,
@@ -71,7 +71,7 @@ Promise.resolve(
 
     const settings = configure(commandLineOptions)
 
-    if (~['deploy', 'watch']) {
+    if (~['deploy', 'watch', 'critical'].indexOf(command)) {
       await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }

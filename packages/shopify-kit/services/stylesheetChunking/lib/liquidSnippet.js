@@ -20,7 +20,7 @@ const createLiquidSnippet = (writtenFiles, settings, originalFile) => {
       )} %}
        ${
          settings['css.chunk.inline']
-           ? `{% raw %}<style>${token.content}</style>{% endraw %}`
+           ? `{% raw %}<style data-kit>${token.content}</style>{% endraw %}`
            : generateStylesheetLinks(token, writtenFiles, settings)
        }`
       return string
@@ -121,7 +121,7 @@ const generateStylesheetLink = (token, settings) => {
     ${settings['css.chunk.deferredChunkLink'](assetPath, settings)}
     `
   } else {
-    return `<link type="text/css" href="{{ '${assetPath}' | asset_url }}" rel="stylesheet">`
+    return `<link type="text/css" href="{{ '${assetPath}' | asset_url }}" rel="stylesheet" data-kit>`
   }
 }
 
@@ -136,7 +136,7 @@ const generatePrefetchLink = (file) => {
     ? `<link rel="prefetch" href="{{ '${file.replace(
         '.liquid',
         ''
-      )}' | asset_url }}" as="style">`
+      )}' | asset_url }}" as="style" data-kit>`
     : ''
 }
 

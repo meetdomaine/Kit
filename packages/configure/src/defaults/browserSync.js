@@ -15,7 +15,7 @@ module.exports = {
   },
   'bs.open': true,
   'bs.reloadDelay': 1500,
-  'bs.proxyReplacements': [
+  'bs.proxyReplacements.normal': [
     {
       regex: /<script.*main(?:[.]min)?[.]js.[^>]*><\/script>/gi,
       replacement() {}
@@ -27,8 +27,28 @@ module.exports = {
       }
     }
   ],
-  'bs.proxyReplacementsFilter'(settings) {
-    return settings['bs.proxyReplacements']
+  'bs.proxyReplacements.chunked': [
+    {
+      regex: /<script.*main(?:[.]min)?[.]js.[^>]*><\/script>/gi,
+      replacement() {}
+    },
+    {
+      regex: /<link.*assets\/.+(?:[.]min)?[.]css.[^>]* data-kit>/gi,
+      replacement() {}
+    },
+    {
+      regex: /<style data-critical data-kit>.*<\/style>/gi,
+      replacement() {}
+    },
+    {
+      regex: /<!-- kit injection tag -->/gi,
+      replacement(settings) {
+        return `<script src="${settings['path.public']}main.js"></script>`
+      }
+    }
+  ],
+  'bs.proxyReplacementsFilter'(rules, settings) {
+    return rules
   },
   'bs.whitelist': [
     '/',

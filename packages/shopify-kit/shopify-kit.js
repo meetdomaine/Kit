@@ -189,6 +189,11 @@ async function getThemeInformation(settings) {
   spinner.succeed()
 
   const response = await getTheme(settings)
+
+  if (!response.theme && response.errors) {
+    error(new Error(response.errors), false, true)
+  }
+
   Object.assign(settings, {
     themeInfo: response.theme || {}
   })

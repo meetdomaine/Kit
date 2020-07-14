@@ -34,7 +34,7 @@ test.serial('Outputs file stylesheet snippet', async (t) => {
   )
 })
 
-test.serial('Focus: Renders request.type and templates.suffix', async (t) => {
+test.serial('Renders request.type and templates.suffix', async (t) => {
   const output = chunkStylesheets.createLiquidSnippet(
     require('./mocks/fileTokens'),
     settings,
@@ -153,5 +153,29 @@ test.serial(
     const produceStyles = getFileWriteCall(t, 'dist/assets/product.min.css')
       .args[0][1]
     t.true(!!~produceStyles.indexOf('/*! critical */'))
+  }
+)
+
+test.serial(
+  'Focus: trueCritical CSS supports interrupting comments',
+  async (t) => {
+    await chunkStylesheets(
+      ['/dummy/user/dist/assets/main.min.css'],
+      Object.assign({}, settings, {
+        'css.chunk.critical': true
+      })
+    )
+
+    const nonCritical = getFileWriteCall(
+      t,
+      'dist/assets/main-non-critical.min.css'
+    ).args[0][1]
+    const liquidSnippet = getFileWriteCall(
+      t,
+      'dist/snippets/stylesheets.liquid'
+    ).args[0][1]
+
+    t.true(!!~liquidSnippet.indexOf('Optima LT Pro'))
+    t.true(!~nonCritical.indexOf('Optima LT Pro'))
   }
 )

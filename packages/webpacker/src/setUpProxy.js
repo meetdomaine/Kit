@@ -64,16 +64,21 @@ function makeConfig(webpack, settings, watchCallback) {
   }
 
   if (settings['bs.replaceAssets']) {
-    config.rewriteRules = settings['bs.proxyReplacementsFilter'](settings).map(
-      (rule) => {
-        return {
-          match: rule.regex,
-          fn: (req, res, match) => {
-            return rule.replacement(settings, req, res, match) || ''
-          }
+    const rules = settings['css.chunk']
+      ? settings['bs.proxyReplacements.chunked']
+      : settings['bs.proxyReplacements.normal']
+
+    config.rewriteRules = settings['bs.proxyReplacementsFilter'](
+      rules,
+      settings
+    ).map((rule) => {
+      return {
+        match: rule.regex,
+        fn: (req, res, match) => {
+          return rule.replacement(settings, req, res, match) || ''
         }
       }
-    )
+    })
   }
 
   if (settings['js.hmr']) {

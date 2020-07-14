@@ -34,17 +34,17 @@ module.exports = {
   'css.chunk.defaultCSSInclude'(settings) {
     return `{{ 'main.min.css' | asset_url | stylesheet_tag }}`
   },
-  'css.chunk.critical': true,
-  'css.chunk.criticalWhitelist': ['index', 'product', 'collection'],
+  'css.chunk.critical': false,
+  'css.chunk.criticalWhitelist': [],
   'css.chunk.partials': {
     reviews: ['product']
   },
   'css.chunk.criticalChunk'(token, settings) {
-    return `<style data-critical>${token.critical}</style>`
+    return `<style data-critical data-kit>${token.critical}</style>`
   },
   'css.chunk.deferredChunkLink'(assetPath, settings) {
     return `
-      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-kit>
       <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
       `
   },

@@ -7,7 +7,12 @@ const {
   action,
   error,
   webpackResponse,
-  browserSyncNotice
+  browserSyncNotice,
+  box,
+  title,
+  subtitle,
+  color,
+  completedAction
 } = require('@halfhelix/terminal-kit')
 const config = require('./src/webpack.config')
 const setUpProxy = require('./src/setUpProxy')
@@ -68,7 +73,6 @@ async function compileWithWebpack(settings) {
       resetConsole(false)
       spinner.succeed()
       const hasErrors = webpackHasErrors(error, stats)
-
       if (hasErrors) {
         return reject(hasErrors)
       }
@@ -80,7 +84,7 @@ async function compileWithWebpack(settings) {
       resolve(files, settings)
     })
   }).catch((e) => {
-    error(e, false)
+    error(e, true, true)
     return Promise.resolve(false)
   })
 }
@@ -90,13 +94,45 @@ module.exports = (settings) => {
 }
 
 module.exports.critical = async (settings, watchCallback) => {
+  await warnInCriticalAndConditionallyExit(settings)
   interceptConsole()
-  const watching = webpack(config(settings)).watch({}, (error, stats) => {
+  const watching = webpack(config(settings)).watch({}, (_error, stats) => {
     resetConsole(false)
+    const hasErrors = webpackHasErrors(_error, stats)
+    if (hasErrors) {
+      return error(hasErrors, true)
+    }
     webpackResponse(stats, settings)
     watchCallback(getCompiledFilePaths(stats))
-    watching.close()
+    settings.close && watching.close()
   })
+}
+
+const warnInCriticalAndConditionallyExit = async (settings) => {
+  const spinner = action('Checking Kit critical settings')
+  !settings.quick && (await wait(1000))
+  spinner.succeed()
+
+  box(
+    title('Notice:'),
+    subtitle(
+      `css.chunk is set to: ${color(
+        settings['css.chunk'] ? 'green' : 'red',
+        settings['css.chunk']
+      )}`
+    ),
+    subtitle(
+      `css.chunk.critical is set to: ${color(
+        settings['css.chunk.critical'] ? 'green' : 'red',
+        settings['css.chunk.critical']
+      )}`
+    )
+  )
+  if (!settings['css.chunk.critical'] || !settings['css.chunk']) {
+    process.exit()
+  } else {
+    completedAction('Passed! Continuing with command')
+  }
 }
 
 module.exports.watch = async (settings, watchCallback) => {
