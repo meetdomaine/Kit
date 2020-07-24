@@ -46,10 +46,10 @@ test.serial('Renders request.type and templates.suffix', async (t) => {
   )
   const conditionals = output.match(/\{\%.[^}]*\%\}/gi)
 
-  t.true(!!~conditionals[1].indexOf(`request.page_type contains '404'`))
-  t.true(!!~conditionals[2].indexOf(`request.page_type contains 'product'`))
+  t.true(!!~conditionals[0].indexOf(`request.page_type contains '404'`))
+  t.true(!!~conditionals[1].indexOf(`request.page_type contains 'product'`))
   t.true(
-    !!~conditionals[3].indexOf(
+    !!~conditionals[2].indexOf(
       `request.page_type contains 'page' and template.suffix contains 'faq'`
     )
   )
@@ -89,7 +89,7 @@ test.serial('Critical CSS writes non critical main file', async (t) => {
   await chunkStylesheets(
     ['/dummy/user/dist/assets/main.min.css'],
     Object.assign({}, settings, {
-      'css.chunk.critical': true
+      'css.chunk.critical': () => true
     })
   )
   const nonCriticalMainStyles = getFileWriteCall(
@@ -103,7 +103,7 @@ test.serial('Critical CSS uses liquid template markup', async (t) => {
   await chunkStylesheets(
     ['/dummy/user/dist/assets/main.min.css'],
     Object.assign({}, settings, {
-      'css.chunk.critical': true
+      'css.chunk.critical': () => true
     })
   )
 
@@ -117,7 +117,7 @@ test.serial('Critical CSS does not use liquid template markup', async (t) => {
   await chunkStylesheets(
     ['/dummy/user/dist/assets/main.min.css'],
     Object.assign({}, settings, {
-      'css.chunk.critical': false
+      'css.chunk.critical': () => false
     })
   )
 
@@ -131,10 +131,10 @@ test.serial('Critical CSS conditionally does remove critical', async (t) => {
   await chunkStylesheets(
     ['/dummy/user/dist/assets/main.min.css'],
     Object.assign({}, settings, {
-      'css.chunk.critical': true
+      'css.chunk.critical': () => true,
+      'css.chunk.criticalWhitelist': ['product']
     })
   )
-
   const produceStyles = getFileWriteCall(t, 'dist/assets/product.min.css')
     .args[0][1]
   t.true(!~produceStyles.indexOf('/*! critical */'))
@@ -146,7 +146,7 @@ test.serial(
     await chunkStylesheets(
       ['/dummy/user/dist/assets/main.min.css'],
       Object.assign({}, settings, {
-        'css.chunk.critical': false
+        'css.chunk.critical': () => false
       })
     )
 
@@ -156,26 +156,21 @@ test.serial(
   }
 )
 
-test.serial(
-  'Focus: trueCritical CSS supports interrupting comments',
-  async (t) => {
-    await chunkStylesheets(
-      ['/dummy/user/dist/assets/main.min.css'],
-      Object.assign({}, settings, {
-        'css.chunk.critical': true
-      })
-    )
+test.serial('trueCritical CSS supports interrupting comments', async (t) => {
+  await chunkStylesheets(
+    ['/dummy/user/dist/assets/main.min.css'],
+    Object.assign({}, settings, {
+      'css.chunk.critical': () => true
+    })
+  )
 
-    const nonCritical = getFileWriteCall(
-      t,
-      'dist/assets/main-non-critical.min.css'
-    ).args[0][1]
-    const liquidSnippet = getFileWriteCall(
-      t,
-      'dist/snippets/stylesheets.liquid'
-    ).args[0][1]
+  const nonCritical = getFileWriteCall(
+    t,
+    'dist/assets/main-non-critical.min.css'
+  ).args[0][1]
+  const liquidSnippet = getFileWriteCall(t, 'dist/snippets/stylesheets.liquid')
+    .args[0][1]
 
-    t.true(!!~liquidSnippet.indexOf('Optima LT Pro'))
-    t.true(!~nonCritical.indexOf('Optima LT Pro'))
-  }
-)
+  t.true(!!~liquidSnippet.indexOf('Optima LT Pro'))
+  t.true(!~nonCritical.indexOf('Optima LT Pro'))
+})

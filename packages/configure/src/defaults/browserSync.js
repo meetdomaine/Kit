@@ -23,7 +23,7 @@ module.exports = {
     {
       regex: /<link.*main(?:[.]min)?[.]css.[^>]*>/gi,
       replacement(settings) {
-        return `<script src="${settings['path.public']}/main.js"></script>`
+        return `<script src="${settings['path.public']}main.js"></script>`
       }
     }
   ],

@@ -51,8 +51,8 @@ function logTokensWithoutCSS(obj, showOnly, disable = false) {
 
 const shouldRenderCritical = (key, settings) => {
   return (
-    settings['css.chunk.critical'] &&
-    ~(settings['css.chunk.criticalWhitelist'] || []).indexOf(key)
+    settings['css.chunk.critical'](settings) &&
+    !!~(settings['css.chunk.criticalWhitelist'] || []).indexOf(key)
   )
 }
 

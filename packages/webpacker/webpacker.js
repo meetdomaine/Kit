@@ -123,12 +123,12 @@ const warnInCriticalAndConditionallyExit = async (settings) => {
     ),
     subtitle(
       `css.chunk.critical is set to: ${color(
-        settings['css.chunk.critical'] ? 'green' : 'red',
-        settings['css.chunk.critical']
+        settings['css.chunk.critical'](settings) ? 'green' : 'red',
+        settings['css.chunk.critical'](settings)
       )}`
     )
   )
-  if (!settings['css.chunk.critical'] || !settings['css.chunk']) {
+  if (!settings['css.chunk.critical'](settings) || !settings['css.chunk']) {
     process.exit()
   } else {
     completedAction('Passed! Continuing with command')

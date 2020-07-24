@@ -77,7 +77,7 @@ const processCSSFile = async (originalFile, settings) => {
     settings
   )
 
-  if (settings['css.chunk.critical']) {
+  if (settings['css.chunk.critical'](settings)) {
     await getOriginalFileCriticalCSS(originalFile)
   }
 
@@ -98,7 +98,7 @@ const processCSSFile = async (originalFile, settings) => {
     settings['css.chunk.updateOriginalFile']
   ) {
     fs.outputFileSync(originalFile.file, originalFile.content)
-    if (settings['css.chunk.critical']) {
+    if (settings['css.chunk.critical'](settings)) {
       fs.outputFileSync(originalFile.nonCriticalFile, originalFile.nonCritical)
       writtenFiles.push({ path: originalFile.nonCriticalFile, written: true })
     }

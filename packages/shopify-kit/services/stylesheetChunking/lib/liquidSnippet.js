@@ -141,7 +141,7 @@ const generatePrefetchLink = (file) => {
 }
 
 const applyLiquidTemplate = (html, originalFile, settings) => {
-  if (!settings['css.chunk.critical']) {
+  if (!settings['css.chunk.critical'](settings)) {
     return html
   }
   return settings['css.chunk.filterLiquidSnippetTemplate'](

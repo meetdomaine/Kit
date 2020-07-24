@@ -34,11 +34,13 @@ module.exports = {
   'css.chunk.defaultCSSInclude'(settings) {
     return `{{ 'main.min.css' | asset_url | stylesheet_tag }}`
   },
-  'css.chunk.critical': false,
-  'css.chunk.criticalWhitelist': [],
+  'css.chunk.critical'(settings) {
+    return !!settings['css.chunk']
+  },
   'css.chunk.partials': {
     reviews: ['product']
   },
+  'css.chunk.criticalWhitelist': [],
   'css.chunk.criticalChunk'(token, settings) {
     return `<style data-critical data-kit>${token.critical}</style>`
   },
