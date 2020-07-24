@@ -10,6 +10,7 @@ module.exports = {
     ]
   },
   'css.chunk': false,
+  'css.chunk.fileToProcess': 'main.min.css',
   'css.chunk.globalFolders': ['global'],
   'css.chunk.globalFiles': [],
   'css.chunk.inline': false,
@@ -28,5 +29,38 @@ module.exports = {
   'css.chunk.snippetFilter'(obj, defaultString) {
     return defaultString
   },
-  'css.chunk.updateOriginalFile': true
+  'css.chunk.createPreRenderLinks': false,
+  'css.chunk.updateOriginalFile': true,
+  'css.chunk.defaultCSSInclude'(fileName, settings) {
+    return `{{ '${fileName}' | asset_url | stylesheet_tag }}`
+  },
+  'css.chunk.critical'(settings) {
+    return !!settings['css.chunk']
+  },
+  'css.chunk.partials': {
+    reviews: ['product']
+  },
+  'css.chunk.criticalWhitelist': [],
+  'css.chunk.criticalChunk'(token, settings) {
+    return `<style data-critical data-kit>${token.critical}</style>`
+  },
+  'css.chunk.deferredChunkLink'(assetPath, settings) {
+    return `
+      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-kit>
+      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
+      `
+  },
+  'css.chunk.filterLiquidSnippetTemplate'(template, settings) {
+    return template
+  },
+  'css.chunk.filterLiquidSnippetTag'(tag, settings) {
+    return tag
+  },
+  'css.chunk.criticalUploadFilter'(token, settings) {
+    if (settings.upload) {
+      return new RegExp(`main|snippet|${settings.upload}`).test(token.theme)
+    }
+
+    return true
+  }
 }

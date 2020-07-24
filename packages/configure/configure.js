@@ -35,7 +35,6 @@ function validateConfig(config, env) {
 module.exports = (options) => {
   Object.assign(defaults, options)
 
-  options.debug && (process.env.DEBUG = '*')
   process.env.NODE_ENV = options.env
 
   const config = readConfigFiles()

@@ -34,7 +34,8 @@ function makeConfig(webpack, settings, watchCallback) {
     https: true,
     notify: false,
     snippetOptions: {
-      rule: settings['bs.snippetPlacement'](settings)
+      rule: settings['bs.snippetPlacement'](settings),
+      whitelist: settings['bs.whitelist']
     },
     files: [
       {
@@ -63,7 +64,14 @@ function makeConfig(webpack, settings, watchCallback) {
   }
 
   if (settings['bs.replaceAssets']) {
-    config.rewriteRules = settings['bs.proxyReplacements'].map((rule) => {
+    const rules = settings['css.chunk']
+      ? settings['bs.proxyReplacements.chunked']
+      : settings['bs.proxyReplacements.normal']
+
+    config.rewriteRules = settings['bs.proxyReplacementsFilter'](
+      rules,
+      settings
+    ).map((rule) => {
       return {
         match: rule.regex,
         fn: (req, res, match) => {
@@ -83,7 +91,6 @@ function makeConfig(webpack, settings, watchCallback) {
 module.exports = (webpack, settings, watchCallback) => {
   const { wdm, config } = makeConfig(webpack, settings, watchCallback)
   let spinner = false
-
   wdm.context.compiler.hooks.invalid.tap('kit', () => {
     spinner = action('Rebuilding bundle')
   })

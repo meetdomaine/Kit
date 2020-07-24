@@ -3,18 +3,28 @@
   "version": "0.0.1-beta.0",
   "description": "A frontend helper monorepo by the folks at Half Helix",
   "scripts": {
-    "publish": "NPM_CONFIG_OTP= ./node_modules/.bin/lerna publish",
     "bootstrap": "lerna bootstrap",
-    "clean": "lerna clean"
+    "clean": "lerna clean",
+    "test:watch": "node node_modules/.bin/ava packages/**/test/** -v -w --match='Focus:*'",
+    "test": "node node_modules/.bin/ava packages/**/test/** -v"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/halfhelix/Kit.git"
   },
+  "ava": {
+    "require": [
+      "./test/helpers/dependency-interceptor.js"
+    ]
+  },
   "homepage": "https://github.com/halfhelix/Kit#readme",
   "author": "https://halfhelix.com",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "ava": "^3.8.2",
+    "lodash.clonedeep": "^4.5.0",
+    "nock": "^13.0.2",
+    "pirates": "^4.0.1",
+    "sinon": "^9.0.2"
   }
 }

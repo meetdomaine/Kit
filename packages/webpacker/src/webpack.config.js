@@ -6,14 +6,14 @@ const StyleLintPlugin = require('stylelint-webpack-plugin')
 const DynamicPublicPathPlugin = require('dynamic-public-path-webpack-plugin')
 const autoprefixer = require('autoprefixer')
 const fs = require('fs-extra')
-const settings = require('@halfhelix/configure').settings
+const cloneDeep = require('lodash.clonedeep')
 
 function getThemeNodeModulesDir(suffix = '') {
   return `${settings['path.cwd']}/node_modules${suffix}`
 }
 
-function getEnv() {
-  return process.env.NODE_ENV === 'development' ? 'development' : 'production'
+function getEnv(settings) {
+  return settings.env === 'development' ? 'development' : 'production'
 }
 
 /**
@@ -58,14 +58,14 @@ function findAndCleanseLoader(rule, name, cleanse = true) {
   const isInUse = (rule.use || []).findIndex(matchLoader(name))
 
   if (~isInUse) {
-    cleanse && rule.splice(isInUse, 1)
+    cleanse && rule.use.splice(isInUse, 1)
     return true
   }
 
   return false
 }
 
-function prepareDevtool() {
+function prepareDevtool(settings) {
   if (settings.task !== 'watch') {
     return ''
   } else {
@@ -73,15 +73,15 @@ function prepareDevtool() {
   }
 }
 
-function prepareEntry() {
+function prepareEntry(settings) {
   const { entry } = settings.webpack
 
-  if (settings.task !== 'watch' || !settings['js.hmr']) {
+  if (!~['critical', 'watch'].indexOf(settings.task) || !settings['js.hmr']) {
     return entry
   }
 
   if (typeof entry === 'string') {
-    return [entry].push(settings['path.hmr'])
+    return mutateEntry([entry], settings)
   }
 
   return Object.keys(entry).reduce((obj, key) => {
@@ -90,18 +90,30 @@ function prepareEntry() {
     } else {
       obj[key] = entry[key]
     }
-    obj[key].push(settings['path.hmr'])
+    obj[key] = mutateEntry(obj[key], settings)
     return obj
   }, {})
 }
 
-function prepareOutput() {
+function mutateEntry(entry, settings) {
+  if (settings.task === 'watch') {
+    entry.push(settings['path.hmr'])
+  }
+
+  if (settings.task === 'critical') {
+    entry = entry.filter((file) => /s?css|sass|less/.test(file))
+  }
+
+  return entry
+}
+
+function prepareOutput(settings) {
   return Object.assign({}, settings.webpack.output, {
     publicPath: settings['path.public']
   })
 }
 
-function prepareResolve() {
+function prepareResolve(settings) {
   return Object.assign(
     {
       modules: [getNodeModulesDir(), 'node_modules']
@@ -116,24 +128,24 @@ function prepareResolveLoader() {
   }
 }
 
-function prepareModule() {
-  const webpackModules = Object.assign({}, settings.webpack.module)
+function prepareModule(settings) {
+  const webpackModules = cloneDeep(settings.webpack.module)
 
   if (!webpackModules.rules) {
     throw new Error('webpack.module must have "rules" property')
   }
 
   webpackModules.rules.map((rule) => {
-    _addCSSExtractPlugin(rule)
-    _addEslintConfig(rule)
-    _addCustomJsLoaders(rule)
-    _addCustomStyleLoaders(rule)
+    _addCSSExtractPlugin(rule, settings)
+    _addEslintConfig(rule, settings)
+    _addCustomJsLoaders(rule, settings)
+    _addCustomStyleLoaders(rule, settings)
   })
 
   return webpackModules
 }
 
-function _addCSSExtractPlugin(rule) {
+function _addCSSExtractPlugin(rule, settings) {
   let { extract, use } = rule
 
   if (!extract) return
@@ -156,7 +168,7 @@ function _addCSSExtractPlugin(rule) {
   })
 }
 
-function _addEslintConfig(rule) {
+function _addEslintConfig(rule, settings) {
   if (!findAndCleanseLoader(rule, 'eslint-loader')) {
     return
   }
@@ -167,7 +179,7 @@ function _addEslintConfig(rule) {
   }
 }
 
-function _addCustomJsLoaders(rule) {
+function _addCustomJsLoaders(rule, settings) {
   if (!findAndCleanseLoader(rule, 'babel-loader')) {
     return
   }
@@ -190,7 +202,7 @@ function _addCustomJsLoaders(rule) {
   ]
 }
 
-function _addCustomStyleLoaders(rule) {
+function _addCustomStyleLoaders(rule, settings) {
   if (!findAndCleanseLoader(rule, 'style-loader', false)) {
     return
   }
@@ -239,7 +251,7 @@ function _addCustomStyleLoaders(rule) {
   })
 }
 
-function preparePlugins() {
+function preparePlugins(settings) {
   return [
     ...(settings.webpack.plugins || []),
     ...(settings['css.lintStyles']
@@ -261,8 +273,8 @@ function preparePlugins() {
       : []),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(getEnv()),
-      DEBUG: getEnv() === 'development',
+      'process.env.NODE_ENV': JSON.stringify(getEnv(settings)),
+      DEBUG: getEnv(settings) === 'development',
       KIT_VERSION: JSON.stringify(settings.package.version)
     }),
     ...(settings.task !== 'watch'
@@ -278,11 +290,11 @@ function preparePlugins() {
   ]
 }
 
-function prepareExternals() {
+function prepareExternals(settings) {
   return Object.assign({}, settings.webpack.externals)
 }
 
-module.exports = () => {
+module.exports = (settings) => {
   const {
     devtool,
     entry,
@@ -296,15 +308,15 @@ module.exports = () => {
   } = settings.webpack
 
   const webpackConfig = {
-    mode: getEnv(),
-    devtool: prepareDevtool(),
-    entry: prepareEntry(),
-    output: prepareOutput(),
-    resolve: prepareResolve(),
-    resolveLoader: prepareResolveLoader(),
-    plugins: preparePlugins(),
-    externals: prepareExternals(),
-    module: prepareModule(),
+    mode: getEnv(settings),
+    devtool: prepareDevtool(settings),
+    entry: prepareEntry(settings),
+    output: prepareOutput(settings),
+    resolve: prepareResolve(settings),
+    resolveLoader: prepareResolveLoader(settings),
+    plugins: preparePlugins(settings),
+    externals: prepareExternals(settings),
+    module: prepareModule(settings),
     stats: 'none',
     performance: {
       hints: false
@@ -312,5 +324,5 @@ module.exports = () => {
     ...remaining
   }
 
-  return webpackConfig
+  return settings['js.overrideWebpack'](webpackConfig, settings)
 }

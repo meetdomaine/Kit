@@ -2,13 +2,17 @@ const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs-extra')
 const wait = require('w2t')
-const settings = require('@halfhelix/configure').settings
 const {
   log,
   action,
   error,
   webpackResponse,
-  browserSyncNotice
+  browserSyncNotice,
+  box,
+  title,
+  subtitle,
+  color,
+  completedAction
 } = require('@halfhelix/terminal-kit')
 const config = require('./src/webpack.config')
 const setUpProxy = require('./src/setUpProxy')
@@ -39,7 +43,7 @@ function getCompiledFilePaths(stats) {
   }, [])
 }
 
-function writeToLogFile(stats) {
+function writeToLogFile(stats, settings) {
   fs.outputJsonSync(`${settings['path.cwd']}/webpack.kit.log`, stats.toJson(), {
     spaces: 2
   })
@@ -52,53 +56,86 @@ function webpackHasErrors(webpackError, webpackStats) {
   )
 }
 
-async function compileWithWebpack() {
-  if (settings['debug.cssSplitting']) {
-    return Promise.resolve([
-      `${settings['path.dist']}/assets/${settings['css.mainFileName'].replace(
-        '[name]',
-        'main'
-      )}`
-    ])
-  }
+async function compileWithWebpack(settings) {
   if (settings['debug.bypassWebpack']) {
     return Promise.resolve([])
   }
   const spinner = action('Compiling assets with Webpack')
-  await wait(1000)
+  !settings.quick && (await wait(1000))
 
   return new Promise((resolve, reject) => {
     interceptConsole()
     webpack(config(settings)).run(async (error, stats) => {
       if (settings['debug.writeWebpackOutputToFile']) {
-        writeToLogFile(stats)
+        writeToLogFile(stats, settings)
       }
 
       resetConsole(false)
       spinner.succeed()
-
       const hasErrors = webpackHasErrors(error, stats)
       if (hasErrors) {
         return reject(hasErrors)
       }
 
       webpackResponse(stats, settings)
-      await wait(1000)
+      !settings.quick && (await wait(1000))
 
       const files = getCompiledFilePaths(stats)
       resolve(files, settings)
     })
   }).catch((e) => {
-    error(e, false)
+    error(e, true, true)
     return Promise.resolve(false)
   })
 }
 
-module.exports = (options) => {
-  return compileWithWebpack()
+module.exports = (settings) => {
+  return compileWithWebpack(settings)
 }
 
-module.exports.watch = async (watchCallback) => {
+module.exports.critical = async (settings, watchCallback) => {
+  await warnInCriticalAndConditionallyExit(settings)
+  interceptConsole()
+  const watching = webpack(config(settings)).watch({}, (_error, stats) => {
+    resetConsole(false)
+    const hasErrors = webpackHasErrors(_error, stats)
+    if (hasErrors) {
+      return error(hasErrors, true)
+    }
+    webpackResponse(stats, settings)
+    watchCallback(getCompiledFilePaths(stats))
+    settings.close && watching.close()
+  })
+}
+
+const warnInCriticalAndConditionallyExit = async (settings) => {
+  const spinner = action('Checking Kit critical settings')
+  !settings.quick && (await wait(1000))
+  spinner.succeed()
+
+  box(
+    title('Notice:'),
+    subtitle(
+      `css.chunk is set to: ${color(
+        settings['css.chunk'] ? 'green' : 'red',
+        settings['css.chunk']
+      )}`
+    ),
+    subtitle(
+      `css.chunk.critical is set to: ${color(
+        settings['css.chunk.critical'](settings) ? 'green' : 'red',
+        settings['css.chunk.critical'](settings)
+      )}`
+    )
+  )
+  if (!settings['css.chunk.critical'](settings) || !settings['css.chunk']) {
+    process.exit()
+  } else {
+    completedAction('Passed! Continuing with command')
+  }
+}
+
+module.exports.watch = async (settings, watchCallback) => {
   let spinner = action('Starting up BrowserSync proxy server')
 
   await wait(1000)
@@ -129,6 +166,6 @@ module.exports.watch = async (watchCallback) => {
   return Promise.resolve()
 }
 
-module.exports.lint = (options) => {
+module.exports.lint = (options, settings) => {
   return lint(options, settings)
 }

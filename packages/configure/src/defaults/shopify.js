@@ -2,7 +2,10 @@ module.exports = {
   'shopify.cdnPathVar': '__GLOBAL__.cdn',
   'shopify.addShopifyLoader': true,
   'shopify.clearGeneratedFiles'(settings) {
-    return settings['css.chunk']
+    return false
+  },
+  'shopify.restrictLiveTheme'(settings) {
+    return false
   },
   'shopify.generatedFiles'(settings) {
     return [settings['css.chunk.snippet']]

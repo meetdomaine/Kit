@@ -13,7 +13,8 @@ const {
   deployFiles,
   buildTheme,
   deployFile,
-  chunkStylesheets
+  chunkStylesheets,
+  getThemeInformation
 } = require('@halfhelix/shopify-kit')
 
 let command = false
@@ -22,9 +23,13 @@ program
   .version(pkg.version)
   .version('0.1.0')
   .arguments('<cmd>')
-  .usage('[watch|build|deploy|lint|gitlab]')
+  .usage('[watch|build|deploy|lint|gitlab|critical]')
   .option('-e --env [env]', 'specify an environment')
-  .option('-q --quick', 'hide the loading screen')
+  .option('-u --upload [upload]', 'upload specific file in critical command')
+  .option('-q --quick', 'hide the loading screen and any synthetic pauses')
+  .option('--debug', 'turn the debug flag on')
+  .option('--close', 'close critical command after processing once')
+  .option('--no-open', 'do not open the default browser')
   .option(
     '-i --include [include]',
     'specify the type of files to include',
@@ -42,19 +47,32 @@ program
   .parse(process.argv)
 
 Promise.resolve(
-  splash({
-    title: 'Half Helix Kit',
-    subtitle: 'The developer toolbelt'
-  })
+  program.quick
+    ? true
+    : splash({
+        title: 'Half Helix Kit',
+        subtitle: 'The developer toolbelt'
+      })
 ).then(
   protect(async () => {
-    const settings = configure({
+    const commandLineOptions = {
       simple: program['quick'],
+      close: program.close,
+      debug: program.debug,
+      quick: program.quick,
+      upload: program.upload,
       env: program.env || 'development',
       task: command
-    })
+    }
 
-    if (~['deploy', 'watch']) {
+    if (program.open === false) {
+      commandLineOptions['bs.open'] = false
+    }
+
+    const settings = configure(commandLineOptions)
+
+    if (~['deploy', 'watch', 'critical'].indexOf(command)) {
+      await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }
 
@@ -83,8 +101,17 @@ Promise.resolve(
       return
     }
 
+    if (~['critical'].indexOf(command)) {
+      webpacker.critical(settings, (files) => {
+        chunkStylesheets(files, settings).then((files) => {
+          deployFiles(files, settings)
+        })
+      })
+      return
+    }
+
     if (~['watch'].indexOf(command)) {
-      webpacker.watch((event, file, settings) =>
+      webpacker.watch(settings, (event, file, settings) =>
         deployFile(event, file, settings)
       )
       return
@@ -92,10 +119,13 @@ Promise.resolve(
 
     if (~['lint'].indexOf(command)) {
       webpacker
-        .lint({
-          include: program.include.split(','),
-          fix: program.fix
-        })
+        .lint(
+          {
+            include: program.include.split(','),
+            fix: program.fix
+          },
+          settings
+        )
         .then(() => {
           epilogue()
         })

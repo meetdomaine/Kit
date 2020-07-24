@@ -37,12 +37,25 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 Run these commands from the root of the theme
 
 ```
+# Compile the theme and save it to your local directory
 kit build  --env [production|staging|development]
+
+# Build and deploy the theme to Shopify
 kit deploy --env [production|staging|development]
+
+# Setup a dev environment with BrowserSync
+# Changed files are deployed to Shopify
+# JS and CSS are compiled and served to the browser from memory
 kit watch  --env [production|staging|development]
+
+# A helper command to help with defining critical styles
+# Compiles and deploys CSS-specific files in a watch-based environment
+# --upload defines a single file to upload, in addition to the main css file and liquid snippet
+# --close closes the session without watching for file changes
+kit critical --env [production|staging|development] --upload [filename] --close
 ```
 
-#### Theme architecture
+#### Shopify theme architecture
 
 We have plans to release the starter theme we use for our Shopify sites over time to sit alongside this toolkit. In the meantime, see here for a little information about how our these are structured. This is the environment in which this toolkit is used.
 
@@ -295,7 +308,9 @@ There are 50+ settings that can be configured in the kit.config.js file that adj
 }
 ```
 
-#### CSS Splitting options
+---
+
+#### CSS Chunking Logic
 
 We've baked in some configurable logic that can automatically create dedicated CSS files for different pages of a Shopify site. So, you can have a CSS file that targets product pages, account pages or a specific page template individually.
 
@@ -318,18 +333,64 @@ src
 With default settings, this structure will culminate into the following snippet (named via the "css.chunk.snippet" setting) file being generated, with global styles kept into the main stylesheet:
 
 ```liquid
+...
+
 {% if request.page_type contains 'page' and template.suffix contains 'wishlist' %}
 <link type="text/css" href="{{ 'page-wishlist.min.css' | asset_url }}" rel="stylesheet">
-<link rel="prefetch" href="{{ 'page.min.css' | asset_url }}" as="style">
 {% elsif request.page_type contains 'page' %}
 <link type="text/css" href="{{ 'page.min.css' | asset_url }}" rel="stylesheet">
-<link rel="prefetch" href="{{ 'page-wishlist.min.css' | asset_url }}" as="style">
 {% endif %}
+
+...
 ```
+
+If a folder name is in the `css.chunk.criticalWhitelist` setting, the conditional rendered for that chunk will support inline styles and well as a non-blocking critical css file link. Here is an example of the output if "page" is whitelisted like so: `css.chunk.criticalWhitelist: ['page']`
+
+```liquid
+...
+
+{% elsif request.page_type contains 'page' %}
+<style data-critical data-kit><!-- module critical styles are placed here --></style>
+<link rel="preload" href="{{ 'page.min.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-kit>
+<noscript><link rel="stylesheet" href="{{ 'page.min.css' | asset_url }}"></noscript>
+{% endif %}
+
+...
+```
+
+Now, we also load the global stylesheet critically if the page's css is getting loaded critical through this final part of the generated snippet:
+
+```
+{% if kit_chunked_styles contains 'critical' %}
+<style data-critical data-kit><!-- global critical styles --></style>
+<link rel="preload" href="{{ 'main-non-critical.min.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-kit>
+<noscript><link rel="stylesheet" href="{{ 'main-non-critical.min.css' | asset_url }}"></noscript>
+{% else %}
+{{ 'main.min.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{{ kit_chunked_styles }}
+```
+
+**Defining critical CSS blocks**
+
+Within each CSS module, define each block of CSS with the following comments:
+
+```
+/*! critical */
+
+...
+
+/*! end critical */
+```
+
+**Folder naming conventions**
 
 The "global" folder is marked by default as a location to put any global code. Global styles are kept in the main stylesheet and not referenced in the snippet.
 
 For non global styles, the first word in the top level folder name before the "-" character maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
+
+**CSS chunking configuration settings**
 
 See below an outline of CSS chunking specific options alongside their default values.
 
@@ -338,22 +399,18 @@ See below an outline of CSS chunking specific options alongside their default va
   // Should the main CSS file/s be chunked?
   'css.chunk': false,
 
+  // The file that will have chunking logic applied
+  'css.chunk.fileToProcess': 'main.min.css',
+
   // What folder/s dictate CSS that should be on every page?
   'css.chunk.globalFolders': ['global'],
 
   // Any files here will be rolled up into global sheet
   'css.chunk.globalFiles': [],
 
-  // Should CSS be inlined in the "css.chunk.snippet" file?
-  'css.chunk.inline': false,
-
   // What is the name of the snippet that includes the conditional
   // logic that loads in the specific files on the right pages
   'css.chunk.snippet': 'snippets/stylesheets.liquid',
-
-  // Allow a developer to test the CSS splitting logic by
-  // only deploying the generated CSS rather than all theme files
-  'css.chunk.testSplitting': false,
 
   // Sort the order of the conditionals in the 'css.chunk.snippet'
   // file. The default order is alphabetically
@@ -401,12 +458,29 @@ See below an outline of CSS chunking specific options alongside their default va
     return defaultString
   },
 
-  // Should the original CSS file be updated after
-  // the chunks have been split into their own CSS files? This
-  // will avoid duplicate CSS declarations
-  'css.chunk.updateOriginalFile': true
+  // Any top-level folders that should not make their own individual
+  // CSS files, rather roll up into others. This is handy when you
+  // have a group of modules that are shared across multiple areas of
+  // the site but you don't want to bloat the global stylesheet
+  'css.chunk.partials': {},
+
+  // A whitelist of folder names that should be split out into
+  // critical and non-critical chunks
+  'css.chunk.criticalWhitelist': [],
+
+  // When a folder is in the critical whitelist and has critical styles,
+  // this is the HTML that gets rendered for that chunk.
+  'css.chunk.deferredChunkLink'(assetPath, settings) {
+    return `
+      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-kit>
+      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
+      `
+  },
+
 }
 ```
+
+---
 
 #### Webpack configuration
 
@@ -473,6 +547,8 @@ module.exports = {
 
 ```
 
+---
+
 #### NPM Dependencies
 
 Most of the dependencies that are used to compile assets with the Webpack configuration above are declared and managed in this package. However, there are some that will need to be dev dependencies of the theme itself. Currently, the theme dev dependencies we use for the configuration above are:
@@ -486,18 +562,26 @@ Most of the dependencies that are used to compile assets with the Webpack config
 "stylelint-config-standard": "^19.0.0",
 ```
 
+---
+
 #### Logging
 
 Most logs from core dependencies are relayed directly to the console. However, there are certain compilation logs that Webpack and other dependencies do not provide configuration access to, and that we occasionally want to silence. When compilation occurs, we redirect these outputs to log files rather than directly to the browser. However, this can be turned off via the `debug` setting.
+
+---
 
 #### Roadmap
 
 1. Theme scaffolding command/s
 1. Liquid linting (in progress...)
 
+---
+
 #### Bugs & Missing Information
 
 This package is currently unstable and in it's initial stages. Expect bugs and missing information. We encourage you to submit tickets and let us know the issues you are experiencing! Keep in mind that our current priority is to enable our internal developers so expect delays for general bug reports.
+
+---
 
 #### Testing changes when contributing
 
