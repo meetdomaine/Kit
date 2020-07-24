@@ -37,12 +37,25 @@ This is a toolkit that we use internally at Half Helix to develop our frontend S
 Run these commands from the root of the theme
 
 ```
+# Compile the theme and save it to your local directory
 kit build  --env [production|staging|development]
+
+# Build and deploy the theme to Shopify
 kit deploy --env [production|staging|development]
+
+# Setup a dev environment with BrowserSync
+# Changed files are deployed to Shopify
+# JS and CSS are compiled and served to the browser from memory
 kit watch  --env [production|staging|development]
+
+# A helper command to help with defining critical styles
+# Compiles and deploys CSS-specific files in a watch-based environment
+# --upload defines a single file to upload, in addition to the main css file and liquid snippet
+# --close closes the session without watching for file changes
+kit critical --env [production|staging|development] --upload [filename] --close
 ```
 
-#### Theme architecture
+#### Shopify theme architecture
 
 We have plans to release the starter theme we use for our Shopify sites over time to sit alongside this toolkit. In the meantime, see here for a little information about how our these are structured. This is the environment in which this toolkit is used.
 
@@ -377,7 +390,7 @@ The "global" folder is marked by default as a location to put any global code. G
 
 For non global styles, the first word in the top level folder name before the "-" character maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. These functionality can be modified by the settings outlined below.
 
-**CSS Chunking configuration settings**
+**CSS chunking configuration settings**
 
 See below an outline of CSS chunking specific options alongside their default values.
 

@@ -31,8 +31,8 @@ module.exports = {
   },
   'css.chunk.createPreRenderLinks': false,
   'css.chunk.updateOriginalFile': true,
-  'css.chunk.defaultCSSInclude'(settings) {
-    return `{{ 'main.min.css' | asset_url | stylesheet_tag }}`
+  'css.chunk.defaultCSSInclude'(fileName, settings) {
+    return `{{ '${fileName}' | asset_url | stylesheet_tag }}`
   },
   'css.chunk.critical'(settings) {
     return !!settings['css.chunk']

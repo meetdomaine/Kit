@@ -168,7 +168,8 @@ const applyLiquidTemplate = (html, originalFile, settings) => {
         settings
       ),
       settings['css.chunk.defaultCSSInclude'](
-        originalFile.fileName.replace('.liquid', '')
+        originalFile.fileName.replace('.liquid', ''),
+        settings
       )
     )
 }
