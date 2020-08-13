@@ -5,5 +5,8 @@ module.exports = {
   'js.chunkSortFunction': false,
   'js.overrideWebpack'(config, settings) {
     return config
+  },
+  'js.chunkNameFilter'(chunk, path) {
+    return chunk
   }
 }

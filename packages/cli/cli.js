@@ -58,11 +58,14 @@ Promise.resolve(
     const commandLineOptions = {
       simple: program['quick'],
       close: program.close,
-      debug: program.debug,
       quick: program.quick,
       upload: program.upload,
       env: program.env || 'development',
       task: command
+    }
+
+    if (program.debug) {
+      commandLineOptions['debug'] = true
     }
 
     if (program.open === false) {

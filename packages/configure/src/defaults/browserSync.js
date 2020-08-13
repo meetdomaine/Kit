@@ -1,4 +1,5 @@
 module.exports = {
+  'bs.online': true,
   'bs.local': 'localhost',
   'bs.target': (settings) => {
     return `https://${settings.domain || settings.store}?preview_theme_id=${

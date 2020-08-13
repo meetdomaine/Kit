@@ -32,7 +32,7 @@ function getChunkName(path, options) {
     .split('/')
     .filter((val) => val)
 
-  return split[1] || 'general'
+  return options.chunkNameFilter(split[1] || 'general', path)
 }
 
 async function getFilesViaGlob(token) {

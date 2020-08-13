@@ -196,7 +196,8 @@ function _addCustomJsLoaders(rule, settings) {
       options: {
         'path.src': settings['path.src'],
         autoChunk: settings['js.autoChunk'],
-        sortFunction: settings['js.chunkSortFunction']
+        sortFunction: settings['js.chunkSortFunction'],
+        chunkNameFilter: settings['js.chunkNameFilter']
       }
     }
   ]

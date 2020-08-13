@@ -21,6 +21,7 @@ function makeConfig(webpack, settings, watchCallback) {
   })
 
   const config = {
+    online: settings['bs.online'],
     proxy: {
       target: settings['bs.target'](settings),
       middleware: [wdm]
