@@ -127,7 +127,7 @@ In addition to style and Javascript files, Liquid is taken out of these module f
 src/modules/header/header.liquid > snippets/header.liquid
 src/modules/global/header/header.liquid > snippets/header.liquid
 src/modules/header/header.section.liquid > sections/header.liquid
-src/modules/cart/cart.template.liquid > templates/header.liquid
+src/modules/cart/cart.template.liquid > templates/cart.liquid
 ```
 
 #### Configuration
