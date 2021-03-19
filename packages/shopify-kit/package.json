@@ -18,6 +18,7 @@
     "fs-extra": "^8.1.0",
     "globby": "^10.0.1",
     "node-fetch": "^2.6.0",
+    "throttled-queue": "^1.0.7",
     "w2t": "^2.0.2"
   },
   "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"
