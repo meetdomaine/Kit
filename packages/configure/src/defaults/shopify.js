@@ -1,6 +1,9 @@
 module.exports = {
   'shopify.cdnPathVar': '__GLOBAL__.cdn',
   'shopify.addShopifyLoader': true,
+  'shopify.requestsPerInterval': 4,
+  'shopify.interval': 1000,
+  'shopify.evenlyDistributedUpload': true,
   'shopify.clearGeneratedFiles'(settings) {
     return false
   },

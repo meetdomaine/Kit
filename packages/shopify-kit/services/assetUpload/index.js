@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const output = require('@halfhelix/terminal-kit')
 const { shopifyApiRequest } = require('./../util')
+const throttledQueue = require('throttled-queue')
 
 module.exports = function init(settings, args = {}) {
   /**
@@ -40,35 +41,33 @@ module.exports = function init(settings, args = {}) {
         } else {
           successes.push({ token, asset })
         }
-        return Promise.resolve(true)
+        return Promise.resolve({ token })
       })
       .catch((error) => {
         errors.push({ token, error })
+        return Promise.resolve({ token })
       })
   }
 
   function enqueue(action, cb) {
-    return new Promise(async (resolve, reject) => {
-      ;(function push(token) {
-        if (!token) resolve()
-
-        Promise.all([
-          new Promise((resolve) => {
-            setTimeout(() => resolve(), 500)
-          }),
-          action(token)
-        ])
-          .then(() => {
-            cb && cb(queue.length, token)
-            if (queue.length) return push(queue.pop())
-            resolve()
+    let completed = 0
+    const throttle = throttledQueue(
+      settings['shopify.requestsPerInterval'],
+      settings['shopify.interval'],
+      settings['shopify.evenlyDistributedUpload']
+    )
+    return new Promise(async (resolve) => {
+      for (let i = 0; i < queue.length; i++) {
+        throttle(() => {
+          action(queue[i]).finally(() => {
+            cb && cb(queue.length - completed, queue[i])
+            completed++
+            if (completed === queue.length) {
+              resolve()
+            }
           })
-          .catch((error) => {
-            cb && cb(queue.length, token)
-            if (queue.length) return push(queue.pop())
-            reject(error)
-          })
-      })(queue.pop())
+        })
+      }
     })
   }
 
@@ -110,7 +109,7 @@ module.exports = function init(settings, args = {}) {
       var cb = (function () {
         const total = queue.length
         const update = output.progressBar(
-          'Uploading',
+          `Uploading (${settings['shopify.requestsPerInterval']}/${settings['shopify.interval']}ms)`,
           total,
           settings.isCI() || settings['debug.showDeploymentLog']
         )

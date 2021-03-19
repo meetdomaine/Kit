@@ -23,7 +23,8 @@ addHook(
     log () {},
     action () {
       return {
-        succeed () {}
+        succeed () {},
+        fail () {}
       }
     },
     completedAction () {},
@@ -33,12 +34,16 @@ addHook(
       log && console.log(error)
       exit && process.exit()
     },
+    uploadErrors () {},
     webpackResponse () {},
     browserSyncNotice () {},
     title () {},
     subtitle () {},
     color () {},
-    box () {}
+    box () {},
+    progressBar () {
+      return () => {}
+    }
   }
   `
   },
