@@ -46,7 +46,7 @@ function createTokens(path) {
 }
 
 function getBase(path, file) {
-  if (/template/.test(path) && /[.]liquid/.test(file)) {
+  if (/templates\//.test(path) || /[.]template[.]liquid/.test(file)) {
     if (/templates\/customers/.test(path)) {
       base = 'templates/customers'
     } else {
@@ -66,7 +66,7 @@ function getBase(path, file) {
     base = 'snippets'
   }
 
-  return base
+  return settings['shopify.filterTokenBase'](base, path, file, settings)
 }
 
 function createCompiledAssetTokens(path) {
@@ -87,7 +87,7 @@ function init(files = [], compiledAssets = []) {
   if (compiledAssets.length) {
     files = files.concat(compiledAssets.map(createCompiledAssetTokens))
   }
-  return files
+  return settings['shopify.filterTokens'](files, settings)
 }
 
 module.exports = init

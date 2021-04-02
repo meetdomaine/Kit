@@ -309,8 +309,11 @@ module.exports = (settings) => {
   } = settings.webpack
 
   const webpackConfig = {
-    mode: getEnv(settings),
-    devtool: prepareDevtool(settings),
+    mode: settings['js.filterWebpackMode'](getEnv(settings), settings),
+    devtool: settings['js.filterWebpackDevTool'](
+      prepareDevtool(settings),
+      settings
+    ),
     entry: prepareEntry(settings),
     output: prepareOutput(settings),
     resolve: prepareResolve(settings),
@@ -318,10 +321,13 @@ module.exports = (settings) => {
     plugins: preparePlugins(settings),
     externals: prepareExternals(settings),
     module: prepareModule(settings),
-    stats: 'none',
-    performance: {
-      hints: false
-    },
+    stats: settings['js.filterWebpackStats']('none', settings),
+    performance: settings['js.filterWebpackPerformance'](
+      {
+        hints: false
+      },
+      settings
+    ),
     ...remaining
   }
 

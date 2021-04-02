@@ -7,6 +7,10 @@ const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
 const gitlab = require('@halfhelix/gitlab-kit')
 const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
+const {
+  getPackageInformation,
+  getVersionDetails
+} = require('./lib/getPackageInformation')
 
 const {
   prepareForDeployment,
@@ -21,7 +25,6 @@ let command = false
 
 program
   .version(pkg.version)
-  .version('0.1.0')
   .arguments('<cmd>')
   .usage('[watch|build|deploy|lint|gitlab|critical]')
   .option('-e --env [env]', 'specify an environment')
@@ -46,14 +49,27 @@ program
   })
   .parse(process.argv)
 
-Promise.resolve(
-  program.quick
-    ? true
-    : splash({
-        title: 'Half Helix Kit',
-        subtitle: 'The developer toolbelt'
-      })
-).then(
+new Promise(async (resolve) => {
+  try {
+    const details = await getPackageInformation('@halfhelix/kit')
+    program.quick
+      ? true
+      : splash({
+          title: 'Half Helix Kit',
+          subtitle: 'The developer toolbelt',
+          version: getVersionDetails(details, `${pkg.version}`)
+        })
+    resolve()
+  } catch (e) {
+    program.quick
+      ? true
+      : splash({
+          title: 'Half Helix Kit',
+          subtitle: 'The developer toolbelt'
+        })
+    resolve()
+  }
+}).then(
   protect(async () => {
     const commandLineOptions = {
       simple: program['quick'],
