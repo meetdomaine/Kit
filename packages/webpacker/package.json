@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/webpacker",
-  "version": "0.0.1-beta.30",
+  "version": "0.0.1-beta.31",
   "description": "",
   "main": "webpacker.js",
   "author": "https://halfhelix.com",
@@ -14,11 +14,11 @@
   },
   "dependencies": {
     "@babel/core": "^7.7.7",
-    "@halfhelix/configure": "^0.0.1-beta.30",
+    "@halfhelix/configure": "^0.0.1-beta.31",
     "@halfhelix/glob-loader": "^0.0.1-beta.30",
-    "@halfhelix/shopify-kit": "^0.0.1-beta.30",
+    "@halfhelix/shopify-kit": "^0.0.1-beta.31",
     "@halfhelix/shopify-loader": "^0.0.1-beta.27",
-    "@halfhelix/terminal-kit": "^0.0.1-beta.29",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.31",
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",
     "babel-minify-webpack-plugin": "^0.3.1",
