@@ -2,15 +2,29 @@ const chalk = require('chalk')
 const cliProgress = require('cli-progress')
 
 const { log } = require('./utils')
-const { clear, icon } = require('./atoms')
-const { logo, box, title, subtitle, spinner } = require('./molecules')
+const { clear, icon, newLines } = require('./atoms')
+const {
+  logo,
+  box,
+  truncatingBox,
+  title,
+  subtitle,
+  spinner
+} = require('./molecules')
 
-function splash({ title: bar, subtitle: foo }) {
+function splash({ title: bar, subtitle: foo, version = {} }) {
   clear()
   logo()
   box(
     title(`${icon('pointerSmall')} ${bar}`),
-    subtitle(`${icon('pointerSmall')} ${foo}`)
+    subtitle(`${icon('pointerSmall')} ${foo}`),
+    version && version.message
+      ? subtitle(
+          `${icon('pointerSmall')} ${chalk[
+            version.isCurrent ? 'green' : 'blue'
+          ](version.message)}`
+        )
+      : null
   )
 }
 
@@ -20,6 +34,11 @@ function action(string) {
 
 function completedAction(string) {
   return log(`${chalk.green(icon('tick'))} ${string}`)
+}
+
+function warning(string, newLine = false) {
+  log(`${chalk.green(icon('warning'))} ${string}`)
+  newLine && log(newLines())
 }
 
 function webpackResponse(stats, settings) {
@@ -78,8 +97,8 @@ function error(e, renderToString = true, shouldExit = false) {
   shouldExit && process.exit()
 }
 
-function uploadErrors(list) {
-  box('Errors:', ...list.map((item) => `${icon('star')} ${item}`))
+function uploadErrors(list, title = 'Errors:') {
+  truncatingBox(title, ...list.map((item) => `${icon('star')} ${item}`))
 }
 
 function progressBar(title, total, explode = false) {
@@ -117,9 +136,10 @@ function progressBar(title, total, explode = false) {
 module.exports = {
   splash,
   action,
+  completedAction,
+  warning,
   webpackResponse,
   genericListBox,
-  completedAction,
   epilogue,
   browserSyncNotice,
   uploadErrors,
