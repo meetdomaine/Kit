@@ -1,18 +1,9 @@
 const path = require('path')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   devtool: 'eval-source-map',
-  optimization: {
-    splitChunks: {
-      automaticNameDelimiter: '-',
-    }
-  },
   entry: {
-    "main": [
-      './src/assets/css/main.scss',
-      './src/assets/js/main'
-    ]
+    main: ['./src/assets/css/main.scss', './src/assets/js/main']
   },
   output: {
     path: path.join(__dirname, 'dist/assets'),
@@ -22,10 +13,10 @@ module.exports = {
   module: {
     rules: [
       {
-        enforce: "pre",
+        enforce: 'pre',
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "eslint-loader",
+        loader: 'eslint-loader'
       },
       {
         test: /\.js$/,
@@ -50,19 +41,7 @@ module.exports = {
             }
           }
         ]
-      },
+      }
     ]
-  },
-  resolve: {
-    alias: {
-      'lib': path.resolve(__dirname, 'src/assets/js/lib'),
-      'store': path.resolve(__dirname, 'src/assets/js/store'),
-      'mixins': path.resolve(__dirname, 'src/assets/js/mixins'),
-      'modules': path.resolve(__dirname, 'src/modules'),
-      'vue': process.env.ENV === 'production' ? 'vue/dist/vue.min.js' : 'vue/dist/vue.js',
-    },
-  },
-  plugins: [
-    // new BundleAnalyzerPlugin()
-  ],
+  }
 }
