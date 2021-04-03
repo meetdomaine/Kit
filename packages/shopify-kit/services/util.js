@@ -17,6 +17,7 @@ function shopifyApiRequest(method, url, body, settings) {
 }
 
 async function getTheme(settings) {
+  console.log(settings)
   return shopifyApiRequest(
     'GET',
     `/themes/${settings.theme}.json`,
