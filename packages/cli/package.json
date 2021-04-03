@@ -22,11 +22,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@halfhelix/configure": "^0.0.1-beta.31",
-    "@halfhelix/gitlab-kit": "^0.0.1-beta.31",
-    "@halfhelix/shopify-kit": "^0.0.1-beta.31",
-    "@halfhelix/terminal-kit": "^0.0.1-beta.31",
-    "@halfhelix/webpacker": "^0.0.1-beta.31",
+    "@halfhelix/configure": "0.0.1-beta.31",
+    "@halfhelix/gitlab-kit": "0.0.1-beta.31",
+    "@halfhelix/shopify-kit": "0.0.1-beta.31",
+    "@halfhelix/terminal-kit": "0.0.1-beta.31",
+    "@halfhelix/webpacker": "0.0.1-beta.31",
     "commander": "^4.0.1",
     "node-fetch": "^2.6.1"
   },
