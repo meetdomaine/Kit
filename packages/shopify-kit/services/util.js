@@ -3,7 +3,6 @@ const fs = require('fs-extra')
 const util = require('util')
 
 function shopifyApiRequest(method, url, body, settings) {
-  console.log(method, url, body, settings.password)
   return fetch(`https://${settings.store}/admin${url}`, {
     method,
     headers: {

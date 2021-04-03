@@ -94,7 +94,7 @@ function error(e, renderToString = true, shouldExit = false) {
   )
 
   renderToString && log(e.toString())
-  shouldExit && process.exit()
+  shouldExit && process.exit(1)
 }
 
 function uploadErrors(list, title = 'Errors:') {
