@@ -1,6 +1,5 @@
 {
   "private": true,
-  "name": "@halfhelix/theme",
   "scripts": {
     "start": "npm run watch",
     "watch": "kit watch --env development",

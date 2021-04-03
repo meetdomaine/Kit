@@ -4,13 +4,13 @@ stages:
   - test
 
 before_script:
-  # - npm i -g lerna
-  # - npm ci
+  - npm i -g lerna
   - lerna bootstrap
 
 tests:
   type: test
   script:
+    - npm ci
     - npm run test
   except:
     - master
@@ -20,6 +20,7 @@ exec:
   type: test
   script:
     - cd ./packages/theme/basic-test
+    - npm i
     - node ../../cli/cli.js lint
   except:
     - master
