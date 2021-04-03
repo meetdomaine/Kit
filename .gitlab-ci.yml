@@ -1,0 +1,26 @@
+image: node:13.7
+
+stages:
+  - test
+
+before_script:
+  # - npm i -g lerna
+  # - npm ci
+  - lerna bootstrap
+
+tests:
+  type: test
+  script:
+    - npm run test
+  except:
+    - master
+    - production
+
+exec:
+  type: test
+  script:
+    - cd ./packages/theme/basic-test
+    - node ../../cli/cli.js lint
+  except:
+    - master
+    - production
