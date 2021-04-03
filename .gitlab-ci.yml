@@ -3,15 +3,7 @@ image: node:13.7
 stages:
   - test
 
-variables:
-  THEME_ID: '7630013536'
-  PASSWORD: 7779592d571fed2fe6e7bd7626973400
-  STORE: halfhelix-ci.myshopify.com
-
 before_script:
-  - echo $THEME_ID
-  - echo $PASSWORD
-  - echo $STORE
   - npm i -g lerna
   - lerna bootstrap
 
