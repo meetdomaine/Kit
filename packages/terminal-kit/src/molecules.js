@@ -17,7 +17,7 @@ function logo() {
 function box() {
   log(newLines())
   const longestString = Object.values(arguments).reduce(function (a, b) {
-    return a.length > b.length ? a : b
+    return a.length && b.length && a.length > b.length ? a : b
   })
   const windowIsTooSmall =
     (longestString || '').length > termSize().columns - 10
