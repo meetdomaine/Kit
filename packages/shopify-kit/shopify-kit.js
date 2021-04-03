@@ -189,6 +189,7 @@ async function getThemeInformation(settings) {
   spinner.succeed()
 
   const response = await getTheme(settings)
+  console.log(response)
 
   if (!response.theme && response.errors) {
     error(new Error(response.errors), false, true)
