@@ -1,6 +1,6 @@
 {
   "name": "@halfhelix/cypress-kit",
-  "version": "0.0.1-beta.32",
+  "version": "0.0.1-beta.33",
   "description": "",
   "main": "cypress-kit.js",
   "bin": {
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@halfhelix/configure": "^0.0.1-beta.31",
-    "@halfhelix/terminal-kit": "^0.0.1-beta.32",
+    "@halfhelix/terminal-kit": "^0.0.1-beta.33",
     "commander": "^4.0.1",
     "cypress": "3.8.3"
   }
