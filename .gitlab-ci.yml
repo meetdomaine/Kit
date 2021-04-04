@@ -2,6 +2,7 @@ image: node:13.7
 
 stages:
   - test
+  - run
 
 before_script:
   - npm i -g lerna
@@ -12,12 +13,9 @@ tests:
   script:
     - npm ci
     - npm run test
-  except:
-    - master
-    - production
 
-lint:
-  type: test
+exec:lint:
+  type: run
   script:
     - cd ./packages/theme/basic-test
     - npm i
@@ -26,8 +24,8 @@ lint:
     - master
     - production
 
-build:
-  type: test
+exec:build:
+  type: run
   script:
     - cd ./packages/theme/basic-test
     - npm i
@@ -36,8 +34,8 @@ build:
     - master
     - production
 
-deploy:
-  type: test
+exec:deploy:
+  type: run
   script:
     - cd ./packages/theme/basic-test
     - npm i
