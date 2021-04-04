@@ -17,3 +17,7 @@
 # Nitro
 **/project/blueprints
 **/.yo-rc.json
+
+# File Types
+*.html
+*.liquid

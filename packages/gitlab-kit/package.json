@@ -15,6 +15,6 @@
   "dependencies": {
     "@halfhelix/configure": "^0.0.1-beta.31",
     "@halfhelix/terminal-kit": "^0.0.1-beta.32",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.1"
   }
 }

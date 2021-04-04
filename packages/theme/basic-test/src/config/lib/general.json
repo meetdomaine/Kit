@@ -1,0 +1,10 @@
+{
+  "name": "General",
+  "settings": [
+    {
+      "type": "text",
+      "id": "hello_world",
+      "label": "Hello World!"
+    }
+  ]
+}

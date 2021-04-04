@@ -51,7 +51,7 @@ addHook(
     exts: ['.js'],
     ignoreNodeModules: false,
     matcher(filename) {
-      return !!~filename.indexOf('terminal-kit')
+      return !!~filename.indexOf('terminal-kit/terminal-kit.js')
     }
   }
 )

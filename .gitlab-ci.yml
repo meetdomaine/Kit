@@ -2,8 +2,44 @@ image: node:13.7
 
 stages:
   - test
+  - run
+
+before_script:
+  - npm i -g lerna
+  - lerna bootstrap
 
 tests:
   type: test
   script:
-    - echo "Hello World"
+    - npm ci
+    - npm run test
+
+exec:lint:
+  type: run
+  script:
+    - cd ./packages/theme/basic-test
+    - npm i
+    - node ../../cli/cli.js lint
+  except:
+    - master
+    - production
+
+exec:build:
+  type: run
+  script:
+    - cd ./packages/theme/basic-test
+    - npm i
+    - node ../../cli/cli.js build
+  except:
+    - master
+    - production
+
+exec:deploy:
+  type: run
+  script:
+    - cd ./packages/theme/basic-test
+    - npm i
+    - node ../../cli/cli.js deploy
+  except:
+    - master
+    - production

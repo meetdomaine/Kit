@@ -4,6 +4,7 @@ const ora = require('ora')
 const termSize = require('term-size')
 const { log } = require('./utils')
 const { newLines, time } = require('./atoms')
+
 function logo() {
   termSize().columns > 55 && log(require(`${__dirname}/../src/logo`))
 }
@@ -16,9 +17,10 @@ function logo() {
  */
 function box() {
   log(newLines())
-  const longestString = Object.values(arguments).reduce(function (a, b) {
-    return a.length && b.length && a.length > b.length ? a : b
-  })
+  const longestString =
+    Object.values(arguments).reduce(function (a, b) {
+      return (a || '').length > (b || '').length ? a : b
+    }) || ''
   const windowIsTooSmall =
     (longestString || '').length > termSize().columns - 10
   const string = Object.keys(arguments)
