@@ -3,6 +3,7 @@ image: node:13.7
 stages:
   - test
   - run
+  - deploy
 
 before_script:
   - npm i -g lerna
@@ -43,3 +44,49 @@ exec:deploy:
   except:
     - master
     - production
+
+.deploy:
+  type: deploy
+  before_script:
+    - apt-get update -y
+    - 'which ssh-agent || ( apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$GITLAB_DEPLOY_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo //registry.npmjs.org/:_authToken=$NPM_PUBLISH_KEY >> .npmrc
+    - npm whoami
+    - git config --global user.email $GIT_EMAIL
+    - git config --global user.name $GIT_NAME
+    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
+    - git remote remove origin
+    - git remote add origin git@gitlab.com:maxrolon/testing.git
+    - git fetch origin
+    - npm i -g lerna
+    - lerna bootstrap
+  when: manual
+  only:
+    - master
+    - production
+
+deploy:major:
+  extends: .deploy
+  script:
+    - lerna publish major --no-verify-access --yes
+
+deploy:minor:
+  extends: .deploy
+  script:
+    - lerna publish minor --no-verify-access --yes
+
+deploy:patch:
+  extends: .deploy
+  script:
+    - lerna publish patch --no-verify-access --yes
+
+deploy:prerelease:
+  extends: .deploy
+  script:
+    - lerna publish prerelease --no-verify-access --yes
