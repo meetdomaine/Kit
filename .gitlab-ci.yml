@@ -3,6 +3,7 @@ image: node:13.7
 stages:
   - test
   - run
+  - deploy
 
 before_script:
   - npm i -g lerna
@@ -46,7 +47,6 @@ exec:deploy:
 
 .deploy:
   type: deploy
-  when: manual
   before_script:
     - apt-get update -y
     - 'which ssh-agent || ( apt-get install openssh-client -y )'
@@ -66,6 +66,7 @@ exec:deploy:
     - git fetch origin
     - npm i -g lerna
     - lerna bootstrap
+  when: manual
   only:
     - master
     - production
