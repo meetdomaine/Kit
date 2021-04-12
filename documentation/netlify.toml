@@ -1,4 +1,4 @@
 [build]
   base = "documentation/"
   command = "gridsome build"
-  publish = "documentation/dist/"
+  publish = "dist/"
