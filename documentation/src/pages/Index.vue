@@ -6,7 +6,7 @@
           <Logo :width="200" />
         </div>
         <h1 class="text-4xl text-center lg:text-5xl">
-          Half Helix Kit.
+          Half Helix / Kit.
         </h1>
         <p class="text-xl font-medium text-center">
           A <span class="text-ui-primary font-bold">Shopify</span> build and development tool.
@@ -26,7 +26,7 @@
         </div>
 
         <p class="mt-8 text-center container max-w-lg">
-         So we developed this tool for own team at Half Helix but hey, there might be other people out there that could enjoy this so we made it open source!
+         So we developed this tool for own team at <a class="underline" href="https://halfhelix.com">Half Helix</a> but hey, we thought that there might be other people out there that could enjoy this so we made it public!
         </p>
 
         <p class="text-lg text-center flex flex-wrap container max-w-xl justify-center">
@@ -137,16 +137,17 @@ export default {
         'Webpack',
         'Browser Sync',
         'Babel',
+        'Sass',
         'Live Reloading',
         'Stylelint',
         'Eslint',
         'Git Linting',
+        'Git Auto MRs',
         'Gitlab CI Friendly',
         'Critical CSS',
         'Webpack Chunking',
-        'Critical CSS',
         'Theme (Re)naming',
-        '+ more!'
+        '+ a whole bunch more!'
       ]
     }
   }
