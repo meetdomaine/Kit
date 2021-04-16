@@ -21,38 +21,93 @@ const {
   getThemeInformation
 } = require('@halfhelix/shopify-kit')
 
-let command = false
+let command = {}
 
 program
   .version(pkg.version)
-  .arguments('<cmd>')
   .usage('[watch|build|deploy|lint|gitlab|critical]')
-  .option('-e --env [env]', 'specify an environment')
-  .option('-u --upload [upload]', 'upload specific file in critical command')
-  .option('-q --quick', 'hide the loading screen and any synthetic pauses')
-  .option('--debug', 'turn the debug flag on')
-  .option('--close', 'close critical command after processing once')
-  .option('--no-open', 'do not open the default browser')
+  .option('-e --env [env]', 'specify an environment', 'development')
+  .option('--debug', 'turn the debug flag on', false)
   .option(
-    '-i --include [include]',
-    'specify the type of files to include',
-    'js,css'
+    '--open',
+    'open the default browser automatically (applies to "watch")'
   )
-  .option('-f --fix', 'Fix formatting issues', false)
   .option(
-    '-r --routine [routine]',
-    'Specify the routine to run (for supporting commands)',
-    ''
+    '--no-open',
+    'do not open the default browser automatically (applies to "watch")'
   )
-  .action((cmd) => {
-    command = cmd
+  .option(
+    '-f --fix',
+    'attempts to fix linting issues (applies to "lint")',
+    false
+  )
+
+program.addOption(new program.Option('-q --quick').hideHelp())
+program.addOption(new program.Option('-u --upload [upload]').hideHelp())
+program.addOption(new program.Option('--close').hideHelp())
+program.addOption(new program.Option('-i --include [include]').hideHelp())
+program.addOption(new program.Option('-r --routine [routine]').hideHelp())
+
+program
+  .command('watch')
+  .description('spin up a development experience')
+  .action(() => {
+    command.type = 'watch'
   })
-  .parse(process.argv)
+program
+  .command('build')
+  .description('build the theme locally')
+  .action(() => {
+    command.type = 'build'
+  })
+program
+  .command('deploy')
+  .description('deploy the theme to Shopify')
+  .action(() => {
+    command.type = 'deploy'
+  })
+program
+  .command('lint [types...]')
+  .description('lint different file types (e.g. "lint css js")')
+  .action((types) => {
+    command = {
+      type: 'lint',
+      include: types.length ? types : ['css', 'js']
+    }
+  })
+
+program
+  .command('gitlab [routine]')
+  .description('run a Gitlab specific routine (e.g. create an MR via CI)')
+  .action((routine) => {
+    command = {
+      routine,
+      type: 'gitlab'
+    }
+  })
+
+program
+  .command('critical')
+  .description('a helper command for generating a critical CSS bundle')
+  .action(() => {
+    command = {
+      type: 'critical'
+    }
+  })
+
+program.addHelpCommand(
+  'help [command]',
+  'list out available commands and options'
+)
+
+program.parse(process.argv)
+
+const programOptions = program.opts()
 
 new Promise(async (resolve) => {
   try {
     const details = await getPackageInformation('@halfhelix/kit')
-    program.quick
+    programOptions.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -61,7 +116,7 @@ new Promise(async (resolve) => {
         })
     resolve()
   } catch (e) {
-    program.quick
+    programOptions.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -72,30 +127,30 @@ new Promise(async (resolve) => {
 }).then(
   protect(async () => {
     const commandLineOptions = {
-      simple: program['quick'],
-      close: program.close,
-      quick: program.quick,
-      upload: program.upload,
-      env: program.env || 'development',
-      task: command
+      simple: programOptions.quick,
+      close: programOptions.close,
+      quick: programOptions.quick,
+      upload: programOptions.upload,
+      env: programOptions.env,
+      task: command.type
     }
 
-    if (program.debug) {
+    if (programOptions.debug) {
       commandLineOptions['debug'] = true
     }
 
-    if (program.open === false) {
-      commandLineOptions['bs.open'] = false
+    if (typeof programOptions.open !== 'undefined') {
+      commandLineOptions['bs.open'] = programOptions.open
     }
 
     const settings = configure(commandLineOptions)
 
-    if (~['deploy', 'watch', 'critical'].indexOf(command)) {
+    if (~['deploy', 'watch', 'critical'].indexOf(settings.task)) {
       await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }
 
-    if (~['build', 'deploy'].indexOf(command)) {
+    if (~['build', 'deploy'].indexOf(settings.task)) {
       webpacker(settings)
         .then((files) => {
           return settings['css.chunk']
@@ -120,7 +175,7 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['critical'].indexOf(command)) {
+    if (~['critical'].indexOf(settings.task)) {
       webpacker.critical(settings, (files) => {
         chunkStylesheets(files, settings).then((files) => {
           deployFiles(files, settings)
@@ -129,19 +184,21 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['watch'].indexOf(command)) {
+    if (~['watch'].indexOf(settings.task)) {
       webpacker.watch(settings, (event, file, settings) =>
         deployFile(event, file, settings)
       )
       return
     }
 
-    if (~['lint'].indexOf(command)) {
+    if (~['lint'].indexOf(settings.task)) {
       webpacker
         .lint(
           {
-            include: program.include.split(','),
-            fix: program.fix
+            include: programOptions.include
+              ? programOptions.include.split(',') // legacy support
+              : command.include,
+            fix: programOptions.fix
           },
           settings
         )
@@ -151,20 +208,11 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['gitlab'].indexOf(command)) {
-      gitlab(program.routine, settings).then(() => {
+    if (~['gitlab'].indexOf(settings.task)) {
+      gitlab(programOptions.routine || command.routine, settings).then(() => {
         epilogue()
       })
       return
     }
-
-    // Add more commands here..!
-
-    program.outputHelp()
-    epilogue({
-      error: true,
-      title: `Command "${command}" not supported`,
-      subtitle: 'See usage information above'
-    })
   })
 )

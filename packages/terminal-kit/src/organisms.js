@@ -62,8 +62,11 @@ function epilogue({
   title: foo = false,
   subtitle: bar = false
 } = {}) {
-  const text =
-    foo || error ? 'Process completed with errors' : 'Process completed!'
+  const text = foo
+    ? foo
+    : error
+    ? 'Process completed with errors'
+    : 'Process completed!'
 
   box(
     title(error ? chalk.red(text) : text),
