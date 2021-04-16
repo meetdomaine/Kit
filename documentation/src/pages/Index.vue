@@ -146,7 +146,7 @@ export default {
         'Gitlab CI Friendly',
         'Critical CSS',
         'Webpack Chunking',
-        'Theme (Re)naming',
+        'Theme Naming',
         '+ a whole bunch more!'
       ]
     }

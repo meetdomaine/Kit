@@ -70,6 +70,8 @@ PASSWORD={shopify-private-app-password}
 STORE={shopify-store}.myshopify.com
 ```
 
+See [**Getting Started / Connecting To Shopify**](/docs/getting-started/#setup-your-connection-to-shopify) for details on how to setup the minimum recommended variables as you see above.
+
 ## webpack.config.js
 
 Webpack configurations can vary pretty wildly per project but here is an example of a common boilerplate.
@@ -150,13 +152,12 @@ Again, add linting rules that make sense for your project. Another example below
 
 ```js
 module.exports = {
-  "extends": "stylelint-config-standard",
-  "rules": {
-    "selector-class-pattern": "^[a-z-_]+$",
-    "at-rule-no-unknown": null,
-    "no-descending-specificity": null,
-    "max-nesting-depth": 2
+  extends: 'stylelint-config-standard',
+  rules: {
+    'selector-class-pattern': '^[a-z-_]+$',
+    'at-rule-no-unknown': null,
+    'no-descending-specificity': null,
+    'max-nesting-depth': 2
   }
 }
-
 ```

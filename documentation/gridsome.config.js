@@ -10,42 +10,38 @@ module.exports = {
     favicon: './src/assets/favicon.png',
     touchicon: './src/assets/favicon.png'
   },
-  siteUrl: (process.env.SITE_URL ? process.env.SITE_URL : 'https://kit.halfhelix.com'),
+  siteUrl: process.env.SITE_URL
+    ? process.env.SITE_URL
+    : 'https://kit.halfhelix.com',
   settings: {
     web: process.env.URL_WEB || false,
     twitter: process.env.URL_TWITTER || false,
     github: process.env.URL_GITHUB || false,
     nav: {
-      links: [
-        { path: '/docs/', title: 'Docs' }
-      ]
+      links: [{ path: '/docs/', title: 'Docs' }]
     },
     sidebar: [
       {
         name: 'docs',
         sections: [
           {
-            title: 'Getting Started',
+            title: 'The Basics',
             items: [
               '/docs/',
               '/docs/theme-setup/',
+              '/docs/getting-started/',
               '/docs/commands/',
               '/docs/watch/',
-              '/docs/deploy/',
+              '/docs/deploy/'
             ]
           },
           {
             title: 'Features',
-            items: [
-              '/docs/critical-css/',
-              '/docs/linting/',
-            ]
+            items: ['/docs/critical-css/', '/docs/linting/']
           },
           {
             title: 'Reference',
-            items: [
-              '/docs/settings/'
-            ]
+            items: ['/docs/settings/']
           }
         ]
       }
@@ -61,9 +57,7 @@ module.exports = {
         remark: {
           externalLinksTarget: '_blank',
           externalLinksRel: ['noopener', 'noreferrer'],
-          plugins: [
-            '@gridsome/remark-prismjs'
-          ]
+          plugins: ['@gridsome/remark-prismjs']
         }
       }
     },
@@ -74,9 +68,7 @@ module.exports = {
         tailwindConfig: './tailwind.config.js',
         purgeConfig: {
           // Prevent purging of prism classes.
-          whitelistPatternsChildren: [
-            /token$/
-          ]
+          whitelistPatternsChildren: [/token$/]
         }
       }
     },
@@ -84,15 +76,13 @@ module.exports = {
     {
       use: '@gridsome/plugin-google-analytics',
       options: {
-        id: (process.env.GA_ID ? process.env.GA_ID : 'XX-999999999-9')
+        id: process.env.GA_ID ? process.env.GA_ID : 'XX-999999999-9'
       }
     },
 
     {
       use: '@gridsome/plugin-sitemap',
-      options: {
-      }
+      options: {}
     }
-
   ]
 }
