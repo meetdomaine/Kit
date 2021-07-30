@@ -8,6 +8,7 @@ const {
   completedAction
 } = require('@halfhelix/terminal-kit')
 const { getBranch } = require('@halfhelix/configure').utils
+const githubService = require('./services/github')
 
 const getBranchAndValidate = async (settings) => {
   const branch = await settings['git.getBranch'](settings, getBranch)
@@ -224,15 +225,18 @@ const displayCommitReel = (commits) => {
   })
 }
 
-module.exports = async (action, settings) => {
-  const branch = await getBranchAndValidate(settings)
+module.exports = {
+  github: githubService,
+  gitlab: async (action, settings) => {
+    const branch = await getBranchAndValidate(settings)
 
-  completedAction(`Conditionally creating merge request`)
-  const mergeRequest = await createMergeRequest(branch, settings)
+    completedAction(`Conditionally creating merge request`)
+    const mergeRequest = await createMergeRequest(branch, settings)
 
-  if (action === 'commits/lint') {
-    await lintCommits(branch, mergeRequest, settings)
+    if (action === 'commits/lint') {
+      await lintCommits(branch, mergeRequest, settings)
+    }
+
+    return Promise.resolve(action)
   }
-
-  return Promise.resolve(action)
 }

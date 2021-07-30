@@ -44,5 +44,9 @@ module.exports = {
   },
   'git.branchValidator'(branch, settings) {
     return /master|production|feature\/|bugfix\/|qa\//.test(branch)
-  }
+  },
+  'git.builtThemeCommitMessage'(settings) {
+    return 'Update from source code repository'
+  },
+  'git.githubRepositoryUrl': ''
 }

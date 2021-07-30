@@ -1,4 +1,5 @@
 const { exec } = require('child_process')
+const fs = require('fs-extra')
 
 const reverseSlashes = (path) => {
   return path.replace(/\\/g, '/')
@@ -36,10 +37,35 @@ const getUsername = () => {
   })
 }
 
+const pathExists = (fileOrDir) => {
+  return fs.pathExistsSync(fileOrDir)
+}
+
+const movePath = (from, to) => {
+  return fs.moveSync(from, to)
+}
+
+const outputFile = (file, data = '') => {
+  return fs.outputFileSync(file, data)
+}
+
+const appendToFile = (file, data = '') => {
+  return fs.appendFileSync(file, '\n' + data)
+}
+
+const emptyDir = (path) => {
+  return fs.emptyDirSync(path)
+}
+
 module.exports = {
   reverseSlashes,
   getCommit,
   getDate,
   getBranch,
-  getUsername
+  getUsername,
+  pathExists,
+  movePath,
+  outputFile,
+  appendToFile,
+  emptyDir
 }

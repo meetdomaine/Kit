@@ -5,7 +5,7 @@ const program = require('commander')
 const pkg = require('./package.json')
 const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
-const gitlab = require('@halfhelix/gitlab-kit')
+const { gitlab, github } = require('@halfhelix/gitlab-kit')
 const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
 const {
   getPackageInformation,
@@ -32,6 +32,7 @@ program
   .option('-q --quick', 'hide the loading screen and any synthetic pauses')
   .option('--debug', 'turn the debug flag on')
   .option('--close', 'close critical command after processing once')
+  .option('--sync-with-github', 'sync built theme to github')
   .option('--no-open', 'do not open the default browser')
   .option(
     '-i --include [include]',
@@ -71,12 +72,14 @@ new Promise(async (resolve) => {
   }
 }).then(
   protect(async () => {
+    const options = program.opts()
+
     const commandLineOptions = {
-      simple: program['quick'],
-      close: program.close,
-      quick: program.quick,
-      upload: program.upload,
-      env: program.env || 'development',
+      simple: options['quick'],
+      close: options.close,
+      quick: options.quick,
+      upload: options.upload,
+      env: options.env || 'development',
       task: command
     }
 
@@ -96,28 +99,29 @@ new Promise(async (resolve) => {
     }
 
     if (~['build', 'deploy'].indexOf(command)) {
-      webpacker(settings)
-        .then((files) => {
-          return settings['css.chunk']
-            ? chunkStylesheets(files, settings)
-            : Promise.resolve(files)
-        })
-        .then((files) => {
-          if (!files || !files.length) {
-            return Promise.resolve(false)
-          }
+      let files = await webpacker(settings)
+      files = settings['css.chunk']
+        ? await chunkStylesheets(files, settings)
+        : files
 
-          if (settings.task === 'build') {
-            return buildTheme(settings)
-          }
-          if (settings.task === 'deploy') {
-            return deployFiles(files, settings)
-          }
-        })
-        .then((result) => {
-          epilogue({ error: !result })
-        })
-      return
+      if (!files || !files.length) {
+        epilogue({ error: true })
+      }
+
+      if (settings.task === 'deploy') {
+        await deployFiles(files, settings)
+        return epilogue({ error: false })
+      }
+
+      if (options.syncWithGithub) {
+        const remoteBranchExists = await github.prepareDistRepo(settings)
+        await buildTheme(settings)
+        await github.commitAndPush(settings, remoteBranchExists)
+      } else {
+        await buildTheme(settings)
+      }
+
+      return epilogue({ error: false })
     }
 
     if (~['critical'].indexOf(command)) {
