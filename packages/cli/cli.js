@@ -109,13 +109,13 @@ new Promise(async (resolve) => {
       }
 
       if (settings.task === 'deploy') {
-        await deployFiles(files, settings)
+        await deployFiles(files || [], settings)
         return epilogue({ error: false })
       }
 
       if (options.syncWithGithub) {
         const remoteBranchExists = await github.prepareDistRepo(settings)
-        await buildTheme(settings)
+        await buildTheme(files || [], settings)
         await github.commitAndPush(settings, remoteBranchExists)
       } else {
         await buildTheme(settings)
@@ -156,9 +156,8 @@ new Promise(async (resolve) => {
     }
 
     if (~['gitlab'].indexOf(command)) {
-      gitlab(program.routine, settings).then(() => {
-        epilogue()
-      })
+      await gitlab(options.routine, settings)
+      epilogue()
       return
     }
 

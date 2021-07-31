@@ -78,6 +78,29 @@ async function addInConfig(files, settings) {
   return files
 }
 
+async function generateMappingFile(files, settings) {
+  ;(files || []).sort((a, b) => {
+    if (a.destination < b.destination) {
+      return -1
+    }
+    if (a.destination > b.destination) {
+      return 1
+    }
+    return 0
+  })
+
+  fs.outputJSONSync(
+    `${settings['path.dist']}/${settings['path.mapping-json']}`,
+    (files || []).reduce((obj, token) => {
+      obj[token['destination'].replace(settings['path.dist'], '')] = token[
+        'original'
+      ].replace(settings['path.src'], '')
+      return obj
+    }, {}),
+    { spaces: 2 }
+  )
+}
+
 /**
  * This is called after Webpack does it's compiling.
  * The compiled Webpack assets are passed in, and we then
@@ -127,20 +150,25 @@ async function deployFiles(compiledAssets = [], settings) {
  *
  * @param {Object} settings
  */
-async function buildTheme(settings) {
+async function buildTheme(compiledAssets = [], settings) {
   const spinner = action('Copying theme files')
 
-  const files = sanitize(await getThemeFiles(settings))
+  const files = sanitize(await getThemeFiles(settings), compiledAssets)
 
   await addInConfig(files, settings)
 
   files.forEach(async ({ original, destination, content = false }) => {
+    if (original === destination) {
+      return true
+    }
     content
       ? await fs.outputFile(destination, content)
       : fs.copySync(original, destination)
 
     return true
   })
+
+  await generateMappingFile(files, settings)
 
   await wait(2000)
   spinner.succeed()

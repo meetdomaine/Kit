@@ -45,6 +45,10 @@ const movePath = (from, to) => {
   return fs.moveSync(from, to)
 }
 
+const copyPath = (from, to) => {
+  return fs.copySync(from, to)
+}
+
 const outputFile = (file, data = '') => {
   return fs.outputFileSync(file, data)
 }
@@ -57,6 +61,10 @@ const emptyDir = (path) => {
   return fs.emptyDirSync(path)
 }
 
+const readJson = (path) => {
+  return fs.readJsonSync(path)
+}
+
 module.exports = {
   reverseSlashes,
   getCommit,
@@ -65,7 +73,9 @@ module.exports = {
   getUsername,
   pathExists,
   movePath,
+  copyPath,
   outputFile,
   appendToFile,
-  emptyDir
+  emptyDir,
+  readJson
 }

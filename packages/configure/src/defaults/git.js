@@ -45,8 +45,21 @@ module.exports = {
   'git.branchValidator'(branch, settings) {
     return /master|production|feature\/|bugfix\/|qa\//.test(branch)
   },
-  'git.builtThemeCommitMessage'(settings) {
-    return 'Update from source code repository'
+  'git.builtThemeCommitMessage'(settings, isBuildCommit = false) {
+    return 'Update from corresponding remote code repository'
   },
-  'git.githubRepositoryUrl': ''
+  'git.githubRepositoryUrl': '',
+  'git.gitlabRepositoryUrl': '',
+  'git.filesToCopyToGithub': [
+    'translation.yml',
+    '.theme-check.yml',
+    'kit.config.js',
+    'package.json'
+  ],
+  'git.mapNewFileSrcLocation'(path, settings) {
+    if ((path || '').split('/').filter(Boolean).length <= 1) {
+      return false
+    }
+    return path
+  }
 }

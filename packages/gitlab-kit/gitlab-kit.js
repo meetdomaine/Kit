@@ -228,15 +228,25 @@ const displayCommitReel = (commits) => {
 module.exports = {
   github: githubService,
   gitlab: async (action, settings) => {
-    const branch = await getBranchAndValidate(settings)
+    if (action === 'sync-from-build-repo') {
+      const remoteBranchExists = await githubService.prepareTempRepo(settings)
+      await githubService.copyOverBuiltFiles(settings)
+      await githubService.commitFilesAndPush(
+        settings,
+        'temp',
+        remoteBranchExists
+      )
+    } else {
+      const branch = await getBranchAndValidate(settings)
 
-    completedAction(`Conditionally creating merge request`)
-    const mergeRequest = await createMergeRequest(branch, settings)
+      completedAction(`Conditionally creating merge request`)
+      const mergeRequest = await createMergeRequest(branch, settings)
 
-    if (action === 'commits/lint') {
-      await lintCommits(branch, mergeRequest, settings)
+      if (action === 'commits/lint' || action === 'lint-commits') {
+        await lintCommits(branch, mergeRequest, settings)
+      }
     }
 
-    return Promise.resolve(action)
+    return action
   }
 }
