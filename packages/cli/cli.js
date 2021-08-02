@@ -5,6 +5,7 @@ const program = require('commander')
 const pkg = require('./package.json')
 const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
+const { developerThemeService } = require('@halfhelix/shopify-kit')
 const { gitlab, github } = require('@halfhelix/gitlab-kit')
 const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
 const {
@@ -22,11 +23,12 @@ const {
 } = require('@halfhelix/shopify-kit')
 
 let command = false
+let subCommand = false
 
 program
   .version(pkg.version)
   .arguments('<cmd>')
-  .usage('[watch|build|deploy|lint|gitlab|critical]')
+  .usage('[watch|build|deploy|lint|gitlab|critical|theme <command>]')
   .option('-e --env [env]', 'specify an environment')
   .option('-u --upload [upload]', 'upload specific file in critical command')
   .option('-q --quick', 'hide the loading screen and any synthetic pauses')
@@ -34,6 +36,7 @@ program
   .option('--close', 'close critical command after processing once')
   .option('--sync-with-github', 'sync built theme to github')
   .option('--no-open', 'do not open the default browser')
+  .option('--developer', 'use developer theme in watch and deploy commands')
   .option(
     '-i --include [include]',
     'specify the type of files to include',
@@ -45,15 +48,26 @@ program
     'Specify the routine to run (for supporting commands)',
     ''
   )
-  .action((cmd) => {
+  .action((cmd, program) => {
     command = cmd
+    if ((program.args || []).length > 1) {
+      subCommand = program.args[1]
+    }
+
+    // Adds in for kit deploy --developer
+    if (command === 'theme' && subCommand === 'deploy') {
+      command = 'deploy'
+      program.developer = true
+    }
   })
   .parse(process.argv)
+
+const options = program.opts()
 
 new Promise(async (resolve) => {
   try {
     const details = await getPackageInformation('@halfhelix/kit')
-    program.quick
+    options.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -72,14 +86,13 @@ new Promise(async (resolve) => {
   }
 }).then(
   protect(async () => {
-    const options = program.opts()
-
     const commandLineOptions = {
       simple: options['quick'],
       close: options.close,
       quick: options.quick,
       upload: options.upload,
       env: options.env || 'development',
+      isDeveloper: options.developer,
       task: command
     }
 
@@ -91,7 +104,7 @@ new Promise(async (resolve) => {
       commandLineOptions['bs.open'] = false
     }
 
-    const settings = configure(commandLineOptions)
+    const settings = await configure(commandLineOptions)
 
     if (~['deploy', 'watch', 'critical'].indexOf(command)) {
       await getThemeInformation(settings)
@@ -157,6 +170,12 @@ new Promise(async (resolve) => {
 
     if (~['gitlab'].indexOf(command)) {
       await gitlab(options.routine, settings)
+      epilogue()
+      return
+    }
+
+    if (~['theme'].indexOf(command)) {
+      await developerThemeService(subCommand, options, settings)
       epilogue()
       return
     }

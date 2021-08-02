@@ -51,6 +51,7 @@ module.exports = {
   'git.githubRepositoryUrl': '',
   'git.gitlabRepositoryUrl': '',
   'git.filesToCopyToGithub': [
+    '.github',
     'translation.yml',
     '.theme-check.yml',
     'kit.config.js',

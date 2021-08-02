@@ -65,6 +65,18 @@ const readJson = (path) => {
   return fs.readJsonSync(path)
 }
 
+const writeJson = (path, data) => {
+  fs.outputJSONSync(path, data, { spaces: 2 })
+}
+
+const readThemeLogFile = (settings) => {
+  return pathExists(
+    `${settings['path.cwd']}/${settings['shopify.themeLogFile']}`
+  )
+    ? readJson(`${settings['path.cwd']}/${settings['shopify.themeLogFile']}`)
+    : {}
+}
+
 module.exports = {
   reverseSlashes,
   getCommit,
@@ -77,5 +89,7 @@ module.exports = {
   outputFile,
   appendToFile,
   emptyDir,
-  readJson
+  readJson,
+  writeJson,
+  readThemeLogFile
 }

@@ -1,28 +1,58 @@
 const fetch = require('node-fetch')
 const fs = require('fs-extra')
-const util = require('util')
+const { getUsername } = require('@halfhelix/configure').utils
 
 function shopifyApiRequest(method, url, body, settings) {
-  return fetch(`https://${settings.store}/admin${url}`, {
-    method,
-    headers: {
-      'X-Shopify-Access-Token': settings.password,
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: body ? JSON.stringify(body) : null
-  }).then((response) => {
+  return fetch(
+    `https://${
+      /^shptka_/.test(settings.password)
+        ? 'theme-kit-access.shopifyapps.com/cli'
+        : settings.store
+    }/admin/api/unstable${url}`,
+    {
+      method,
+      headers: {
+        'X-Shopify-Access-Token': settings.password,
+        'X-Shopify-Shop': settings.store,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: body ? JSON.stringify(body) : null
+    }
+  ).then((response) => {
     return response.json()
   })
 }
 
-async function getTheme(settings) {
+async function getTheme(settings, themeId = false) {
   return shopifyApiRequest(
     'GET',
-    `/themes/${settings.theme}.json`,
+    `/themes/${themeId || settings.theme}.json`,
     false,
     settings
   )
+}
+
+async function createTheme(settings, branch) {
+  return shopifyApiRequest(
+    'POST',
+    `/themes.json`,
+    {
+      theme: {
+        name: `${settings['shopify.developmentThemeName'](
+          settings,
+          branch,
+          await getUsername()
+        )}`,
+        role: 'development'
+      }
+    },
+    settings
+  )
+}
+
+async function deleteTheme(settings, themeId) {
+  return shopifyApiRequest('DELETE', `/themes/${themeId}.json`, false, settings)
 }
 
 function isProductionTheme(settings) {
@@ -37,5 +67,7 @@ module.exports = {
   shopifyApiRequest,
   getTheme,
   isProductionTheme,
-  writeToLogFile
+  writeToLogFile,
+  createTheme,
+  deleteTheme
 }

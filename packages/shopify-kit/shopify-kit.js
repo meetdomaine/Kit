@@ -16,6 +16,7 @@ const sanitize = require('./services/tokenization')
 const sync = require('./services/assetUpload')
 const chunkStylesheets = require('./services/stylesheetChunking')
 const renameTheme = require('./services/themeNaming')
+const developerThemeService = require('./services/developerThemes')
 const { isProductionTheme, getTheme } = require('./services/util')
 
 /**
@@ -135,8 +136,12 @@ async function deployFiles(compiledAssets = [], settings) {
     await renameTheme(settings)
   }
 
-  completedAction(
-    `[${settings.theme}] Preview: https://${settings.store}?preview_theme_id=${settings.theme}`
+  box(
+    subtitle(`Customize this theme in the Online Store Editor:`),
+    subtitle(`https://${settings.store}/admin/themes/${settings.theme}/editor`),
+    newLines(),
+    subtitle(`Share this theme preview:`),
+    subtitle(`https://${settings.store}/?preview_theme_id=${settings.theme}`)
   )
 
   return Promise.resolve(true)
@@ -297,5 +302,6 @@ module.exports = {
   deployFiles,
   buildTheme,
   deployFile,
-  chunkStylesheets
+  chunkStylesheets,
+  developerThemeService
 }
