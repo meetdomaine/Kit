@@ -27,7 +27,7 @@
     "@halfhelix/shopify-kit": "^0.0.1-beta.33",
     "@halfhelix/terminal-kit": "^0.0.1-beta.33",
     "@halfhelix/webpacker": "^0.0.1-beta.33",
-    "commander": "^7.2.0",
+    "commander": "^8.1.0",
     "node-fetch": "^2.6.1"
   },
   "gitHead": "436453a333a2db6e13dc024ba070920951f24e43"

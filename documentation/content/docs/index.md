@@ -5,47 +5,26 @@ prev: '/docs'
 next: '/docs'
 ---
 
-# Installation
+# Introduction
 
-This package is designed to be installed globally on your local computer. However, you should be able to install in locally as a project dependency too (for example, we do this when running CI/CD builds so we can cache the package in a relative folder between jobs).
+At Half Helix, we've been using this build and development tool for all of our Shopify themes since late 2019. We built and incorporated it into our workflows since we saw a need to have a scalable developer experience that can be purposed on a wide range of Shopify theme projects without our developers having to worry about setup.
 
-In most instances you can get going by simply installing the package globally via the commands below. However, see the bottom section on some issues we've encountered in the past when going through the installation process.
+We are in 2021 now and there are new tools and features that greatly help with Shopify theme development. Shopify has introduced [Dawn](https://github.com/Shopify/dawn) and with it a set of standards that encourage adoption of simpler approaches to theme development and a preference for JIT asset pipelines through the use of [Shopify CLI for Themes](https://shopify.dev/themes/tools/cli/theme-commands) over robust tooling and file mutations. In part this is an expression of the maturity of modern browser APIs and our ability as a community to leverage greenfield features, like native javascript syntax and APIs like Web Components.
 
-## Using NPM
+The future of this Kit is unclear. In the short term, we'll be supporting this tool and allowing theme developers that use this tool to get the most out of Shopify. Feel free to review our recent Online Store 2.0 releases [here](/docs/online-store-2021).
 
-You can simply run:
+## Philosophy & Contributing
 
-```bash
-npm i -g @halfhelix/kit
-```
+This tool was made for our team Half Helix and currently our focus is on maintaining it for our immediate stakeholders. If you have an idea or notice a bug please feel free to reach out and submit a Merge Request.
 
-After that run `kit --version` to verify that the tool is working.
+## Dependencies
 
-## Using Yarn
+This tool is built upon Webpack 4 and it is certainly time to upgrade to Webpack 5. There are a number of vulnerability flags that we'll get removed with this pending update.
 
-If you would prefer to use Yarn, you can run:
+## Online Store 2.0 Features
 
-```bash
-yarn global add @halfhelix/kit
-```
+During Unite in 2021, Shopify released a number of features under the name "Online Store 2.0". We explore how this tool supports these features in the "Online Store 2.0" section. Here are the features that we've added:
 
-After that run `kit --version` to verify that the tool is working.
-
-## Installation troubleshooting
-
-In order to install this package we write to the local computer directory that is set to store NPM global packages, and we do install Node Sass (at least until we release a new version using Dart Sass). If there is an issue with permissions for this global directory, or issues with Sass having been built for another version of Node, issues may arise in the installation process.
-
-### Permission issues
-
-See [this link](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) on resolving permission issues when installing global packages.
-
-### Node Sass binding issues
-
-If you run into an error relating to Node Sass about non-compatible binaries "Node Sass could not find a binding for your current environment: OS X 64-bit with Node.js" you may need to rebuild node-sass from within the kit node_modules folder:
-
-```bash
-# For Mac OSX Users
-cd "$(npm root -g)/@halfhelix/kit" && npm rebuild node-sass;
-```
-
-*Note: Its on our roadmap to release a new version with Dart Sass support since [Node Sass is now deprecated](https://www.npmjs.com/package/node-sass).*
+- Github Support
+- Theme Kit Access Tokens
+- Developer Themes

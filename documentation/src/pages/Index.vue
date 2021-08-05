@@ -133,7 +133,6 @@ export default {
   data () {
     return {
       tags: [
-        'Install Globally',
         'Webpack',
         'Browser Sync',
         'Babel',

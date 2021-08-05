@@ -185,8 +185,9 @@ new Promise(async (resolve) => {
     }
 
     if (~['watch'].indexOf(settings.task)) {
-      webpacker.watch(settings, (event, file, settings) =>
-        deployFile(event, file, settings)
+      webpacker.watch(
+        settings,
+        async (event, file, settings) => await deployFile(event, file, settings)
       )
       return
     }

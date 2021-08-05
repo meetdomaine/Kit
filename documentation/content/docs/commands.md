@@ -5,7 +5,7 @@ prev: '/docs'
 next: '/docs'
 ---
 
-# Commands
+# Core Commands
 
 The main commands with the Kit are `kit watch`, `kit build` & `kit deploy`. Here, we'll give an overview of the commands available but we'll dive into these main commands in the dedicated pages as referenced in the menu.
 
@@ -24,8 +24,6 @@ If your a developer, this is likely the command that you'll most frequently use.
 1. Waits for initial files to be compiled by Webpack
 1. Opens your default browser
 1. Listens for changes
-
-**More can be found in [Development](/docs/watch)**
 
 ## Kit Build
 
@@ -60,15 +58,13 @@ This command will build the theme for deployment to Shopify, only copying the We
 1. Creates a queue that controls a throttled deployment to Shopify
 1. Optionally renames the Shopify theme at the end of the deployment
 
-**More can be found in [Deploying](/docs/deploy)**
-
 ## Other commands
 
 In addition to these three main commands, Kit also exposes the following commands:
 
 - `kit lint` (see [Linting](/docs/linting))
 - `kit gitlab` (see [Gitab](/docs/gitlab))
-- `kit critical` (see [Critical CSS](/docs/critical))
+- `kit critical` (see [Critical CSS](/docs/critical-css))
 - `kit --version` (print your current version of kit)
 
 And run `kit` or `kit help` to print an outline of what is available.

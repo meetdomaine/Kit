@@ -28,20 +28,49 @@ module.exports = {
             title: 'The Basics',
             items: [
               '/docs/',
+              '/docs/installation/',
               '/docs/theme-setup/',
               '/docs/getting-started/',
               '/docs/commands/',
-              '/docs/watch/',
-              '/docs/deploy/'
+              '/docs/local-development/',
+              '/docs/thinking-modular/'
+              // '/docs/deploy/'
             ]
           },
           {
             title: 'Features',
-            items: ['/docs/critical-css/', '/docs/linting/']
+            items: [
+              '/docs/critical-css/',
+              '/docs/javascript-chunking/',
+              '/docs/linting/',
+              '/docs/gitlab-integration/',
+              '/docs/theme-naming/'
+            ]
           },
           {
-            title: 'Reference',
-            items: ['/docs/settings/']
+            title: 'Online Store 2.0',
+            items: [
+              '/docs/github-sync/',
+              '/docs/developer-themes/',
+              '/docs/theme-kit-access-tokens/'
+            ]
+          },
+          {
+            title: 'Settings Reference',
+            items: [
+              '/settings/environment/',
+              '/settings/browsersync/',
+              '/settings/css/',
+              '/settings/git/',
+              '/settings/javascript/',
+              '/settings/path/',
+              '/settings/shopify/',
+              '/settings/theme-name/'
+            ]
+          },
+          {
+            title: 'Other Stuff',
+            items: ['/docs/contributing/', '/docs/testing-on-mobile/']
           }
         ]
       }

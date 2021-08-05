@@ -229,7 +229,7 @@ function _addCustomStyleLoaders(rule, settings) {
         }
       })
     }
-    if (settings['js.autoprefixInDev'] || settings.task !== 'watch') {
+    if (settings['css.autoprefixInWatch'] || settings.task !== 'watch') {
       rule.use.splice(sassIndex(), 0, {
         loader: resolveNodeModule('/postcss-loader'),
         options: {
@@ -331,5 +331,5 @@ module.exports = (settings) => {
     ...remaining
   }
 
-  return settings['js.overrideWebpack'](webpackConfig, settings)
+  return settings['js.filterWebpackConfig'](webpackConfig, settings)
 }

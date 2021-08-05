@@ -7,7 +7,7 @@ next: '/docs'
 
 # Theme Setup
 
-There are a few things that we need to do to setup a regular Shopify theme for Kit. Follow these steps and you'll have a theme setup (and developer experience) that is pretty, well, top notch.
+There are a few things that we need to do to setup a regular Shopify theme for Kit. Follow these steps and you'll have a theme setup that should be good to go.
 
 ## Basic Directory Structure
 
@@ -161,3 +161,7 @@ module.exports = {
   }
 }
 ```
+
+## Modules folders (optional)
+
+Check out the [Thinking Modular](/docs/thinking-modular) section for details on how to leverage a `src/modules/` folder for extra brownie points.

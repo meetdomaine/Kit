@@ -98,7 +98,7 @@ const generateStylesheetLinks = (token = {}, allFiles, settings) => {
   const string = `
     ${file ? generateStylesheetLink(token, settings) : ''}
     ${
-      (settings['css.chunk.createPreRenderLinks'] &&
+      (settings['css.chunk.createPreFetchLinks'] &&
         allFiles
           .map(({ file: _file, key: _key }) =>
             _key !== key ? generatePrefetchLink(_file) : ''
