@@ -26,7 +26,7 @@
         </div>
 
         <p class="mt-8 text-center container max-w-lg">
-         So we developed this tool for own team at <a class="underline" href="https://halfhelix.com">Half Helix</a> but hey, we thought that there might be other people out there that could enjoy this so we made it public!
+         We developed this tool for our own team at <a class="underline" href="https://halfhelix.com">Half Helix</a> but hey, we thought that there might be other people out there that could enjoy this so we made it public.
         </p>
 
         <p class="text-lg text-center flex flex-wrap container max-w-xl justify-center">
