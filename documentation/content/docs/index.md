@@ -9,9 +9,9 @@ next: '/docs'
 
 At Half Helix, we've been using this build and development tool for all of our Shopify themes since late 2019. We built and incorporated it into our workflows since we saw a need to have a scalable developer experience that can be purposed on a wide range of Shopify theme projects without our developers having to worry about setup.
 
-We are in 2021 now and there are new tools and features that greatly help with Shopify theme development. Shopify has introduced [Dawn](https://github.com/Shopify/dawn) and with it a set of standards that encourage adoption of simpler approaches to theme development and a preference for JIT asset pipelines through the use of [Shopify CLI for Themes](https://shopify.dev/themes/tools/cli/theme-commands) over robust tooling and file mutations. In part this is an expression of the maturity of modern browser APIs and our ability as a community to leverage greenfield features, like native javascript syntax and APIs like Web Components.
+We are in 2021 now and there are new tools and features that greatly help with Shopify theme development. Shopify has introduced [Dawn](https://github.com/Shopify/dawn) and with it a set of standards that encourage adoption of simpler approaches to theme development and a preference for JIT asset pipelines. [Shopify CLI for Themes](https://shopify.dev/themes/tools/cli/theme-commands) has been introduced to encourage this approach over robust tooling and file mutations. In part this is an expression of the maturity of modern browser APIs and our ability as a community to leverage greenfield features, like native javascript syntax and APIs like Web Components.
 
-The future of this Kit is unclear. In the short term, we'll be supporting this tool and allowing theme developers that use this tool to get the most out of Shopify. Feel free to review our recent Online Store 2.0 releases [here](/docs/online-store-2021).
+We'll be supporting this tool and allowing theme developers that use this tool to get the most out of Shopify. Feel free to review our recent Online Store 2.0 feature additions which we'll continue to add to.
 
 ## Philosophy & Contributing
 
