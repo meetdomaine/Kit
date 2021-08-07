@@ -126,7 +126,8 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - run: |
           npm i -g @halfhelix/kit
-          git config --global user.email "deployments@halfhelix.com"
+          git config --global init.defaultBranch master
+          git config --global user.email "ci@halfhelix.com"
           git config --global user.name "Half Helix"
       - run: kit sync-back-to-source-repo
 ```
