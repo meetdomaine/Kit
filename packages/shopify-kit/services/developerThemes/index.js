@@ -47,13 +47,11 @@ const fetchTheme = async (settings) => {
   const themeLog = readThemeLogFile(settings)
   if (themeLog[branch]) {
     const { theme } = await getTheme(settings, themeLog[branch])
-    completedAction(`Existing theme for branch "${themeLog[branch]}" found.`)
+    completedAction(`Existing theme for branch "${branch}" found.`)
     outputThemeInformation(settings, theme)
     return
   } else {
-    completedAction(
-      `Existing theme for branch "${themeLog[branch]}" not found.`
-    )
+    completedAction(`Existing theme for branch "${branch}" not found.`)
   }
 }
 
@@ -80,7 +78,7 @@ module.exports = async (action, options, settings) => {
   if (action === 'init') {
     await initializeTheme(settings)
   }
-  if (action === 'fetch') {
+  if (action === 'info') {
     await fetchTheme(settings)
   }
   if (action === 'destroy') {
