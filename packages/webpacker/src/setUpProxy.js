@@ -52,7 +52,7 @@ function makeConfig(webpack, settings, watchCallback) {
                 return
               }
               const spinner = action('Reloading your browser')
-              await wait(settings['bs.reloadDelay'] || 1000)
+              await wait(settings['bs.reloadDelay'] || 0)
               browserSync.reload()
               await wait(500)
               spinner.succeed()
