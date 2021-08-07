@@ -25,7 +25,7 @@ async function prepareRepo(settings, repoUrlSettingName, directorySettingName) {
   const branch = await settings['git.getBranch'](settings, utils.getBranch)
   utils.emptyDir(settings[`path.${directorySettingName}`])
   ;({ stdout, stderr } = await utils.exec(
-    `git init ${settings[`path.${directorySettingName}`]} --initial-branch noop`
+    `git init ${settings[`path.${directorySettingName}`]}`
   )),
     !stderr ? completedAction(stdout.trim()) : error(stderr)
   ;({ stdout, stderr } = await utils.exec(

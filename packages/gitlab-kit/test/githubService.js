@@ -55,9 +55,7 @@ test.beforeEach((t) => {
 
 test.serial('prepareDistRepo runs through 5 git interactions', async (t) => {
   await prepareDistRepo(Object.assign({}, settings))
-  t.true(
-    t.context.exec.getCall(0).args[0] === 'git init /dist --initial-branch noop'
-  )
+  t.true(t.context.exec.getCall(0).args[0] === 'git init /dist')
   t.true(
     t.context.exec.getCall(1).args[0] ===
       'cd /dist && git remote add slave git+foo'
@@ -76,9 +74,7 @@ test.serial('prepareDistRepo runs through 5 git interactions', async (t) => {
 
 test.serial('prepareTempRepo runs through 5 git interactions', async (t) => {
   await prepareTempRepo(Object.assign({}, settings))
-  t.true(
-    t.context.exec.getCall(0).args[0] === 'git init /temp --initial-branch noop'
-  )
+  t.true(t.context.exec.getCall(0).args[0] === 'git init /temp')
   t.true(
     t.context.exec.getCall(1).args[0] ===
       'cd /temp && git remote add slave git+bar'
