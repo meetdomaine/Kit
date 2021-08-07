@@ -63,9 +63,6 @@ exec:deploy:
     - git config --global user.name "Half Helix"
     - npm i -g lerna
     - lerna bootstrap
-  only:
-    - master
-    - production
 
 exec:sync:a:
   extends: .sync
