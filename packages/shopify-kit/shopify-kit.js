@@ -16,6 +16,7 @@ const sanitize = require('./services/tokenization')
 const sync = require('./services/assetUpload')
 const chunkStylesheets = require('./services/stylesheetChunking')
 const renameTheme = require('./services/themeNaming')
+const developerThemeService = require('./services/developerThemes')
 const { isProductionTheme, getTheme } = require('./services/util')
 
 /**
@@ -78,6 +79,29 @@ async function addInConfig(files, settings) {
   return files
 }
 
+async function generateMappingFile(files, settings) {
+  ;(files || []).sort((a, b) => {
+    if (a.destination < b.destination) {
+      return -1
+    }
+    if (a.destination > b.destination) {
+      return 1
+    }
+    return 0
+  })
+
+  fs.outputJSONSync(
+    `${settings['path.dist']}/${settings['path.mapping-json']}`,
+    (files || []).reduce((obj, token) => {
+      obj[token['destination'].replace(settings['path.dist'], '')] = token[
+        'original'
+      ].replace(settings['path.src'], '')
+      return obj
+    }, {}),
+    { spaces: 2 }
+  )
+}
+
 /**
  * This is called after Webpack does it's compiling.
  * The compiled Webpack assets are passed in, and we then
@@ -112,8 +136,12 @@ async function deployFiles(compiledAssets = [], settings) {
     await renameTheme(settings)
   }
 
-  completedAction(
-    `[${settings.theme}] Preview: https://${settings.store}?preview_theme_id=${settings.theme}`
+  box(
+    subtitle(`Customize this theme in the Online Store Editor:`),
+    subtitle(`https://${settings.store}/admin/themes/${settings.theme}/editor`),
+    newLines(),
+    subtitle(`Share this theme preview:`),
+    subtitle(`https://${settings.store}/?preview_theme_id=${settings.theme}`)
   )
 
   return Promise.resolve(true)
@@ -127,20 +155,25 @@ async function deployFiles(compiledAssets = [], settings) {
  *
  * @param {Object} settings
  */
-async function buildTheme(settings) {
+async function buildTheme(compiledAssets = [], settings) {
   const spinner = action('Copying theme files')
 
-  const files = sanitize(await getThemeFiles(settings))
+  const files = sanitize(await getThemeFiles(settings), compiledAssets)
 
   await addInConfig(files, settings)
 
   files.forEach(async ({ original, destination, content = false }) => {
+    if (original === destination) {
+      return true
+    }
     content
       ? await fs.outputFile(destination, content)
       : fs.copySync(original, destination)
 
     return true
   })
+
+  await generateMappingFile(files, settings)
 
   await wait(2000)
   spinner.succeed()
@@ -269,5 +302,6 @@ module.exports = {
   deployFiles,
   buildTheme,
   deployFile,
-  chunkStylesheets
+  chunkStylesheets,
+  developerThemeService
 }

@@ -48,5 +48,7 @@ module.exports = {
   // change event has been fired).
   'shopify.filterTokens'(tokens, settings) {
     return tokens
-  }
+  },
+  // The file that stores developer theme to branch correlations
+  'shopify.themeLogFile': '.kit-themes.json'
 }

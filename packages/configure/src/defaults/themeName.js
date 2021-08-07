@@ -12,6 +12,10 @@ module.exports = {
       return '[DEV] {name} - {date}'
     }
   },
+  // Override the development theme name format
+  'themeName.developmentThemeFormat'(settings, branch, username) {
+    return `[DEV] ${branch} (${username})`
+  },
   // Override the theme name after 'themeName.format' runs,
   // but before update has been made in Shopify
   'themeName.override'(name, settings) {

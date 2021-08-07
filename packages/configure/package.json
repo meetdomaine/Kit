@@ -13,6 +13,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@halfhelix/terminal-kit": "^0.0.1-beta.33",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.12.0"

@@ -64,5 +64,30 @@ module.exports = {
   // Override the branch name validator function
   'git.branchValidator'(branch, settings) {
     return /master|production|feature\/|bugfix\/|qa\//.test(branch)
+  },
+  // The remote repository of the built theme
+  'git.builtThemeRepositoryUrl': '',
+  // The remote repository of the source theme
+  'git.srcThemeRepositoryUrl': '',
+  // The commit title for repository to repository code sync
+  // "isBuildCommit" flags if the commit is coming from the build repo
+  'git.builtThemeCommitMessage'(settings, isBuildCommit = false) {
+    return 'Update from corresponding remote code repository'
+  },
+  // Files and directory to copy & commit to the built theme
+  'git.filesToCopyToBuiltTheme': [
+    '.github',
+    'translation.yml',
+    '.theme-check.yml',
+    'kit.config.js',
+    'package.json'
+  ],
+  // Overrides the src location for new built theme files
+  // These are files that are not found in the .kit-mappings.json file
+  'git.mapNewFileSrcLocation'(path, settings) {
+    if ((path || '').split('/').filter(Boolean).length <= 1) {
+      return false
+    }
+    return path
   }
 }

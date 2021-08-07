@@ -5,8 +5,9 @@ const program = require('commander')
 const pkg = require('./package.json')
 const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
-const gitlab = require('@halfhelix/gitlab-kit')
-const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
+const { developerThemeService } = require('@halfhelix/shopify-kit')
+const { gitlab, github } = require('@halfhelix/gitlab-kit')
+const { splash, epilogue, error } = require('@halfhelix/terminal-kit')
 const {
   getPackageInformation,
   getVersionDetails
@@ -21,13 +22,27 @@ const {
   getThemeInformation
 } = require('@halfhelix/shopify-kit')
 
-let command = {}
+let command = false
+let subCommand = false
 
 program
   .version(pkg.version)
-  .usage('[watch|build|deploy|lint|gitlab|critical]')
-  .option('-e --env [env]', 'specify an environment', 'development')
-  .option('--debug', 'turn the debug flag on', false)
+  .arguments('<cmd>')
+  .usage(
+    '[watch|build|deploy|lint|gitlab|critical|theme <command>]|sync-back-to-source-repo'
+  )
+  .option('-e --env [env]', 'specify an environment')
+  .option('-u --upload [upload]', 'upload specific file in critical command')
+  .option('-q --quick', 'hide the loading screen and any synthetic pauses')
+  .option('--debug', 'turn the debug flag on')
+  .option('--close', 'close critical command after processing once')
+  .option('--sync-with-repo', 'sync built theme to remote repo')
+  .option('--no-open', 'do not open the default browser')
+  .option('--developer', 'use developer theme in watch and deploy commands')
+  .option(
+    '--include [types]',
+    'the mime types to include in lint command (js,css)'
+  )
   .option(
     '--open',
     'open the default browser automatically (applies to "watch")'
@@ -36,62 +51,16 @@ program
     '--no-open',
     'do not open the default browser automatically (applies to "watch")'
   )
-  .option(
-    '-f --fix',
-    'attempts to fix linting issues (applies to "lint")',
-    false
-  )
-
-program.addOption(new program.Option('-q --quick').hideHelp())
-program.addOption(new program.Option('-u --upload [upload]').hideHelp())
-program.addOption(new program.Option('--close').hideHelp())
-program.addOption(new program.Option('-i --include [include]').hideHelp())
-program.addOption(new program.Option('-r --routine [routine]').hideHelp())
-
-program
-  .command('watch')
-  .description('spin up a development experience')
-  .action(() => {
-    command.type = 'watch'
-  })
-program
-  .command('build')
-  .description('build the theme locally')
-  .action(() => {
-    command.type = 'build'
-  })
-program
-  .command('deploy')
-  .description('deploy the theme to Shopify')
-  .action(() => {
-    command.type = 'deploy'
-  })
-program
-  .command('lint [types...]')
-  .description('lint different file types (e.g. "lint css js")')
-  .action((types) => {
-    command = {
-      type: 'lint',
-      include: types.length ? types : ['css', 'js']
+  .action((cmd, program) => {
+    command = cmd
+    if ((program.args || []).length > 1) {
+      subCommand = program.args[1]
     }
-  })
 
-program
-  .command('gitlab [routine]')
-  .description('run a Gitlab specific routine (e.g. create an MR via CI)')
-  .action((routine) => {
-    command = {
-      routine,
-      type: 'gitlab'
-    }
-  })
-
-program
-  .command('critical')
-  .description('a helper command for generating a critical CSS bundle')
-  .action(() => {
-    command = {
-      type: 'critical'
+    // Adds in for kit deploy --developer
+    if (command === 'theme' && subCommand === 'deploy') {
+      command = 'deploy'
+      program.developer = true
     }
   })
 
@@ -102,12 +71,12 @@ program.addHelpCommand(
 
 program.parse(process.argv)
 
-const programOptions = program.opts()
+const options = program.opts()
 
 new Promise(async (resolve) => {
   try {
     const details = await getPackageInformation('@halfhelix/kit')
-    programOptions.quick
+    options.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -116,7 +85,7 @@ new Promise(async (resolve) => {
         })
     resolve()
   } catch (e) {
-    programOptions.quick
+    options.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -124,55 +93,57 @@ new Promise(async (resolve) => {
         })
     resolve()
   }
-}).then(
-  protect(async () => {
+})
+  .then(async () => {
     const commandLineOptions = {
-      simple: programOptions.quick,
-      close: programOptions.close,
-      quick: programOptions.quick,
-      upload: programOptions.upload,
-      env: programOptions.env,
-      task: command.type
+      simple: options['quick'],
+      close: options.close,
+      quick: options.quick,
+      upload: options.upload,
+      env: options.env || 'development',
+      isDeveloper: options.developer,
+      task: command
     }
 
-    if (programOptions.debug) {
+    if (options.debug) {
       commandLineOptions['debug'] = true
     }
 
-    if (typeof programOptions.open !== 'undefined') {
-      commandLineOptions['bs.open'] = programOptions.open
+    if (typeof options.open !== 'undefined') {
+      commandLineOptions['bs.open'] = options.open
     }
 
-    const settings = configure(commandLineOptions)
+    const settings = await configure(commandLineOptions)
 
     if (~['deploy', 'watch', 'critical'].indexOf(settings.task)) {
       await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }
 
-    if (~['build', 'deploy'].indexOf(settings.task)) {
-      webpacker(settings)
-        .then((files) => {
-          return settings['css.chunk']
-            ? chunkStylesheets(files, settings)
-            : Promise.resolve(files)
-        })
-        .then((files) => {
-          if (!files || !files.length) {
-            return Promise.resolve(false)
-          }
+    if (~['build', 'deploy'].indexOf(command)) {
+      let files = await webpacker(settings)
+      files = settings['css.chunk']
+        ? await chunkStylesheets(files, settings)
+        : files
 
-          if (settings.task === 'build') {
-            return buildTheme(settings)
-          }
-          if (settings.task === 'deploy') {
-            return deployFiles(files, settings)
-          }
-        })
-        .then((result) => {
-          epilogue({ error: !result })
-        })
-      return
+      if (!files || !files.length) {
+        epilogue({ error: true })
+      }
+
+      if (settings.task === 'deploy') {
+        await deployFiles(files || [], settings)
+        return epilogue({ error: false })
+      }
+
+      if (options.syncWithRepo) {
+        const remoteBranchExists = await github.prepareDistRepo(settings)
+        await buildTheme(files || [], settings)
+        await github.commitAndPush(settings, remoteBranchExists)
+      } else {
+        await buildTheme(files || [], settings)
+      }
+
+      return epilogue({ error: false })
     }
 
     if (~['critical'].indexOf(settings.task)) {
@@ -196,10 +167,13 @@ new Promise(async (resolve) => {
       webpacker
         .lint(
           {
-            include: programOptions.include
-              ? programOptions.include.split(',') // legacy support
-              : command.include,
-            fix: programOptions.fix
+            include:
+              (options.include
+                ? typeof options.include === 'string'
+                  ? options.include.split(',')
+                  : options.include
+                : command.include) || 'css,js',
+            fix: options.fix
           },
           settings
         )
@@ -209,11 +183,24 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['gitlab'].indexOf(settings.task)) {
-      gitlab(programOptions.routine || command.routine, settings).then(() => {
-        epilogue()
-      })
+    if (~['gitlab', 'sync-back-to-source-repo'].indexOf(command)) {
+      const routine =
+        command === 'sync-back-to-source-repo'
+          ? 'sync-back-to-source-repo'
+          : options.routine
+      await gitlab(routine, settings)
+      epilogue()
+      return
+    }
+
+    if (~['theme'].indexOf(command)) {
+      await developerThemeService(subCommand, options, settings)
+      epilogue()
       return
     }
   })
-)
+  .catch((e) => {
+    error(e)
+    epilogue()
+    process.exit(1)
+  })

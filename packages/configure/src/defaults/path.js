@@ -24,5 +24,9 @@ module.exports = {
   // Location for stdout logs when the the current terminal window is bypassed
   'path.stdout': path.normalize(`${CWD}/node_modules/.logs/kit-stdout.log`),
   // Location for stderr logs when the the current terminal window is bypassed
-  'path.stderr': path.normalize(`${CWD}/node_modules/.logs/kit-stderr.log`)
+  'path.stderr': path.normalize(`${CWD}/node_modules/.logs/kit-stderr.log`),
+  // The temporary directory used for the built theme > source theme repo sync
+  'path.temp': path.normalize(`${CWD}/temp`),
+  // The file that stores src > built theme file locations in built repo (source repo to built repo sync)
+  'path.mapping-json': '.kit-mapping.json'
 }

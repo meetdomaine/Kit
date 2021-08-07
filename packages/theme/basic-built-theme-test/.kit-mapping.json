@@ -1,0 +1,10 @@
+{
+  "/assets/main.js": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.js",
+  "/assets/main.min.css.liquid": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.min.css.liquid",
+  "/config/settings_schema.json": "/config/settings_schema.json",
+  "/layout/theme.liquid": "/layout/theme.liquid",
+  "/locales/en.default.json": "/locales/en.default.json",
+  "/snippets/foo.liquid": "/modules/foo/foo.liquid",
+  "/snippets/snippet.liquid": "/snippets/snippet.liquid",
+  "/templates/product.liquid": "/templates/product.liquid"
+}

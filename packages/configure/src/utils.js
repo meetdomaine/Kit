@@ -1,4 +1,7 @@
-const { exec } = require('child_process')
+const util = require('util')
+const exec = require('child_process').exec
+const fs = require('fs-extra')
+const promiseExec = util.promisify(require('child_process').exec)
 
 const reverseSlashes = (path) => {
   return path.replace(/\\/g, '/')
@@ -36,10 +39,60 @@ const getUsername = () => {
   })
 }
 
+const pathExists = (fileOrDir) => {
+  return fs.pathExistsSync(fileOrDir)
+}
+
+const movePath = (from, to) => {
+  return fs.moveSync(from, to)
+}
+
+const copyPath = (from, to) => {
+  return fs.copySync(from, to)
+}
+
+const outputFile = (file, data = '') => {
+  return fs.outputFileSync(file, data)
+}
+
+const appendToFile = (file, data = '') => {
+  return fs.appendFileSync(file, '\n' + data)
+}
+
+const emptyDir = (path) => {
+  return fs.emptyDirSync(path)
+}
+
+const readJson = (path) => {
+  return fs.readJsonSync(path)
+}
+
+const writeJson = (path, data) => {
+  fs.outputJSONSync(path, data, { spaces: 2 })
+}
+
+const readThemeLogFile = (settings) => {
+  return pathExists(
+    `${settings['path.cwd']}/${settings['shopify.themeLogFile']}`
+  )
+    ? readJson(`${settings['path.cwd']}/${settings['shopify.themeLogFile']}`)
+    : {}
+}
+
 module.exports = {
+  exec: promiseExec,
   reverseSlashes,
   getCommit,
   getDate,
   getBranch,
-  getUsername
+  getUsername,
+  pathExists,
+  movePath,
+  copyPath,
+  outputFile,
+  appendToFile,
+  emptyDir,
+  readJson,
+  writeJson,
+  readThemeLogFile
 }
