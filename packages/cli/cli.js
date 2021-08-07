@@ -7,7 +7,7 @@ const webpacker = require('@halfhelix/webpacker')
 const configure = require('@halfhelix/configure')
 const { developerThemeService } = require('@halfhelix/shopify-kit')
 const { gitlab, github } = require('@halfhelix/gitlab-kit')
-const { protect, splash, epilogue } = require('@halfhelix/terminal-kit')
+const { splash, epilogue, error } = require('@halfhelix/terminal-kit')
 const {
   getPackageInformation,
   getVersionDetails
@@ -91,8 +91,8 @@ new Promise(async (resolve) => {
         })
     resolve()
   }
-}).then(
-  protect(async () => {
+})
+  .then(async () => {
     const commandLineOptions = {
       simple: options['quick'],
       close: options.close,
@@ -194,4 +194,8 @@ new Promise(async (resolve) => {
       return
     }
   })
-)
+  .catch((e) => {
+    error(e)
+    epilogue()
+    process.exit(1)
+  })

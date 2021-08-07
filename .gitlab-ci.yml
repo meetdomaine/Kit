@@ -2,10 +2,12 @@ image: node:13.7
 
 stages:
   - test
-  - run
+  - run:primary
+  - run:secondary
   - deploy
 
 before_script:
+  - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
   - npm i -g lerna
   - lerna bootstrap
 
@@ -16,7 +18,7 @@ tests:
     - npm run test
 
 exec:lint:
-  type: run
+  type: run:primary
   script:
     - cd ./packages/theme/basic-test
     - npm i
@@ -26,7 +28,7 @@ exec:lint:
     - production
 
 exec:build:
-  type: run
+  type: run:primary
   script:
     - cd ./packages/theme/basic-test
     - npm i
@@ -36,11 +38,54 @@ exec:build:
     - production
 
 exec:deploy:
-  type: run
+  type: run:primary
   script:
     - cd ./packages/theme/basic-test
     - npm i
     - node ../../cli/cli.js deploy
+  except:
+    - master
+    - production
+
+.sync:
+  before_script:
+    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
+    - apt-get update -y
+    - 'which ssh-agent || ( apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$GITHUB_AND_GITLAB_SYNC_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - git config --global user.email "ci@halfhelix.com"
+    - git config --global user.name "Half Helix"
+    - npm i -g lerna
+    - lerna bootstrap
+  when: manual
+  only:
+    - master
+    - production
+
+exec:sync:a:
+  extends: .sync
+  type: run:secondary
+  script:
+    - cd ./packages/theme/basic-test
+    - npm i
+    - node ../../cli/cli.js build --sync-with-repo
+  except:
+    - master
+    - production
+
+exec:sync:b:
+  extends: .sync
+  type: run:secondary
+  script:
+    - cd ./packages/theme/basic-built-theme-test
+    - npm i
+    - node ../../cli/cli.js sync-back-to-source-repo
   except:
     - master
     - production
@@ -62,7 +107,7 @@ exec:deploy:
     - git config --global user.name $GIT_NAME
     - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
     - git remote remove origin
-    - git remote add origin git@gitlab.com:maxrolon/testing.git
+    - git remote add origin git@gitlab.com:halfhelix/kit.git
     - git fetch origin
     - npm i -g lerna
     - lerna bootstrap
