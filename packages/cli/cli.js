@@ -40,6 +40,10 @@ program
   .option('--no-open', 'do not open the default browser')
   .option('--developer', 'use developer theme in watch and deploy commands')
   .option(
+    '--include [types]',
+    'the mime types to include in lint command (js,css)'
+  )
+  .option(
     '--open',
     'open the default browser automatically (applies to "watch")'
   )
@@ -67,8 +71,6 @@ program.addHelpCommand(
 
 program.parse(process.argv)
 
-const programOptions = program.opts()
-
 const options = program.opts()
 
 new Promise(async (resolve) => {
@@ -83,7 +85,7 @@ new Promise(async (resolve) => {
         })
     resolve()
   } catch (e) {
-    programOptions.quick
+    options.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -103,12 +105,12 @@ new Promise(async (resolve) => {
       task: command
     }
 
-    if (programOptions.debug) {
+    if (options.debug) {
       commandLineOptions['debug'] = true
     }
 
-    if (typeof programOptions.open !== 'undefined') {
-      commandLineOptions['bs.open'] = programOptions.open
+    if (typeof options.open !== 'undefined') {
+      commandLineOptions['bs.open'] = options.open
     }
 
     const settings = await configure(commandLineOptions)
@@ -165,10 +167,13 @@ new Promise(async (resolve) => {
       webpacker
         .lint(
           {
-            include: programOptions.include
-              ? programOptions.include.split(',') // legacy support
-              : command.include,
-            fix: programOptions.fix
+            include:
+              (options.include
+                ? typeof options.include === 'string'
+                  ? options.include.split(',')
+                  : options.include
+                : command.include) || 'css,js',
+            fix: options.fix
           },
           settings
         )
