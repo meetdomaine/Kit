@@ -21,7 +21,7 @@ module.exports = {
   // Automatically open the proxy in a new browser window
   'bs.open': true,
   // Sets a hard delay live reload event and browser reload
-  'bs.reloadDelay': 0,
+  'bs.reloadDelay': 1000,
   // A set of regular expressions that transform HTML in the Proxy
   // before it is downloaded by the browser. This set is consumed
   // when CSS is not chunked (activated via CSS setting)
