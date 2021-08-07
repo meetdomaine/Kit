@@ -138,7 +138,7 @@ new Promise(async (resolve) => {
         await buildTheme(files || [], settings)
         await github.commitAndPush(settings, remoteBranchExists)
       } else {
-        await buildTheme(settings)
+        await buildTheme(files || [], settings)
       }
 
       return epilogue({ error: false })

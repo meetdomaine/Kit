@@ -16,6 +16,9 @@ settings['path.temp'] = '/temp'
 settings['path.cwd'] = '/foo'
 settings['git.filesToCopyToBuiltTheme'] = ['.foo-config', '.bar']
 settings['path.mapping-json'] = '.kit-mapping.json'
+settings['git.getBranch'] = (settings, fallback) => {
+  return fallback()
+}
 
 test.before((t) => {
   t.context.getBranch = sinon.stub(utils, 'getBranch').returns('feature/foo')

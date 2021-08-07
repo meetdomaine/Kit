@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="{{ shop.locale }}">
+<head>
+  {{ 'main.min.css' | asset_url | stylesheet_tag }}
+  {{ content_for_header }}
+</head>
+
+<body class="{{ template_class }}">
+  {{ content_for_layout }}
+  {{ 'main.js' | asset_url | script_tag }}
+</body>
+</html>
