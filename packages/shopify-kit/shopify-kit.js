@@ -95,7 +95,9 @@ async function generateMappingFile(files, settings) {
     (files || []).reduce((obj, token) => {
       obj[token['destination'].replace(settings['path.dist'], '')] = token[
         'original'
-      ].replace(settings['path.src'], '')
+      ]
+        .replace(settings['path.src'], '')
+        .replace(settings['path.dist'], '')
       return obj
     }, {}),
     { spaces: 2 }
