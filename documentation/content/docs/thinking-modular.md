@@ -43,19 +43,23 @@ src
   |
   |- templates
   |- modules
-     |- header
-     |  |- header.js
-     |  |- header.liquid
-     |  |- header.scss
+     |- global
+     |  |- header
+     |     |- header.js
+     |     |- header.liquid
+     |     |- header.scss
      |
-     |- footer
-     |- newsletter-signup
+     |- index
+     |  |- hero-slider
+     |     |- hero-slider.js
+     |     |- hero-slider.liquid
+     |     |- hero-slider.scss
      |- ...
 ```
 
 ## Globbing JS and CSS files
 
-In this example the header, footer and newsletter-signup code is encapsulated inside module folder. These module folders are a concept that helps us reuse code and keep track of logic, markup and styles across complex themes.
+In this example we have our theme code broken down into modules and encapsulated inside the `modules` folder. These module folders are a concept that helps us reuse code and keep track of logic, markup and styles across complex themes.
 
 This toolbelt enables this architecture by supporting glob patterns like the examples provided below using a custom Webpack loader:
 
@@ -77,7 +81,6 @@ import 'modules/**/*.js'
 In addition to style and Javascript files, Liquid is taken out of these module folders and sent to the Snippets, Sections or Templates theme directories. For example:
 
 ```bash
-src/modules/header/header.liquid > snippets/header.liquid
 src/modules/global/header/header.liquid > snippets/header.liquid
 src/modules/header/header.section.liquid > sections/header.liquid
 src/modules/cart/cart.template.liquid > templates/cart.liquid
@@ -85,7 +88,7 @@ src/modules/cart/cart.template.liquid > templates/cart.liquid
 
 ## Folder Naming Conventions
 
-If the top-level module folders are named a certain way, CSS chunking and JS asset chunking is more readily supported. The standard convention is to follow the pattern: `{request.page_type}-{template.suffix}`. Here is an example of a common structure:
+If the top-level module folders are named a certain way, CSS chunking and JS asset chunking is more readily supported. The standard convention is to follow the pattern: `{request.page_type}-{template.suffix}`, where `request.page_type` and `template.suffix` are both properties exposed in Liquid. Here is an example of a common structure of top level module folders:
 
 ```bash
 src

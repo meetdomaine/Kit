@@ -11,7 +11,7 @@ Development themes were introduced by Shopify to provide separation between deve
 
 The developer flow here is focused on allowing a developer to have **one development theme per branch**. We have introduced a `.kit-themes.json` file that tracks the theme ID to the branch name. This file will be different for each developer, hence this file should be .gitignore'd.
 
-**Note: Development themes do not show in the Shopify Admin UI!**
+**Note: Development themes do not show in the Shopify Admin UI.**
 
 ## Commands
 
@@ -24,7 +24,7 @@ kit theme init
 # Get info about current theme
 kit theme fetch
 
-# Deploy build to current theme
+# Deploy local build to current theme
 kit theme deploy (or kit deploy --developer)
 
 # Develop against the current theme
@@ -44,7 +44,7 @@ kit theme init
 
 Create a new development theme for the current branch. If a theme ID is already tracked to the branch name in the `{project}/.kit-themes.json` file, then a new theme is not created and the current theme's information is printed in your terminal window. You can remove the current mapping by running `kit theme destroy` or deleting the reference in the `{project}/.kit-themes.json` using your IDE.
 
-Note: This simply creates an empty theme. Using `kit theme deploy` to update these theme with new files.
+Note: This simply creates an empty theme. Using `kit theme deploy` to update this theme with new files.
 
 ## kit theme fetch
 
@@ -76,6 +76,6 @@ Start a developer environment against the current branch's developer theme. If a
 kit theme destroy
 ```
 
-Note: This action will have immediate effect without a interstitual prompt.
+Note: This action will have immediate effect without an interstitial prompt.
 
 This theme allows a developer to remove a theme from Shopify once the need for the theme has been satisfied. Generally speaking, the developer who created the theme originally should be the person who removes the theme once they are finished with it.

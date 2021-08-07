@@ -12,7 +12,7 @@ There is functionality included that:
 - Automatically creates merge requests in Gitlab when code is pushed to Gitlab
 - Lints Git authors and messages after a merge requests have been pushed
 
-This functionality is configurable via settings that follow the pattern "git.{settingName}", the defaults for these settings can be found [via this link](https://github.com/halfhelix/Kit/blob/master/packages/configure/src/defaults/git.js).
+This functionality is configurable via settings that follow the pattern "git.{settingName}", more information on these settings can be found in the [Settings > Git](/settings/git/) section below.
 
 ## Commands
 
@@ -25,7 +25,7 @@ kit gitlab --routine commits/lint
 
 ## Example .gitlab-ci.yml
 
-This has been simplified to include only relevant settings.
+This has been simplified to include only relevant properties:
 
 ```yml
 image: node:{version}
@@ -44,7 +44,7 @@ Check Git:
 
 ## Example kit.config.js
 
-This has been simplified to include only relevant settings.
+This has been simplified to include only relevant properties:
 
 ```js
 module.exports = {
@@ -52,7 +52,3 @@ module.exports = {
   'git.maintainer': 'gitlabhandle'
 }
 ```
-
-## Relevant Settings
-
-See breakdown of settings [here](/settings/git).

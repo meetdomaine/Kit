@@ -15,7 +15,7 @@ next: '/docs'
 
 #### shopify.requestsPerInterval
 
-The amount of requests that can be handled simultaneously when deploying assets. This can be set to "4" when the instance is a Shopify Plus instance. It can be set to "5" as a max but expect certain requests to hit a throttle limit and automatically retried at the end of the run.
+The amount of requests that can be handled simultaneously when deploying assets. This can be set to "4" when the instance is a Shopify Plus instance. It can be set to "5" as a max but expect certain requests to hit a throttle limit and automatically be retried at the end of the deployment queue.
 
 ```js
 {

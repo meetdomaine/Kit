@@ -32,9 +32,9 @@ src
 
 ## kit.config.js
 
-This file can get big but at its core it looks like this. For all projects, we recommend having a Babel config and every project must have a "themes" object where each object under "themes" can map to a environment (however, most of the time it is just "development", "staging" and "production").
+This file can get big but at its core it looks like this. For all projects, we recommend having a Babel config and every project must have a "themes" object where each object under "themes" maps to a environment (however, most of the time it is just "development", "staging" and "production").
 
-Any kit.config.js setting can go into the themes.{environment} object to allow it to be set differently per environment. Further, any value can be set per-instance using ENV variables that are pulled from the .env file in the root directory.
+Any kit.config.js setting can go into the themes.{environment} object to allow it to be set differently per environment. Further, any value can be set differently on each developer computer using ENV variables that are pulled from the `.env` file in the root directory.
 
 ```js
 module.exports = {
@@ -62,7 +62,7 @@ module.exports = {
 
 ## .env
 
-The values in the .env variable should map 1-to-1 to the ENV variables that are referenced in the kit.config.js file. If we use the kit.config.js example above, we'd expect a file that looks like the following example. The properties in this file can grow substantially as you support deployments to different themes or Shopify instances, or what to change kit.config file values without having to update Git every time.
+The values in the .env variable should map 1-to-1 to the ENV variables that are referenced in the kit.config.js file. If we use the kit.config.js example above, we'd expect a file that looks like the following example. The properties in this file can grow substantially as you support deployments to different themes or Shopify instances, or want to change kit.config file values without having to update Git every time.
 
 ```bash
 THEME_ID={shopify-theme-id}
@@ -74,7 +74,7 @@ See [**Getting Started / Connecting To Shopify**](/docs/getting-started/#setup-y
 
 ## webpack.config.js
 
-Webpack configurations can vary pretty wildly per project but here is an example of a common boilerplate.
+Webpack configurations can vary per project but here is an example of a common boilerplate.
 
 - The entry property contains both the main scss file and the main JS file
 - The module.rule for `/\.s?css$/` includes an "extract" property that tells Kit to extract the CSS into it's own file at build time. Keep this here and follow this example as a general rule.

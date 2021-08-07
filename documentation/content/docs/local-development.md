@@ -23,7 +23,7 @@ When you trigger "kit watch", this tool will execute the following actions:
 
 Now, CSS and Javascript are treated a little differently to other types of files. To speed up development, Webpack keeps track of file updates in your local memory rather than saving the files to a disk or uploading them to Shopify. For this reason, if you view the theme outside of your localhost and you haven't run `kit deploy` on theme you are trying to preview, you'll likely see up-to-date liquid files but you'll probably not see your up-to-date CSS and JS because it hasn't been pushed to Shopify yet!
 
-In order to allow for this in-memory handling of CSS and Javascript and allow changes to be fed to the browser, we use Webpack HMR (Hot Module Reloading) functionality. We also use BrowserSync replacements to change the URL references to your JS and CSS assets from the Shopify CDN destinations to local URLs that is connected to this HMR functionality (when in the localhost only). So if you see your Javascript coming from a URL like `/dev/main.js` while in localhost, this is the reason.
+In order to allow for this in-memory handling of CSS and Javascript and allow changes to be fed to the browser, we use Webpack HMR (Hot Module Reloading) functionality. We also use BrowserSync replacements to change the URL references of your JS and CSS assets from the Shopify CDN destinations to local URLs that are connected to this HMR functionality (when in the localhost only). So if you see your Javascript coming from a URL like `/dev/main.js` while in localhost, this is the reason.
 
 ## Localhost Proxy Replacements
 

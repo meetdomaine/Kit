@@ -51,7 +51,7 @@ const formatName = async (settings, format) => {
 }
 ```
 
-If you want to simplify the function, you can add it to the specific environment config:
+If you want to override default functionality but simplify the function, you can add it to the specific environment config:
 
 ```js
 module.exports = {
@@ -70,7 +70,7 @@ module.exports = {
 
 #### themeName.update
 
-Should the theme name be updated using the format above as part of the `deploy` command routine? By default, we only allow this in a CI/CD context (see [here](/settings/environment/#isci)) and not in a "development" environment.
+Determines if the theme name should be updated using the format above as part of the `deploy` command routine. By default, we only allow this in a CI/CD context (see [here](/settings/environment/#isci)) and not in a "development" environment.
 
 ```js
 {

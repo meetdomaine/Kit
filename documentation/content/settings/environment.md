@@ -55,9 +55,9 @@ Files to not upload and overwrite in the Shopify-hosted theme.
 
 #### domain (optional)
 
-A domain to use are the target for the localhost proxy rather than the "myshopify.com" domain. This is useful when a site has gone live and the myshopify.com domain is getting redirected to another domain. In this case, if you do not set the domain you'll get redirected outside of the localhost proxy.
+A domain to use as the target for the localhost proxy rather than the ".myshopify.com" domain. This is useful when a site has gone live and the .myshopify.com domain is getting redirected to another domain. In this case, if you do not set the domain you'll get redirected outside of the localhost proxy.
 
-Note: Make sure you include the "www." subdomain if the primary domain in Shopify also includes this subdomain.
+Note: Make sure you include the "www." subdomain if the primary domain configured in Shopify also includes this subdomain.
 
 ```js
 {
@@ -67,7 +67,7 @@ Note: Make sure you include the "www." subdomain if the primary domain in Shopif
 
 ## Per-environment Configurations
 
-Every setting (even the ones outlined in subsequent pages) can be configured differently for each environment! The common environments are "development", "staging" and "production" but an environment can be anything, it just needs to match the `--env {environment}` value passed into the `kit` command, e.g. `kit watch --env development`.
+Every setting (even the ones outlined in subsequent pages) can be configured differently for each environment. The common environments are "development", "staging" and "production" but an environment can be anything, it just needs to match the `--env {environment}` value passed into the `kit` command, e.g. `kit watch --env development`.
 
 Here's an example of a common `kit.config.js` environment setup (the kit.config.js namespace is `themes.{environment}`):
 

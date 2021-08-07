@@ -24,7 +24,7 @@ cd ./packages/cli
 npm i -g $(PWD)
 ```
 
-Once these steps have been successfully carried out, you should be able to run `kit {command}` commands globally and have the command being controlled by this local copy of Kit rather than a copy of the code in your npm global `node_modules` directory (as would be standard if you were to run `npm i -g @halfhelix/kit`).
+Once these steps have been successfully carried out, you should be able to run `kit {command}` commands globally and have the command be controlled by this local copy of Kit rather than a copy of the code in your npm global `node_modules` directory (as would be standard if you were to run `npm i -g @halfhelix/kit`).
 
 ## Unit Testing
 
@@ -32,4 +32,4 @@ We use [ava](https://github.com/avajs/ava) for unit tests. Unit tests for this p
 
 ## Code Formatting
 
-We use [Prettier](https://prettier.io/) for code formatting. Please ensure your IDE is setup to support the `.prettierrc` file in this package.
+We use [Prettier](https://prettier.io/) for code formatting. Please ensure your IDE is setup to support the `.prettierrc` file in this repo.

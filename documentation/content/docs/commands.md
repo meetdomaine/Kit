@@ -7,7 +7,7 @@ next: '/docs'
 
 # Core Commands
 
-The main commands with the Kit are `kit watch`, `kit build` & `kit deploy`. Here, we'll give an overview of the commands available but we'll dive into these main commands in the dedicated pages as referenced in the menu.
+The main commands with Kit are `kit watch`, `kit build` & `kit deploy`.
 
 ## Kit Watch
 
@@ -15,7 +15,7 @@ The main commands with the Kit are `kit watch`, `kit build` & `kit deploy`. Here
 kit watch
 ```
 
-If your a developer, this is likely the command that you'll most frequently use. Here's what this command does:
+If you are a developer, this is likely the command that you'll most frequently use. Here's what this command does:
 
 1. Interprets configuration information
 1. Generates a Webpack configuration object in memory
@@ -63,8 +63,8 @@ This command will build the theme for deployment to Shopify, only copying the We
 In addition to these three main commands, Kit also exposes the following commands:
 
 - `kit lint` (see [Linting](/docs/linting))
-- `kit gitlab` (see [Gitab](/docs/gitlab))
-- `kit critical` (see [Critical CSS](/docs/critical-css))
+- `kit gitlab` (see [Gitab](/docs/gitlab-integration))
+- `kit theme` (see [Developer Themes](/docs/developer-themes))
 - `kit --version` (print your current version of kit)
 
 And run `kit` or `kit help` to print an outline of what is available.

@@ -21,7 +21,7 @@ We are not going to spend too much time on this step. Ensure that you have insta
 
 ## Build the theme for the first time
 
-This step will help us validate that our theme setup is correct, Webpack is able to compile our JS and CSS assets and the Kit is able to copy over theme assets to the build directly (which defaults to `{project}/dist`). Running this command is always a good initial step when starting a new project.
+This step will help us validate that our theme setup is correct, Webpack is able to compile our JS and CSS assets and the Kit is able to copy over theme assets to the build directly (which defaults to `{project}/dist`). Running this command is always a good initial step when validating a new project.
 
 Run: `kit build --env production`
 
@@ -41,15 +41,17 @@ Make sure that any NPM module you are using in `webpack.config.js` or `kit.confi
 
 ## Upload the built theme to Shopify
 
-This is essential so that we have an accurate development theme in your Shopify instance that matches your local environment. Zip up the build directory (defaults to `{project}/dist`) after the theme has been successfully built and upload it to Shopify using the "Upload Theme" functionality.
+It is essential that we have an accurate development theme in your Shopify instance that matches your local environment.
+
+A way to do this when starting a new project is to zip up the build directory (defaults to `{project}/dist`) after the theme has been successfully built and upload it to Shopify using the "Upload Theme" functionality in the Shopify Admin UI.
 
 ## Setup your connection To Shopify
 
 Here, we setup the three main variables that we need to get a development environment going:
 
-- The .myshopify.com URL
-- A private app password that we can use to establish an API connection
-- The theme ID of the theme we'll be developing against
+- The {instance}.myshopify.com URL.
+- A private app password that we can use to establish an API connection (this can be a [Theme Kit Access Tokens](/docs/theme-kit-access-tokens)).
+- The theme ID of the theme we'll be developing against.
 
 **The .myshopify.com URL**
 
@@ -59,11 +61,13 @@ This should be easy to get ahold of. Head over to your Shopify instance, head ov
 
 Head over to the Apps section of the Shopify instance admin, click "Manage Private Apps" and create a new private app that has permissions to read and write theme files. Here, we want the **"Password"** property, not the **"Api Key"** property.
 
+Note: See the [Theme Kit Access Tokens](/docs/theme-kit-access-tokens) section if Theme Kit Access Tokens are preferred over private app passwords.
+
 **Theme ID**
 
-Start off with the Theme ID of the theme that we recently uploaded. Head over to the Theme section of the Shopify instance admin, find your theme and click "Customize". Grab the ID out of the URL bar.
+Head over to the Theme section of the Shopify instance admin, find your corresponding theme and click "Customize". Grab the ID out of the URL bar. (Note: You'll need to make sure that you your local theme state matches a theme that has been deployed to Shopify servers).
 
-Now that you've acquired these three properties, add them to your `{project}/.env` file following the format in [**Theme Setup / .env**](http://localhost:8080/docs/theme-setup/#env).
+Now that you've acquired these three properties, add them to your `{project}/.env` file following the format in [**Theme Setup / .env**](/docs/theme-setup/#env).
 
 ## Test out your dev environment
 

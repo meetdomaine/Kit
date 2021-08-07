@@ -24,7 +24,7 @@ kit lint --include css
 
 ## Eslint
 
-Add an `eslintrc.js` file to your project root. The contents of this file will be informed by your own opinions on syntax. However, he is an example:
+Add an `eslintrc.js` file to your project root. The contents of this file will be informed by your own opinions on syntax. However, here is an example:
 
 ```js
 module.exports = {
@@ -73,7 +73,7 @@ module.exports = {
 
 ## Stylelint
 
-Add a `.stylelintrc.js` file to your project root. Similar to the above, the contents of this file will be informed by your own opinions on syntax. However, he is an example:
+Add a `.stylelintrc.js` file to your project root. Similar to the above, the contents of this file will be informed by your own opinions on syntax. However, here is an example:
 
 ```js
 module.exports = {
@@ -90,7 +90,7 @@ module.exports = {
 ### Configuration
 
 - Stylelint can be turned off via the `css.lintStyles` property in your kit.config.js
-- You can configure paths that are linting for the `css.stylelintPaths` property
+- You can configure paths that are linted with the `css.stylelintPaths` property
 
 ```js
 {

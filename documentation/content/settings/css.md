@@ -11,13 +11,13 @@ next: '/docs'
 - The defaults for these settings can be found [via this link](https://github.com/halfhelix/Kit/blob/master/packages/configure/src/defaults/css.js).
 - Each setting is commented in the link above.
 
-If you check out the link above, you'll see that there are a hefty amount of settings available and most of then relate to CSS chunking and critical css splitting. For this reason, it's worth reading up on the [CSS Chunking & Critical CSS](/docs/critical-css/) section, and the [Thinking Modular](/docs/thinking-modular) section.
+If you check out the link above, you'll see that there are a hefty amount of settings available and most of then relate to CSS chunking and critical CSS splitting. For this reason, it's worth reading up on the [CSS Chunking & Critical CSS](/docs/critical-css/) section, and the [Thinking Modular](/docs/thinking-modular) section.
 
 ### Noteworthy Settings
 
 #### css.lintStyles
 
-This property sets turns on and off style linting using [Stylelint](https://stylelint.io/).
+This property toggles [Stylelint](https://stylelint.io/) linting.
 
 ```js
 {
@@ -33,7 +33,6 @@ This property sets the glob paths that communicate to [Stylelint](https://stylel
 {
   'css.stylelintPaths'(settings) {
     return [
-      // `src/assets/css/**/*.scss`,
       `src/assets/scss/**/*.scss`,
       `src/modules/**/*.scss`,
       `src/sections/**/*.scss`
@@ -46,7 +45,7 @@ This property sets the glob paths that communicate to [Stylelint](https://stylel
 
 This is the flag that enables a whole host of CSS chunking and critical CSS behavior (configurable by a whole bunch of settings). This is pretty dependant on the modular approach to ordering your files so as mentioned above, it's worth reading up on the [CSS Chunking & Critical CSS](/docs/critical-css/) section, and the [Thinking Modular](/docs/thinking-modular) section.
 
-See these commented settings [via this link](https://github.com/halfhelix/Kit/blob/master/packages/configure/src/defaults/css.js).
+See relevant commented settings [via this link](https://github.com/halfhelix/Kit/blob/master/packages/configure/src/defaults/css.js).
 
 ```js
 {
@@ -56,7 +55,7 @@ See these commented settings [via this link](https://github.com/halfhelix/Kit/bl
 
 ### CSS chunking and Critical Example
 
-Here's an example kit.config.js with CSS chunking and Critical CSS enabled:
+Here's an example kit.config.js with CSS chunking and Critical CSS enabled, pulled from one of our projects:
 
 ```js
 {

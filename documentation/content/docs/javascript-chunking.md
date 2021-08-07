@@ -42,4 +42,6 @@ src
 
 This functionality will leverage Webpack to attempt to separate the landing page module JS from the index page JS, but have both areas of the site (the homepage and a page using a "landing" template) access the necessary global javascript. By using folder names to dictate Webpack chunks, we aim to provide an out of the box performance enhancement that can be configured as need be.
 
-Behind the scenes, the implementation is quite simple, we are ingesting the path of the chunk in our custom Glob Loader, and using the top level module folder as the value for the `webpackChunkName` of the module's javascript file.
+Behind the scenes, the implementation is quite simple, we are ingesting the path of the chunk in a custom Webpack loader, and using the top level module folder as the value for the `webpackChunkName` of the module's javascript file.
+
+Note that there is still a single JS bundle entrypoint that Webpack creates to control the loading of subsequent JS chunks.

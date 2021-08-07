@@ -18,4 +18,4 @@ There are a few settings that allow for easy testing on a mobile device connecte
 }
 ```
 
-With these settings temporarily added to your `kit.config.js` file (you probably shouldn't commit them), you can set the URL of your localhost proxy to use your local IP address and turn off hot module reloading functionality. We turn off HMR in this instance since there are situations where reloads are delayed or misfired across a network connection.
+With these settings temporarily added to your `kit.config.js` file (you probably shouldn't commit them), you can set the URL of your localhost proxy to use your local IP address and turn off hot module reloading functionality. We turn off HMR in this situation since there are times where reloads are delayed or misfired across a network connection.

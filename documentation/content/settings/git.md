@@ -11,7 +11,7 @@ next: '/docs'
 - The defaults for these settings can be found [via this link](https://github.com/halfhelix/Kit/blob/master/packages/configure/src/defaults/git.js).
 - Each setting is commented in the link above.
 
-This settings primary service the Gitab Integration, particularly automated Gitlab merge request creation and Git history validation. It's worth reading up on the [Gitlab Integration](/docs/gitlab-integration/) section.
+This settings primarily service the Gitab Integration, particularly around automated Gitlab merge request creation and Git history validation. It's worth reading up on the [Gitlab Integration](/docs/gitlab-integration/) section.
 
 ### Noteworthy Settings
 
@@ -27,7 +27,7 @@ The Gitlab token to use to authenticate Gitlab API requests with. This can be a 
 
 #### git.maintainer
 
-The Gitlab User Handle to use as the assignee for Gitlab Merge Requests (omit the "@" symbol).
+The Gitlab user handle to use as the assignee for Gitlab merge requests (omit the "@" symbol).
 
 ```js
 {
@@ -49,7 +49,7 @@ Properties to pass into the Gitlab API request that generates programmatic merge
 
 #### git.gitlabMergeRequestTitle
 
-The name of the programmatic merge request.
+The title of the programmatic merge request.
 
 ```js
 {

@@ -16,7 +16,7 @@ next: '/docs'
 
 #### bs.local
 
-This property sets the value of the proxy address that appears in browser. For almost all instances, you'll want to keep this at localhost. However, if you want to do something like debug a remote device on a local network you can set this to you local IP address.
+This property sets the value of the proxy address that appears in browser. For almost all instances, you'll want to keep this as localhost. However, if you want to do something like debug a remote device on a local network you can set this to you local IP address.
 
 ```js
 {
@@ -26,7 +26,7 @@ This property sets the value of the proxy address that appears in browser. For a
 
 #### bs.target
 
-This is the opposite of `bs.local`, it sets the root URL that the proxy will.. proxy. You should not have to overwrite this setting directly but it's here so you can see what is happing behind the scenes. If you have a `domain` property configured in your `kit.config.js` it will be prioritized. This is helpful when a Shopify site has gone live and the "myshopify.com" URL is getting redirected to a primary domain. Setting `domain` will ensure the localhost proxy does not follow the redirect and get pulled out of the localhost proxy.
+This is the opposite of `bs.local`, it sets the root URL that the proxy will... proxy. You should not have to overwrite this setting directly but it's here so you can see what is happing behind the scenes. If you have a `domain` property configured in your `kit.config.js` it will be prioritized. This is helpful when a Shopify site has gone live and the ".myshopify.com" URL is getting redirected to a primary domain. Setting `domain` will ensure the localhost proxy does not follow the redirect and get pulled out of the localhost proxy.
 
 ```js
 {
@@ -40,7 +40,7 @@ This is the opposite of `bs.local`, it sets the root URL that the proxy will.. p
 
 #### bs.proxyReplacementsFilter
 
-Take a read of the [Local Development](/docs/local-development/) to better understand where this setting fits in! We added this setting so that you don't need to override all BrowserSync proxy replacement rules, rather you can add to them as needed and retain the defaults.
+Take a read of the [Local Development](/docs/local-development/) section to better understand where this setting fits in. We added this setting so that you don't need to override all BrowserSync proxy replacement rules, rather you can add to them as needed and retain the defaults.
 
 ```js
 {

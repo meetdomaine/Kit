@@ -35,9 +35,9 @@ Name of the src directory to fetch source files from (a child directory of your 
 
 #### path.cdn
 
-This one is a little unique. Since we are compiling javascript and CSS locally in the `watch` command and not sending these files to Shopify on every change (mentioned in [Local Development](/docs/local-development)), we have found the need to interpret the asset_url filter when Liquid has been used on SCSS files. Here, take the Shopify CDN of a theme asset in your instance and add it here. We have a custom loader that with shim `'{{ '{path}.{mine}' | asset_url }}` and add in this property value.
+This one is a little unique. Since we are compiling javascript and CSS locally in the `watch` command and not sending these files to Shopify on every change (mentioned in [Local Development](/docs/local-development)), we have found the need to interpret the `asset_url` filter when Liquid has been used on SCSS files. Here, take the Shopify CDN of a theme asset in your instance and add it here. We have a custom loader that will shim `'{{ '{path}.{mine}' | asset_url }}` and add in this property value.
 
-We will not here that using Liquid in SCSS files does have a performance impact and should typically be avoided.
+We will note here that using Liquid in SCSS files does have a performance impact and should typically be avoided.
 
 ```js
 {
