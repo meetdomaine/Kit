@@ -24,6 +24,7 @@ const {
 
 let command = false
 let subCommand = false
+let developerThemeWorkflow = false
 
 program
   .version(pkg.version)
@@ -51,16 +52,18 @@ program
     '--no-open',
     'do not open the default browser automatically (applies to "watch")'
   )
-  .action((cmd, program) => {
+  .action((cmd, args, program) => {
     command = cmd
+
     if ((program.args || []).length > 1) {
       subCommand = program.args[1]
     }
 
-    // Adds in for kit deploy --developer
-    if (command === 'theme' && subCommand === 'deploy') {
-      command = 'deploy'
-      program.developer = true
+    // Proxies watch and deploy commands for
+    // an intuitive "kit theme" sequence of sub commands
+    if (command === 'theme' && ~['watch', 'deploy'].indexOf(subCommand)) {
+      command = subCommand
+      developerThemeWorkflow = true
     }
   })
 
@@ -101,7 +104,7 @@ new Promise(async (resolve) => {
       quick: options.quick,
       upload: options.upload,
       env: options.env || 'development',
-      isDeveloper: options.developer,
+      isDeveloper: options.developer || developerThemeWorkflow,
       task: command
     }
 

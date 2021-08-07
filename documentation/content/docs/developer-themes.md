@@ -22,7 +22,7 @@ Here are a list of commands added to support developer themes:
 kit theme init
 
 # Get info about current theme
-kit theme fetch
+kit theme info
 
 # Deploy local build to current theme
 kit theme deploy (or kit deploy --developer)
@@ -46,10 +46,10 @@ Create a new development theme for the current branch. If a theme ID is already 
 
 Note: This simply creates an empty theme. Using `kit theme deploy` to update this theme with new files.
 
-## kit theme fetch
+## kit theme info
 
 ```
-kit theme fetch
+kit theme info
 ```
 
 Prints out information about the current branch's developer theme. You'll get an error messaging if you haven't mapped a theme to the current branch already using `kit theme init`.
