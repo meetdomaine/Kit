@@ -62,22 +62,27 @@ This command is designed to be run in a CI/CD runner (see the example below usin
 image: node:{version}
 
 before_script:
+  - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
   - apt-get update -y
   - 'which ssh-agent || ( apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
-  - ssh-add <(echo "$GITHUB_SYNC_PRIVATE_KEY")
+  # https://gitlab.com/gitlab-org/gitlab-foss/-/issues/14434#note_36717658
+  # Run "cat github_sync | base64" to add key to Gitlab
+  - ssh-add <(echo "$GITHUB_AND_GITLAB_SYNC_PRIVATE_KEY" | base64 --decode)
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan github.com >> ~/.ssh/known_hosts
+  - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
-  - yarn install
-  - yarn add @halfhelix/kit@{version}
+  - git config --global init.defaultBranch master
+  - git config --global user.email "ci@halfhelix.com"
+  - git config --global user.name "Half Helix"
+  - npm i -g lerna
+  - lerna bootstrap
 
 Sync To Github:
   type: deployment
   script:
-    - git config --global user.email "deployments@halfhelix.com"
-    - git config --global user.name "Half Helix"
     - kit build --sync-with-repo
 ```
 
