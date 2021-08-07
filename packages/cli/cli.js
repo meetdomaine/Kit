@@ -38,15 +38,12 @@ program
   .option('--no-open', 'do not open the default browser')
   .option('--developer', 'use developer theme in watch and deploy commands')
   .option(
-    '-i --include [include]',
-    'specify the type of files to include',
-    'js,css'
+    '--open',
+    'open the default browser automatically (applies to "watch")'
   )
-  .option('-f --fix', 'Fix formatting issues', false)
   .option(
-    '-r --routine [routine]',
-    'Specify the routine to run (for supporting commands)',
-    ''
+    '--no-open',
+    'do not open the default browser automatically (applies to "watch")'
   )
   .action((cmd, program) => {
     command = cmd
@@ -60,7 +57,15 @@ program
       program.developer = true
     }
   })
-  .parse(process.argv)
+
+program.addHelpCommand(
+  'help [command]',
+  'list out available commands and options'
+)
+
+program.parse(process.argv)
+
+const programOptions = program.opts()
 
 const options = program.opts()
 
@@ -76,7 +81,7 @@ new Promise(async (resolve) => {
         })
     resolve()
   } catch (e) {
-    program.quick
+    programOptions.quick
       ? true
       : splash({
           title: 'Half Helix Kit',
@@ -96,17 +101,17 @@ new Promise(async (resolve) => {
       task: command
     }
 
-    if (program.debug) {
+    if (programOptions.debug) {
       commandLineOptions['debug'] = true
     }
 
-    if (program.open === false) {
-      commandLineOptions['bs.open'] = false
+    if (typeof programOptions.open !== 'undefined') {
+      commandLineOptions['bs.open'] = programOptions.open
     }
 
     const settings = await configure(commandLineOptions)
 
-    if (~['deploy', 'watch', 'critical'].indexOf(command)) {
+    if (~['deploy', 'watch', 'critical'].indexOf(settings.task)) {
       await getThemeInformation(settings)
       await prepareForDeployment(settings)
     }
@@ -137,7 +142,7 @@ new Promise(async (resolve) => {
       return epilogue({ error: false })
     }
 
-    if (~['critical'].indexOf(command)) {
+    if (~['critical'].indexOf(settings.task)) {
       webpacker.critical(settings, (files) => {
         chunkStylesheets(files, settings).then((files) => {
           deployFiles(files, settings)
@@ -146,19 +151,22 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['watch'].indexOf(command)) {
-      webpacker.watch(settings, (event, file, settings) =>
-        deployFile(event, file, settings)
+    if (~['watch'].indexOf(settings.task)) {
+      webpacker.watch(
+        settings,
+        async (event, file, settings) => await deployFile(event, file, settings)
       )
       return
     }
 
-    if (~['lint'].indexOf(command)) {
+    if (~['lint'].indexOf(settings.task)) {
       webpacker
         .lint(
           {
-            include: program.include.split(','),
-            fix: program.fix
+            include: programOptions.include
+              ? programOptions.include.split(',') // legacy support
+              : command.include,
+            fix: programOptions.fix
           },
           settings
         )
@@ -179,14 +187,5 @@ new Promise(async (resolve) => {
       epilogue()
       return
     }
-
-    // Add more commands here..!
-
-    program.outputHelp()
-    epilogue({
-      error: true,
-      title: `Command "${command}" not supported`,
-      subtitle: 'See usage information above'
-    })
   })
 )
