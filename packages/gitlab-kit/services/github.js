@@ -1,7 +1,4 @@
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
-const { getBranch, pathExists, emptyDir, copyPath, readJson } =
-  require('@halfhelix/configure').utils
+const utils = require('@halfhelix/configure').utils
 const { error, completedAction } = require('@halfhelix/terminal-kit')
 
 /**
@@ -25,13 +22,13 @@ async function prepareRepo(settings, repoUrlSettingName, directorySettingName) {
       true
     )
   }
-  const branch = await settings['git.getBranch'](settings, getBranch)
-  emptyDir(settings[`path.${directorySettingName}`])
-  ;({ stdout, stderr } = await exec(
+  const branch = await settings['git.getBranch'](settings, utils.getBranch)
+  utils.emptyDir(settings[`path.${directorySettingName}`])
+  ;({ stdout, stderr } = await utils.exec(
     `git init ${settings[`path.${directorySettingName}`]} --initial-branch noop`
   )),
     !stderr ? completedAction(stdout.trim()) : error(stderr)
-  ;({ stdout, stderr } = await exec(
+  ;({ stdout, stderr } = await utils.exec(
     `cd ${settings[`path.${directorySettingName}`]} && git remote add slave ${
       settings[repoUrlSettingName]
     }`
@@ -41,7 +38,9 @@ async function prepareRepo(settings, repoUrlSettingName, directorySettingName) {
       : error(stderr)
 
   try {
-    await exec(`git ls-remote --exit-code -h "${settings[repoUrlSettingName]}"`)
+    await utils.exec(
+      `git ls-remote --exit-code -h "${settings[repoUrlSettingName]}"`
+    )
   } catch (e) {
     error(
       new Error(`Could not read from ${settings[repoUrlSettingName]}`),
@@ -50,18 +49,18 @@ async function prepareRepo(settings, repoUrlSettingName, directorySettingName) {
     )
   }
   completedAction(`Successfully pinged ${settings[repoUrlSettingName]}`)
-  await exec(
+  await utils.exec(
     `cd ${settings[`path.${directorySettingName}`]} && git fetch slave`
   )
   completedAction(`Ran "git fetch slave" in ${directorySettingName} directory`)
   if (
-    pathExists(
+    utils.pathExists(
       `${
         settings[`path.${directorySettingName}`]
       }/.git/refs/remotes/slave/${branch}`
     )
   ) {
-    await exec(
+    await utils.exec(
       `cd ${settings[`path.${directorySettingName}`]} && git checkout ${branch}`
     )
     completedAction(
@@ -69,7 +68,7 @@ async function prepareRepo(settings, repoUrlSettingName, directorySettingName) {
     )
     return true
   } else {
-    await exec(
+    await utils.exec(
       `cd ${
         settings[`path.${directorySettingName}`]
       } && git checkout -b ${branch}`
@@ -95,8 +94,8 @@ async function commitFilesAndPush(
   directorySettingName,
   remoteBranchExists
 ) {
-  const branch = await settings['git.getBranch'](settings, getBranch)
-  ;({ stdout, stderr } = await exec(
+  const branch = await settings['git.getBranch'](settings, utils.getBranch)
+  ;({ stdout, stderr } = await utils.exec(
     `cd ${settings[`path.${directorySettingName}`]} && git status`
   ))
   if (
@@ -107,7 +106,7 @@ async function commitFilesAndPush(
     completedAction('There are no new changes to push to remote')
     return
   }
-  ;({ stdout, stderr } = await exec(
+  ;({ stdout, stderr } = await utils.exec(
     `cd ${
       settings[`path.${directorySettingName}`]
     } &&  git add . && git commit -am "${settings[
@@ -119,7 +118,7 @@ async function commitFilesAndPush(
           `Committing new updates to ${directorySettingName} repo`
         )
       : error(stderr)
-  await exec(
+  await utils.exec(
     `cd ${
       settings[`path.${directorySettingName}`]
     } && git push slave --set-upstream ${branch}`
@@ -148,8 +147,8 @@ module.exports.prepareTempRepo = async (settings) => {
  */
 module.exports.commitAndPush = async (settings, remoteBranchExists) => {
   settings['git.filesToCopyToBuiltTheme'].forEach((file) => {
-    if (pathExists(`${settings['path.cwd']}/${file}`)) {
-      copyPath(
+    if (utils.pathExists(`${settings['path.cwd']}/${file}`)) {
+      utils.copyPath(
         `${settings['path.cwd']}/${file}`,
         `${settings['path.dist']}/${file}`
       )
@@ -159,18 +158,22 @@ module.exports.commitAndPush = async (settings, remoteBranchExists) => {
 }
 
 module.exports.copyOverBuiltFiles = async (settings) => {
-  const branch = await settings['git.getBranch'](settings, getBranch)
-  const { stdout: gitManagedFiles } = await exec(
+  const branch = await settings['git.getBranch'](settings, utils.getBranch)
+  const { stdout: gitManagedFiles } = await utils.exec(
     `git ls-tree -r ${branch} --name-only`
   )
-  if (!pathExists(`${settings['path.cwd']}/${settings['path.mapping-json']}`)) {
+  if (
+    !utils.pathExists(
+      `${settings['path.cwd']}/${settings['path.mapping-json']}`
+    )
+  ) {
     error(
       new Error(`The ${settings['path.mapping-json']} file is required`),
       false,
       true
     )
   }
-  const mappings = readJson(
+  const mappings = utils.readJson(
     `${settings['path.cwd']}/${settings['path.mapping-json']}`
   )
   gitManagedFiles.split('\n').forEach((file) => {
@@ -178,13 +181,13 @@ module.exports.copyOverBuiltFiles = async (settings) => {
       file = `/${file}`
     }
     if (mappings[file]) {
-      copyPath(
+      utils.copyPath(
         `${settings['path.cwd']}${file}`,
         `${settings['path.temp']}/src/${mappings[file]}`
       )
     } else {
       settings['git.mapNewFileSrcLocation'](file, settings) &&
-        copyPath(
+        utils.copyPath(
           `${settings['path.cwd']}${file}`,
           `${settings['path.temp']}/src/${settings['git.mapNewFileSrcLocation'](
             file,

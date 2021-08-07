@@ -1,5 +1,7 @@
-const { exec } = require('child_process')
+const util = require('util')
+const exec = require('child_process').exec
 const fs = require('fs-extra')
+const promiseExec = util.promisify(require('child_process').exec)
 
 const reverseSlashes = (path) => {
   return path.replace(/\\/g, '/')
@@ -78,6 +80,7 @@ const readThemeLogFile = (settings) => {
 }
 
 module.exports = {
+  exec: promiseExec,
   reverseSlashes,
   getCommit,
   getDate,
