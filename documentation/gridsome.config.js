@@ -50,7 +50,7 @@ module.exports = {
           {
             title: 'Online Store 2.0',
             items: [
-              '/docs/github-sync/',
+              '/docs/repo-sync/',
               '/docs/developer-themes/',
               '/docs/theme-kit-access-tokens/'
             ]

@@ -130,11 +130,11 @@ async function commitFilesAndPush(
 module.exports.commitFilesAndPush = commitFilesAndPush
 
 module.exports.prepareDistRepo = async (settings) => {
-  return await prepareRepo(settings, 'git.githubRepositoryUrl', 'dist')
+  return await prepareRepo(settings, 'git.builtThemeRepositoryUrl', 'dist')
 }
 
 module.exports.prepareTempRepo = async (settings) => {
-  return await prepareRepo(settings, 'git.gitlabRepositoryUrl', 'temp')
+  return await prepareRepo(settings, 'git.srcThemeRepositoryUrl', 'temp')
 }
 
 /**
@@ -147,7 +147,7 @@ module.exports.prepareTempRepo = async (settings) => {
  * @returns
  */
 module.exports.commitAndPush = async (settings, remoteBranchExists) => {
-  settings['git.filesToCopyToGithub'].forEach((file) => {
+  settings['git.filesToCopyToBuiltTheme'].forEach((file) => {
     if (pathExists(`${settings['path.cwd']}/${file}`)) {
       copyPath(
         `${settings['path.cwd']}/${file}`,

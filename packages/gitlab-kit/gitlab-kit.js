@@ -228,7 +228,7 @@ const displayCommitReel = (commits) => {
 module.exports = {
   github: githubService,
   gitlab: async (action, settings) => {
-    if (action === 'sync-from-build-repo') {
+    if (action === 'sync-back-to-source-repo') {
       const remoteBranchExists = await githubService.prepareTempRepo(settings)
       await githubService.copyOverBuiltFiles(settings)
       await githubService.commitFilesAndPush(

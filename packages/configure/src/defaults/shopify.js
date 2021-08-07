@@ -49,8 +49,6 @@ module.exports = {
   'shopify.filterTokens'(tokens, settings) {
     return tokens
   },
-  'shopify.themeLogFile': '.kit-themes.json',
-  'shopify.developmentThemeName'(settings, branch, username) {
-    return `[DEV] ${branch} (${username})`
-  }
+  // The file that stores developer theme to branch correlations
+  'shopify.themeLogFile': '.kit-themes.json'
 }

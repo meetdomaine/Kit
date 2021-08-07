@@ -28,13 +28,15 @@ let subCommand = false
 program
   .version(pkg.version)
   .arguments('<cmd>')
-  .usage('[watch|build|deploy|lint|gitlab|critical|theme <command>]')
+  .usage(
+    '[watch|build|deploy|lint|gitlab|critical|theme <command>]|sync-back-to-source-repo'
+  )
   .option('-e --env [env]', 'specify an environment')
   .option('-u --upload [upload]', 'upload specific file in critical command')
   .option('-q --quick', 'hide the loading screen and any synthetic pauses')
   .option('--debug', 'turn the debug flag on')
   .option('--close', 'close critical command after processing once')
-  .option('--sync-with-github', 'sync built theme to github')
+  .option('--sync-with-repo', 'sync built theme to remote repo')
   .option('--no-open', 'do not open the default browser')
   .option('--developer', 'use developer theme in watch and deploy commands')
   .option(
@@ -131,7 +133,7 @@ new Promise(async (resolve) => {
         return epilogue({ error: false })
       }
 
-      if (options.syncWithGithub) {
+      if (options.syncWithRepo) {
         const remoteBranchExists = await github.prepareDistRepo(settings)
         await buildTheme(files || [], settings)
         await github.commitAndPush(settings, remoteBranchExists)
@@ -176,8 +178,12 @@ new Promise(async (resolve) => {
       return
     }
 
-    if (~['gitlab'].indexOf(command)) {
-      await gitlab(options.routine, settings)
+    if (~['gitlab', 'sync-back-to-source-repo'].indexOf(command)) {
+      const routine =
+        command === 'sync-back-to-source-repo'
+          ? 'sync-back-to-source-repo'
+          : options.routine
+      await gitlab(routine, settings)
       epilogue()
       return
     }

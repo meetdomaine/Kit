@@ -39,7 +39,7 @@ async function createTheme(settings, branch) {
     `/themes.json`,
     {
       theme: {
-        name: `${settings['shopify.developmentThemeName'](
+        name: `${settings['themeName.developmentThemeFormat'](
           settings,
           branch,
           await getUsername()
