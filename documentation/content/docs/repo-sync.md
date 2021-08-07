@@ -68,7 +68,7 @@ before_script:
   - eval $(ssh-agent -s)
   # https://gitlab.com/gitlab-org/gitlab-foss/-/issues/14434#note_36717658
   # Run "cat github_sync | base64" to add key to Gitlab
-  - ssh-add <(echo "$GITHUB_AND_GITLAB_SYNC_PRIVATE_KEY" | base64 --decode)
+  - ssh-add <(echo "$PRIVATE_SSH_KEY" | base64 --decode)
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan github.com >> ~/.ssh/known_hosts
