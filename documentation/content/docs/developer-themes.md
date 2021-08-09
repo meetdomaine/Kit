@@ -78,4 +78,4 @@ kit theme destroy
 
 Note: This action will have immediate effect without an interstitial prompt.
 
-This theme allows a developer to remove a theme from Shopify once the need for the theme has been satisfied. Generally speaking, the developer who created the theme originally should be the person who removes the theme once they are finished with it.
+This allows a developer to remove a theme from Shopify once the need for the theme has been satisfied. Generally speaking, the developer who created the theme originally should be the person who removes the theme once they are finished with it.
