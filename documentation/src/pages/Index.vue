@@ -60,7 +60,7 @@
             Configuration First
           </h3>
           <p class="text-lg text-center">
-            A lot of the default functionality is configurable through the <span class="font-bold">kit.config.js</span> file. There's close to 80 different ways to override change the behavior.
+            A lot of the default functionality is configurable through the <span class="font-bold">kit.config.js</span> file. There's close to 80 different ways to change the behavior.
           </p>
         </div>
 
