@@ -1,13 +1,9 @@
 const fetch = require('node-fetch')
-const { error, completedAction } = require('@halfhelix/terminal-kit')
-const {
-  getCommit,
-  getDate,
-  getBranch,
-  getUsername
-} = require('@halfhelix/configure').utils
+const { error, completedAction, warning } = require('@halfhelix/terminal-kit')
+const { getCommit, getDate, getBranch, getUsername } =
+  require('@halfhelix/configure').utils
 
-const formatName = async (settings, format) => {
+const formatName = async (settings, format = '') => {
   const commit = await settings['git.getCommit'](settings, getCommit)
   const date = await settings['git.getDate'](settings, getDate)
   const branch = await settings['git.getBranch'](settings, getBranch)
@@ -27,6 +23,13 @@ module.exports = async (settings) => {
     settings['themeName.format'](settings)
   )
   const finalThemeName = settings['themeName.override'](themeName, settings)
+
+  if (!finalThemeName) {
+    warning(
+      `Theme name cannot be blank (check theme.{value} exists in themeName.format setting)`
+    )
+    return Promise.resolve()
+  }
   return fetch(
     `https://${settings.store}/admin/themes/${settings.theme}.json`,
     {
