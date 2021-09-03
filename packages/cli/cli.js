@@ -41,6 +41,10 @@ program
   .option('--no-open', 'do not open the default browser')
   .option('--developer', 'use developer theme in watch and deploy commands')
   .option(
+    '--compiled-only',
+    'only deploy compiled files only in deploy command'
+  )
+  .option(
     '--include [types]',
     'the mime types to include in lint command (js,css)'
   )
@@ -105,6 +109,7 @@ new Promise(async (resolve) => {
       upload: options.upload,
       env: options.env || 'development',
       isDeveloper: options.developer || developerThemeWorkflow,
+      compiledOnly: options.compiledOnly,
       task: command
     }
 

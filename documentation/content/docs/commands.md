@@ -58,6 +58,14 @@ This command will build the theme for deployment to Shopify, only copying the We
 1. Creates a queue that controls a throttled deployment to Shopify
 1. Optionally renames the Shopify theme at the end of the deployment
 
+### Deploy Compiled Only
+
+Note the following flag will only deploy Webpack compiled files (usually CSS and JS)
+
+```
+kit deploy --env {environment} --compiled-only
+```
+
 ## Other commands
 
 In addition to these three main commands, Kit also exposes the following commands:

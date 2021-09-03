@@ -124,6 +124,8 @@ async function deployFiles(compiledAssets = [], settings) {
     ).filter((token) =>
       settings['css.chunk.criticalUploadFilter'](token, settings)
     )
+  } else if (settings.compiledOnly) {
+    files = sanitize([], compiledAssets)
   } else {
     files = sanitize(await getThemeFiles(settings), compiledAssets)
     await addInConfig(files, settings)
