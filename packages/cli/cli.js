@@ -129,6 +129,11 @@ new Promise(async (resolve) => {
     }
 
     if (~['build', 'deploy'].indexOf(command)) {
+      const remoteBranchExists =
+        options.syncWithRepo && settings.task === 'build'
+          ? await github.prepareDistRepo(settings)
+          : undefined
+
       let files = await webpacker(settings)
       files = settings['css.chunk']
         ? await chunkStylesheets(files, settings)
@@ -144,7 +149,6 @@ new Promise(async (resolve) => {
       }
 
       if (options.syncWithRepo) {
-        const remoteBranchExists = await github.prepareDistRepo(settings)
         await buildTheme(files || [], settings)
         await github.commitAndPush(settings, remoteBranchExists)
       } else {

@@ -67,7 +67,7 @@ before_script:
   - 'which ssh-agent || ( apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
   # https://gitlab.com/gitlab-org/gitlab-foss/-/issues/14434#note_36717658
-  # Run "cat github_sync | base64" to add key to Gitlab
+  # Run "cat ~/.ssh/private_ssh_key | base64" for value to add as Gitlab CI variable
   - ssh-add <(echo "$PRIVATE_SSH_KEY" | base64 --decode)
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
@@ -77,8 +77,7 @@ before_script:
   - git config --global init.defaultBranch master
   - git config --global user.email "ci@halfhelix.com"
   - git config --global user.name "Half Helix"
-  - npm i -g lerna
-  - lerna bootstrap
+  - npm i -g @halfhelix/kit
 
 Sync To Github:
   type: deployment
@@ -148,13 +147,13 @@ The remote URL to use to interact with the source code repository (e.g. "git@git
 }
 ```
 
-#### git.srcThemeRepositoryUrl
+#### git.builtThemeRepositoryUrl
 
 The remote URL to use to interact with the built theme code repository (e.g. "git@github.com:halfhelix/built-theme-code.git")
 
 ```js
 {
-  'git.srcThemeRepositoryUrl': '',
+  'git.builtThemeRepositoryUrl': '',
 }
 ```
 
