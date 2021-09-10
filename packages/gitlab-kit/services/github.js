@@ -181,9 +181,12 @@ module.exports.copyOverBuiltFiles = async (settings) => {
       file = `/${file}`
     }
     if (mappings[file]) {
+      if (mappings[file].compiled) {
+        return true
+      }
       utils.copyPath(
         `${settings['path.cwd']}${file}`,
-        `${settings['path.temp']}/src/${mappings[file]}`
+        `${settings['path.temp']}/src/${mappings[file].location}`
       )
     } else {
       settings['git.mapNewFileSrcLocation'](file, settings) &&

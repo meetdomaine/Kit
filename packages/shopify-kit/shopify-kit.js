@@ -93,11 +93,12 @@ async function generateMappingFile(files, settings) {
   fs.outputJSONSync(
     `${settings['path.dist']}/${settings['path.mapping-json']}`,
     (files || []).reduce((obj, token) => {
-      obj[token['destination'].replace(settings['path.dist'], '')] = token[
-        'original'
-      ]
-        .replace(settings['path.src'], '')
-        .replace(settings['path.dist'], '')
+      obj[token['destination'].replace(settings['path.dist'], '')] = {
+        location: token['original']
+          .replace(settings['path.src'], '')
+          .replace(settings['path.dist'], ''),
+        compiled: !!~token['original'].indexOf(settings['path.dist'])
+      }
       return obj
     }, {}),
     { spaces: 2 }
