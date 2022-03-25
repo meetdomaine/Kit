@@ -1,0 +1,44 @@
+name: execute-sync
+on:
+  push:
+    branches-ignore:
+      - 'master'
+      - 'production'
+jobs:
+  sync-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '13.7'
+      - uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SYNC_SSH_KEY_GITHUB }}
+          known_hosts: ${{ secrets.SYNC_KNOWN_HOSTS_GITHUB }}
+      - run: git config --global init.defaultBranch master
+      - run: git config --global user.email "ci@halfhelix.com"
+      - run: git config --global user.name "Half Helix"
+      - run: npm i -g lerna
+      - run: lerna bootstrap
+      - name: Installing theme dependencies
+        working-directory: ./packages/theme/basic-test
+        run: npm i
+      - name: Run linting command
+        working-directory: ./packages/theme/basic-test
+        run: node ../../cli/cli.js build --sync-with-repo
+  # sync-built:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '13.7'
+  #     - run: npm i -g lerna
+  #     - run: lerna bootstrap
+  #     - name: Installing theme dependencies
+  #       working-directory: ./packages/theme/basic-test
+  #       run: npm i
+  #     - name: Run linting command
+  #       working-directory: ./packages/theme/basic-test
+  #       run: node ../../cli/cli.js sync-back-to-source-repo
