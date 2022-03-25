@@ -10,6 +10,7 @@ settings['isCI'] = () => false
 settings['shopify.requestsPerInterval'] = 4
 settings['shopify.interval'] = 1000
 settings['shopify.retryUploadErrors'] = false
+settings['$emit'] = () => {}
 
 const createApiMock = (
   code = 200,
@@ -34,11 +35,9 @@ test.serial('Three assets are successfully sent to Shopify', async (t) => {
   const interceptor = createApiMock()
 
   await assetUpload(settings).sync(
-    [
-      'layout/theme.liquid',
-      'snippet/foo.liquid',
-      'snippet/bar.liquid'
-    ].map((theme) => ({ theme, content: '' }))
+    ['layout/theme.liquid', 'snippet/foo.liquid', 'snippet/bar.liquid'].map(
+      (theme) => ({ theme, content: '' })
+    )
   )
 
   t.true(interceptor.interceptors[0].interceptionCounter == 3)
@@ -69,11 +68,9 @@ test.serial('Five assets errors are flagged', async (t) => {
   })
 
   const errors = await assetUpload(settings).sync(
-    [
-      'layout/theme.liquid',
-      'snippet/foo.liquid',
-      'snippet/bar.liquid'
-    ].map((theme) => ({ theme, content: '' }))
+    ['layout/theme.liquid', 'snippet/foo.liquid', 'snippet/bar.liquid'].map(
+      (theme) => ({ theme, content: '' })
+    )
   )
 
   t.true(interceptor.interceptors[0].interceptionCounter == 3)
