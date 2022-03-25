@@ -4,7 +4,6 @@ on:
     branches-ignore:
       - 'master'
       - 'production'
-      - 'feature/github-actions'
 jobs:
   exec-lint:
     runs-on: ubuntu-latest
