@@ -14,6 +14,9 @@ jobs:
           node-version: '13.7'
       - run: npm i -g lerna
       - run: lerna bootstrap
+      - name: Installing theme dependencies
+        working-directory: ./packages/theme/basic-test
+        run: npm i
       - name: Run linting command
         working-directory: ./packages/theme/basic-test
         run: node ../../cli/cli.js lint
