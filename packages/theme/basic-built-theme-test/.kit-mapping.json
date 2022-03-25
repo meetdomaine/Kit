@@ -1,10 +1,34 @@
 {
-  "/assets/main.js": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.js",
-  "/assets/main.min.css.liquid": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.min.css.liquid",
-  "/config/settings_schema.json": "/config/settings_schema.json",
-  "/layout/theme.liquid": "/layout/theme.liquid",
-  "/locales/en.default.json": "/locales/en.default.json",
-  "/snippets/foo.liquid": "/modules/foo/foo.liquid",
-  "/snippets/snippet.liquid": "/snippets/snippet.liquid",
-  "/templates/product.liquid": "/templates/product.liquid"
+  "/assets/main.js": {
+    "location": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.js",
+    "compiled": true
+  },
+  "/assets/main.min.css.liquid": {
+    "location": "/Users/max/Sites/kit/packages/theme/basic-test/dist/assets/main.min.css.liquid",
+    "compiled": true
+  },
+  "/config/settings_schema.json": {
+    "location": "/config/settings_schema.json",
+    "compiled": false
+  },
+  "/layout/theme.liquid": {
+    "location": "/layout/theme.liquid",
+    "compiled": false
+  },
+  "/locales/en.default.json": {
+    "location": "/locales/en.default.json",
+    "compiled": false
+  },
+  "/snippets/foo.liquid": {
+    "location": "/modules/foo/foo.liquid",
+    "compiled": false
+  },
+  "/snippets/snippet.liquid": {
+    "location": "/snippets/snippet.liquid",
+    "compiled": false
+  },
+  "/templates/product.liquid": {
+    "location": "/templates/product.liquid",
+    "compiled": false
+  }
 }
