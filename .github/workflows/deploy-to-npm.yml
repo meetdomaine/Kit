@@ -1,5 +1,5 @@
 name: deploy-to-npm
-on: [workflow_dispatch]
+on: workflow_dispatch
 jobs:
   deploy-minor:
     runs-on: ubuntu-latest
