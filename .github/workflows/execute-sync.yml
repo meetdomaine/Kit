@@ -53,3 +53,4 @@ jobs:
         run: node ../../cli/cli.js sync-back-to-source-repo
         env:
           SRC_THEME_REPO_URL: ${{ secrets.SRC_THEME_REPO_URL }}
+      - run: ./test/scripts/validate-source-sync.sh

@@ -176,11 +176,21 @@ module.exports.copyOverBuiltFiles = async (settings) => {
   const mappings = utils.readJson(
     `${settings['path.cwd']}/${settings['path.mapping-json']}`
   )
+
   gitManagedFiles.split('\n').forEach((file) => {
     if (!/^\//.test(file)) {
       file = `/${file}`
     }
     if (mappings[file]) {
+      if (!mappings[file].location) {
+        error(
+          new Error(
+            `The ${settings['path.mapping-json']} file adheres to old format, needs "location"`
+          ),
+          false,
+          true
+        )
+      }
       if (mappings[file].compiled) {
         return true
       }
