@@ -12,11 +12,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '13.7'
-      - run: npm i -g lerna
-      - run: lerna bootstrap
+      # - run: npm i -g lerna
+      # - run: lerna bootstrap
       - run: cd ./packages/theme/basic-test
-      - run: npm i
-      - run: node ../../cli/cli.js lint
+      # - run: npm i
+      - run: ls -al
+      - run: cd ../../
+      - run: ls -al
+      - run: node ./../../cli/cli.js lint
   # exec-build:
   #   runs-on: ubuntu-latest
   #   steps:

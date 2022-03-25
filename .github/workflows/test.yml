@@ -1,5 +1,8 @@
 name: test
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - 'feature/github-actions'
 jobs:
   test:
     runs-on: ubuntu-latest
