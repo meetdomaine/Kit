@@ -36,6 +36,10 @@ program
   .option('-u --upload [upload]', 'upload specific file in critical command')
   .option('-q --quick', 'hide the loading screen and any synthetic pauses')
   .option('--debug', 'turn the debug flag on')
+  .option(
+    '--routine',
+    'specify the gitlab routine: merge-request/create or commits/lint'
+  )
   .option('--close', 'close critical command after processing once')
   .option('--sync-with-repo', 'sync built theme to remote repo')
   .option('--no-open', 'do not open the default browser')
