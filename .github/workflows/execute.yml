@@ -16,7 +16,7 @@ jobs:
       - run: lerna bootstrap
       - name: Run linting command
         working-directory: ./packages/theme/basic-test
-        run: node ./packages/cli/cli.js lint
+        run: node ../../cli/cli.js lint
   # exec-build:
   #   runs-on: ubuntu-latest
   #   steps:
