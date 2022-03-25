@@ -1,5 +1,5 @@
-name: deploy-to-npm-package
-on: workflow_dispatch
+name: deploy-to-npm
+on: push
 jobs:
   deploy-minor:
     runs-on: ubuntu-latest
