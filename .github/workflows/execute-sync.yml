@@ -24,9 +24,11 @@ jobs:
       - name: Installing theme dependencies
         working-directory: ./packages/theme/basic-test
         run: npm i
-      - name: Run linting command
+      - name: Run sync to build repo command
         working-directory: ./packages/theme/basic-test
         run: node ../../cli/cli.js build --sync-with-repo
+        env:
+          BUILT_THEME_REPO_URL: ${{ secrets.BUILT_THEME_REPO_URL }}
   # sync-built:
   #   runs-on: ubuntu-latest
   #   steps:
