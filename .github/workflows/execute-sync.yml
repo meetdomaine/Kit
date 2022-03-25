@@ -4,6 +4,7 @@ on:
     branches-ignore:
       - 'master'
       - 'production'
+      - 'feature/github-actions'
 jobs:
   # sync-build:
   #   runs-on: ubuntu-latest
