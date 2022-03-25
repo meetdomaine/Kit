@@ -135,6 +135,12 @@ jobs:
 
 This workflow is not designed to handle updates to files whose contents are mutated via asset pipelines (e.g. Webpack bundle files, compiled sprite files). Generally speaking, these files should not be modified in the Shopify UI.
 
+### Getting the SSH Key & Known Hosts
+
+In order to get the `KHOWN_HOSTS` value to add to Github or Gitlab, copy the contents of the `ssh-keyscan {host}` command, e.g. `ssh-keyscan github.com`.
+
+The SSH Key should be the private key of a private/public pair. The public key should be added as a deployment key to the repo with write access, or as a user scoped SSH for someone that who access to the correct repos (the build and/or source code repos).
+
 ### Relevant Settings
 
 #### git.srcThemeRepositoryUrl
