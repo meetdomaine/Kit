@@ -29,6 +29,7 @@ jobs:
         run: node ../../cli/cli.js build --sync-with-repo
         env:
           BUILT_THEME_REPO_URL: ${{ secrets.BUILT_THEME_REPO_URL }}
+      - run: node ./test/scripts/validate-filtered-files.js
   sync-source:
     runs-on: ubuntu-latest
     steps:

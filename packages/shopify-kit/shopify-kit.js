@@ -134,7 +134,12 @@ async function deployFiles(compiledAssets = [], settings) {
     await addInConfig(files, settings)
   }
 
-  await sync(settings).sync(files)
+  const withIgnoredFilesFilteredOut = await filterOutIgnoredFiles(
+    files,
+    settings.ignore
+  )
+
+  await sync(settings).sync(withIgnoredFilesFilteredOut)
 
   log(newLines())
   if (settings['themeName.update'](settings)) {
@@ -167,18 +172,27 @@ async function buildTheme(compiledAssets = [], settings) {
 
   await addInConfig(files, settings)
 
-  files.forEach(async ({ original, destination, content = false }) => {
-    if (original === destination) {
+  const withIgnoredFilesFilteredOut = await filterOutIgnoredFiles(
+    files,
+    settings.ignore
+  )
+
+  settings.$emit('build.files', withIgnoredFilesFilteredOut)
+
+  withIgnoredFilesFilteredOut.forEach(
+    async ({ original, destination, content = false }) => {
+      if (original === destination) {
+        return true
+      }
+      content
+        ? await fs.outputFile(destination, content)
+        : fs.copySync(original, destination)
+
       return true
     }
-    content
-      ? await fs.outputFile(destination, content)
-      : fs.copySync(original, destination)
+  )
 
-    return true
-  })
-
-  await generateMappingFile(files, settings)
+  await generateMappingFile(withIgnoredFilesFilteredOut, settings)
 
   await wait(2000)
   spinner.succeed()
@@ -209,9 +223,33 @@ async function deployFile(event, file, settings) {
     return Promise.resolve(false)
   }
 
-  await sync(settings).sync(files)
+  const withIgnoredFilesFilteredOut = await filterOutIgnoredFiles(
+    files,
+    settings.ignore
+  )
+
+  await sync(settings).sync(withIgnoredFilesFilteredOut)
 
   return Promise.resolve(true)
+}
+
+/**
+ * Allow certain files to be ignored and not
+ * uploaded to Shopify.
+ *
+ * @param {Array} paths paths to object
+ * @returns
+ */
+async function filterOutIgnoredFiles(files, toBeIgnored) {
+  return files.filter(({ theme: file = '' }) => {
+    return (toBeIgnored || []).every((rule) => {
+      if (typeof rule.test === 'undefined') {
+        return file !== rule
+      } else {
+        return !rule.test(file)
+      }
+    })
+  })
 }
 
 /**
@@ -308,5 +346,6 @@ module.exports = {
   buildTheme,
   deployFile,
   chunkStylesheets,
-  developerThemeService
+  developerThemeService,
+  filterOutIgnoredFiles
 }

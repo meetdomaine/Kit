@@ -112,7 +112,7 @@ This property is used to determine if the command is running in a CI context. We
 ```js
 {
   isCI() {
-    return !!process.env.CI_JOB_NAME
+    return !!process.env.CI_JOB_NAME || !!process.env.GITHUB_ACTIONS
   }
 }
 ```

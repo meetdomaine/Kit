@@ -6,6 +6,7 @@ require('dotenv').config()
 
 const defaults = require('./src/defaults')
 const utils = require('./src/utils')
+const emitter = require('./src/emitter')
 
 function readConfigFiles() {
   const config = defaults['path.config'].reduce((obj, path) => {
@@ -57,7 +58,8 @@ module.exports = async (options) => {
     config,
     config.themes[options.env],
     options,
-    options.isDeveloper ? await getDeveloperTheme() : {}
+    options.isDeveloper ? await getDeveloperTheme() : {},
+    emitter
   )
   return defaults
 }

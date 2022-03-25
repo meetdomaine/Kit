@@ -54,3 +54,4 @@ jobs:
           THEME_ID: ${{ secrets.THEME_ID }}
           PASSWORD: ${{ secrets.PASSWORD }}
           STORE: ${{ secrets.STORE }}
+      - run: node ./test/scripts/validate-filtered-files.js
