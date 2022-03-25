@@ -52,4 +52,4 @@ jobs:
         working-directory: ./packages/theme/basic-built-theme-test
         run: node ../../cli/cli.js sync-back-to-source-repo
         env:
-          BUILT_THEME_REPO_URL: ${{ secrets.BUILT_THEME_REPO_URL }}
+          SRC_THEME_REPO_URL: ${{ secrets.SRC_THEME_REPO_URL }}
