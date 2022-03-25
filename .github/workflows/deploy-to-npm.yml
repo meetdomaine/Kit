@@ -1,4 +1,4 @@
-name: deploy-to-npm
+name: deploy-to-npm-package
 on: workflow_dispatch
 jobs:
   deploy-minor:
