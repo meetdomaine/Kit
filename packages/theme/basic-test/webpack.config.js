@@ -27,7 +27,6 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        extract: true,
         use: [
           'style-loader',
           {
