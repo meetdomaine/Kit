@@ -7,6 +7,7 @@
 
 <body class="{{ template_class }}">
   {{ content_for_layout }}
+  {% render 'foo' %}
   {{ 'main.js' | asset_url | script_tag }}
 </body>
 </html>

@@ -70,7 +70,11 @@ module.exports = {
           },
           {
             title: 'Other Stuff',
-            items: ['/docs/contributing/', '/docs/testing-on-mobile/']
+            items: [
+              '/docs/contributing/',
+              '/docs/testing-on-mobile/',
+              '/docs/changelog/'
+            ]
           }
         ]
       }

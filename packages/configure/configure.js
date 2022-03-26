@@ -59,7 +59,10 @@ module.exports = async (options) => {
     config.themes[options.env],
     options,
     options.isDeveloper ? await getDeveloperTheme() : {},
-    emitter
+    emitter,
+    {
+      'runtime.npmPrefix': await utils.getNPMPrefix()
+    }
   )
   return defaults
 }
