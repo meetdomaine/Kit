@@ -17,10 +17,6 @@ To provide an option for Shopify themes that benefit from having asset piplines 
 
 This tool was made for our team at Half Helix and currently our focus is on maintaining it for our immediate stakeholders. If you have an idea or notice a bug please feel free to reach out and submit a Merge Request.
 
-## Dependencies
-
-This tool is built upon Webpack 4 and it is certainly time to upgrade to Webpack 5. There are a number of vulnerability flags that we'll get removed with this pending update.
-
 ## Online Store 2.0 Features
 
 During Unite in 2021, Shopify released a number of features under the name "Online Store 2.0". We explore how this tool supports these features in the "Online Store 2.0" section. Here are the features that we've added:
