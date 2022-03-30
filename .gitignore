@@ -4,3 +4,4 @@ lerna-debug.log
 tmp
 *.log
 builds
+temp
