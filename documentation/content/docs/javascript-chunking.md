@@ -45,3 +45,30 @@ This functionality will leverage Webpack to attempt to separate the landing page
 Behind the scenes, the implementation is quite simple, we are ingesting the path of the chunk in a custom Webpack loader, and using the top level module folder as the value for the `webpackChunkName` of the module's javascript file.
 
 Note that there is still a single JS bundle entrypoint that Webpack creates to control the loading of subsequent JS chunks.
+
+### Defining custom JS chunks
+
+Sometimes we might have a specific module, or collection of modules that use some big NPM dependencies (e.g. like GSAP, ScrollMagic, etc). Using Kit and under the hood, Webpack, we can ensure that these dependencies only get loaded in the parts of the theme that they are relevant to.
+
+#### Custom JS chunk configuration example
+
+```js
+// src/modules/global/vertical-scroll.js
+
+export default function (el) {
+  Promise.all([
+    import(/* webpackChunkName: "vertical-scroll" */ 'scrollmagic'),
+    import(/* webpackChunkName: "vertical-scroll" */ 'gsap'),
+    import(/* webpackChunkName: "vertical-scroll" */ 'scrollmagic-plugin-gsap')
+  ]).then(([ScrollMagic, { gsap }, { ScrollMagicPluginGsap }]) => {
+    ScrollMagicPluginGsap(ScrollMagic, gsap)
+
+    // module code...
+  }
+}
+
+```
+
+In this example, we communicate to Webpack that certain dependencies should be in the custom javascript bundle "vertical-scroll". Further, by using `import()` we let Webpack load these in asynchronously and once they are all loaded, we run our module code.
+
+In this way, we only load dependencies in the `vertical-scroll` bundle when we actually have the module on the page. If the module is not on a page, we don't load the dependencies in the browser.

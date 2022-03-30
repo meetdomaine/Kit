@@ -71,7 +71,7 @@ module.exports = {
   },
   // Roll certain module folders into other CSS chunks to share across pages
   'css.chunk.partials': {
-    reviews: ['product']
+    // reviews: ['product']
   },
   // The folder names to "whitelist" to split out critical and non-critical CSS
   // To avoid FOUT, this functionality is opt-in rather than opt-out
