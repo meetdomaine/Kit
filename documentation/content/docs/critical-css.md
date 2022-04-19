@@ -73,3 +73,41 @@ The "global" folder is marked by default as a location to put any global code sh
 For non global styles, the first word in the top level folder name before the "-" character (this character is configurable) maps to the `request.page_type`, and anything else after than point maps to the `template.suffix` Liquid variable. All this functionality can be modified by the settings outlined [here](/settings/css/).
 
 This is also communicated in the [Thinking Modular > Folder Naming Conventions](/docs/thinking-modular/#folder-naming-conventions) section.
+
+### Critical CSS Commands
+
+The following commands have been added to the kit to help with making updates specifically to CSS to define critical CSS blocks using the comment blocks above.
+
+```
+kit critical --env development --close
+kit critical --env development
+```
+
+The first command here will compile the CSS specifically and deploy it to Shopify, closing the session once done.
+
+The second command will keep the process running, watch for further changes to CSS and deploy the changes to Shopify so that you can iterate on your changes, getting rid of the flash of unstyled content due to CSS not being configured appropriately as critical.
+
+### Example kit.config.js configuration
+
+```js
+{
+  ...
+  'css.chunk': true,
+  'css.chunk.globalFolders': ['global', 'icons'],
+  'css.chunk.criticalWhitelist': ['index'],
+  'css.chunk.partials': {
+    'collection-and-search': ['collection', 'search']
+  },
+  // 'css.chunk.deferredChunkLink' (assetPath, settings) {
+  //   return ``
+  // }
+}
+```
+
+- `css.chunk` tells Kit to chunk the CSS into different files based on on the module directory structure.
+
+- `css.chunk.globalFolders` communicates which module directories should be understood to be global and loaded on every page. Sometimes we put icon related code in it's own directory (`src/modules/icons`), hence this configuration.
+
+- `css.chunk.partials` are top level module directories that include code that should be shared across multiple templates. In this example, we have a `src/modules/collection-and-search` folder that includes modules that should be shared across both collection templates and the search template.
+
+- `css.chunk.deferredChunkLink` overwrites the generated HTML for the non critical CSS `<link>`. Uncommenting this code will tell Kit to not render any non-critical css `<link>` which helps just see the page in it's critical CSS form. This allows a developer to zero in on HTML elements that may be flashing in when the page initially loads.
