@@ -3,6 +3,7 @@ const WHM = require('webpack-hot-middleware')
 const browserSync = require('browser-sync').create()
 const wait = require('w2t')
 const { action } = require('@halfhelix/terminal-kit')
+const { checkCookies } = require('./cookie-handling')
 
 function isLocalhost(string) {
   return /localhost/.test(string)
@@ -24,6 +25,10 @@ function makeConfig(webpack, settings, watchCallback) {
     online: settings['bs.online'],
     proxy: {
       target: settings['bs.target'](settings),
+      cookies: {
+        stripDomain: false,
+        proxyRes: [checkCookies]
+      },
       middleware: [wdm]
     },
     open: settings['bs.open']
@@ -32,7 +37,7 @@ function makeConfig(webpack, settings, watchCallback) {
         : 'external'
       : false,
     host: settings['bs.local'],
-    https: true,
+    https: settings['bs.https'],
     notify: false,
     snippetOptions: {
       rule: settings['bs.snippetPlacement'](settings),

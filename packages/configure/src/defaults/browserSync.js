@@ -9,6 +9,7 @@ module.exports = {
       settings['theme']
     }`
   },
+  'bs.https': true,
   // Sets the location that BrowserSync places the live reload snippet
   'bs.snippetPlacement'(settings) {
     return {
