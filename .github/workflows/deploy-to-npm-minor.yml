@@ -1,0 +1,21 @@
+name: deploy-to-npm-minor
+on: workflow_dispatch
+jobs:
+  deploy-minor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '13.7'
+      - name: Save NPM auth details to .npmrc
+        run: echo //registry.npmjs.org/:_authToken=$NPM_PUBLISH_KEY >> .npmrc
+        env:
+          NPM_PUBLISH_KEY: ${{ secrets.NPM_PUBLISH_KEY }}
+      - run: npm whoami
+      - run: git config --global user.email team@halfhelix.com
+      - run: git config --global user.name Deployments
+      - run: npm i -g lerna
+      - run: lerna bootstrap
+      - run: lerna publish minor --no-verify-access --yes
+
