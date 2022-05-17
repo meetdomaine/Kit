@@ -49,3 +49,29 @@ Take a read of the [Local Development](/docs/local-development/) section to bett
   }
 }
 ```
+
+#### bs.https
+
+This simply proxy's BrowserSync's [https](https://browsersync.io/docs/options#option-https) option but it is powerful since it allows you to add in your own SSL certificates so you can remove the nasty "Your connection to this site is not secure" browser prompt.
+
+```js
+{
+  'bs.https': true
+}
+```
+
+Example configuration in a kit.config.js file is below. This would allow different developers to use different certificate pairs, or opt-out of using custom certificates.
+
+```js
+{
+  "bs.https": process.env.LOCALHOST_CERT ? {
+    cert: process.env.LOCALHOST_CERT,
+    key: process.env.LOCALHOST_KEY
+  } : true,
+}
+```
+
+See details on how to get setup with this here:
+
+- https://ryanparman.com/posts/2019/how-to-create-local-tls-certificates-for-development-on-macos/
+- https://blogjunkie.net/2017/04/enable-https-localhost-browsersync/
