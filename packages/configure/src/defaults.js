@@ -15,7 +15,7 @@ module.exports = {
   ignore: ['config/settings_data.json'],
   webpack: {},
   isCI() {
-    return !!process.env.CI_JOB_NAME
+    return !!process.env.CI_JOB_NAME || !!process.env.GITHUB_ACTIONS
   },
   watch: (settings) => {
     return `${settings['path.src']}/**/*`

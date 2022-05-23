@@ -18,6 +18,7 @@ settings['ignore'] = []
 settings['shopify.clearGeneratedFiles'] = () => {
   return true
 }
+settings['$emit'] = () => {}
 
 test.before((t) => {
   // fs.existsSync = sinon.stub().returns(true)

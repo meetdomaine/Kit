@@ -48,10 +48,15 @@ Files to not upload and overwrite in the Shopify-hosted theme.
 ```js
 {
   'ignore': [
-    'config/settings_data.json'
+    'config/settings_data.json',
+     /templates\/.*[.]json/ // NEW!
   ]
 }
 ```
+
+Recently (v1.1.1 onwards), we added support to have regex values in this setting, as documented above with the "NEW" flag. This is helpful if you want to ignore groups of files from a deployment or when a [sync command](http://localhost:8081/docs/repo-sync/#relevant-commands) is running between a source and build repo. The Pull Request which added this change can be seen [here](https://github.com/halfhelix/Kit/pull/20).
+
+````
 
 #### domain (optional)
 
@@ -63,7 +68,7 @@ Note: Make sure you include the "www." subdomain if the primary domain configure
 {
   'domain': "www.store.halfhelix.com"
 }
-```
+````
 
 ## Per-environment Configurations
 
@@ -112,7 +117,7 @@ This property is used to determine if the command is running in a CI context. We
 ```js
 {
   isCI() {
-    return !!process.env.CI_JOB_NAME
+    return !!process.env.CI_JOB_NAME || !!process.env.GITHUB_ACTIONS
   }
 }
 ```

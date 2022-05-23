@@ -30,7 +30,7 @@ module.exports = function (settings, args = {}) {
      */
     sync(paths = []) {
       this._bindContext()
-      this.queue = this._filterOutIgnored(paths)
+      this.queue = paths
       this.errors = []
 
       if (!this.queue.length) {
@@ -44,6 +44,8 @@ module.exports = function (settings, args = {}) {
           `${args.label || 'Uploading'} "${paths[0].theme}"`
         )
       }
+
+      settings.$emit('upload.queue', this.queue)
 
       return this.enqueue(
         'Uploading',
@@ -254,25 +256,10 @@ module.exports = function (settings, args = {}) {
     _bindContext() {
       this.enqueue = this.enqueue.bind(this)
       this.upload = this.upload.bind(this)
-      this._filterOutIgnored = this._filterOutIgnored.bind(this)
-      this._filterOutIgnored = this._filterOutIgnored.bind(this)
-      this._generateUploadCompleteCallback = this._generateUploadCompleteCallback.bind(
-        this
-      )
-      this._reduceErrorMessagesToArray = this._reduceErrorMessagesToArray.bind(
-        this
-      )
-    },
-
-    /**
-     * Allow certain files to be ignored and not
-     * uploaded to Shopify.
-     *
-     * @param {Array} paths paths to object
-     * @returns
-     */
-    _filterOutIgnored(paths) {
-      return paths.filter((path) => !~settings.ignore.indexOf(path.theme))
+      this._generateUploadCompleteCallback =
+        this._generateUploadCompleteCallback.bind(this)
+      this._reduceErrorMessagesToArray =
+        this._reduceErrorMessagesToArray.bind(this)
     },
 
     /**
