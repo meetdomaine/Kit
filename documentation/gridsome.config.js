@@ -28,6 +28,7 @@ module.exports = {
             title: 'The Basics',
             items: [
               '/docs/',
+              '/docs/updating-to-v2/',
               '/docs/installation/',
               '/docs/theme-setup/',
               '/docs/getting-started/',
@@ -73,7 +74,8 @@ module.exports = {
             items: [
               '/docs/contributing/',
               '/docs/testing-on-mobile/',
-              '/docs/changelog/'
+              '/docs/changelog/',
+              '/docs/troubleshooting/'
             ]
           }
         ]

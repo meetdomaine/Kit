@@ -22,7 +22,7 @@ function readConfigFiles() {
   }, {})
 
   if (fs.existsSync(defaults['path.webpack'])) {
-    config.webpack = require(defaults['path.webpack'])
+    config._webpack = require(defaults['path.webpack'])
   }
 
   return config

@@ -295,6 +295,11 @@ function prepareExternals(settings) {
 }
 
 module.exports = (settings) => {
+  settings.webpack =
+    typeof settings._webpack === 'function'
+      ? settings._webpack(webpack)
+      : settings._webpack
+
   const {
     devtool,
     entry,
