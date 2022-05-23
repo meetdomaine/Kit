@@ -32,6 +32,7 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
+              url: false,
               importLoaders: 1,
               sourceMap: true
             }
@@ -39,7 +40,8 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              implementation: require('node-sass')
             }
           }
         ]
