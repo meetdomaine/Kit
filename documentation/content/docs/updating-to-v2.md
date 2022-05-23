@@ -69,7 +69,7 @@ module.exports = {
 }
 ```
 
-### Updating your files or your linting rules to cater to a new stylelint'ing setup
+### Update your files or your linting rules to cater to a new stylelint'ing setup
 
 There are a couple of ways to do this. First, you can install `stylelint` globally and run the `--fix` directive. This will catch and update a lot but not all. Here's an example:
 
@@ -124,4 +124,20 @@ module.exports = {
     "max-nesting-depth": 3
   }
 }
+```
+
+### Update the Node version in your Github Action files
+
+You might have been using an older Node version in CI to cater to a `v1.*` version of Kit. Update the Node version to support the newer dependencies we now have in `v2`. Here's an example using Github Actions:
+
+```yaml
+jobs:
+  job-name:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          # Change this line
+          node-version: '16.10'
 ```
