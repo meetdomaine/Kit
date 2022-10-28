@@ -63,7 +63,7 @@ module.exports = {
   'css.chunk.updateOriginalFile': true,
   // The rendered Liquid of the fallback remaining unchunked, non-critical CSS
   'css.chunk.defaultCSSInclude'(fileName, settings) {
-    return `{{ '${fileName}' | asset_url | stylesheet_tag }}`
+    return `{{ '${fileName}' | asset_url | stylesheet_tag: preload: true }}`
   },
   // Break the CSS into critical and non-critical blocks
   'css.chunk.critical'(settings) {
@@ -83,8 +83,8 @@ module.exports = {
   // The Liquid that loads in the non-critical part of each CSS chunk
   'css.chunk.deferredChunkLink'(assetPath, settings) {
     return `
-      <link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}" media="print" onload="this.media='all'" data-kit>
-      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
+      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" media="print" onload="this.media='all'" data-kit>
+      <noscript><link rel="preload" href="{{ '${assetPath}' | asset_url }} "></noscript>
     `
   },
   // Overwrite the entire Liquid snippet before it is generated
