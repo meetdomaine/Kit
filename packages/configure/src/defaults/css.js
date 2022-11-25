@@ -83,8 +83,8 @@ module.exports = {
   // The Liquid that loads in the non-critical part of each CSS chunk
   'css.chunk.deferredChunkLink'(assetPath, settings) {
     return `
-      <link rel="preload" href="{{ '${assetPath}' | asset_url }}" media="print" onload="this.media='all'" data-kit>
-      <noscript><link rel="preload" href="{{ '${assetPath}' | asset_url }} "></noscript>
+      <link href="{{ '${assetPath}' | asset_url }}" media="print" onload="this.media='all'" data-kit>
+      <noscript><link href="{{ '${assetPath}' | asset_url }} "></noscript>
     `
   },
   // Overwrite the entire Liquid snippet before it is generated
