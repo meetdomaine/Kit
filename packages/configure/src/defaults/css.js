@@ -84,7 +84,7 @@ module.exports = {
   'css.chunk.deferredChunkLink'(assetPath, settings) {
     return `
       <link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}" media="print" onload="this.media='all'" data-kit>
-      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }} "></noscript>
+      <noscript><link rel="stylesheet" href="{{ '${assetPath}' | asset_url }}"></noscript>
     `
   },
   // Overwrite the entire Liquid snippet before it is generated
