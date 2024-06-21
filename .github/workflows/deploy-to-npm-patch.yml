@@ -22,4 +22,3 @@ jobs:
       - run: npm i -g lerna
       - run: lerna bootstrap
       - run: lerna publish patch --no-verify-access --yes --exact
-
